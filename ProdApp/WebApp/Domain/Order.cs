@@ -1,0 +1,26 @@
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Data.SqlTypes;
+using Domain.NotMapped;
+
+namespace Domain
+{
+    /*TODO: Add fk user*/
+    public class Order : BaseIdentity
+    {
+        [MaxLength(50)]
+        public string Number { get; set; } = default!;
+        [MaxLength(100)]
+        public string Name { get; set; } = default!;
+        [MaxLength(100)]
+        public string DeliveryAddress { get; set; } = default!;
+        [DataType(DataType.Date)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:DD/mm/yyyy}")]
+        public SqlDateTime DueDate { get; set; } = default!;
+        [MaxLength(200)]
+        public string? Info { get; set; }
+        
+        public Guid CustomerId { get; set; }
+        public Customer? Customer { get; set; }
+    }
+}

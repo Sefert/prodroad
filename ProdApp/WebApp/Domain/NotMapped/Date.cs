@@ -8,7 +8,9 @@ namespace Domain.NotMapped
     public class Date : BaseIdentity
     {
         [DataType(DataType.Date)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:DD/mm/yyyy}")]
         public SqlDateTime StartDate { get; set; }
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:DD/mm/yyyy}")]
         [DataType(DataType.Date)]
         public SqlDateTime EndDate { get; set; }
     }

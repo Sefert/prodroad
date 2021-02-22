@@ -7,9 +7,11 @@ namespace Domain.NotMapped
     [NotMapped]
     public class Time : BaseIdentity
     {
-        [DataType(DataType.Date)]
+        [DataType(DataType.Time)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:HH:mm}")]
         public SqlDateTime StartTime { get; set; }
-        [DataType(DataType.Date)]
+        [DataType(DataType.Time)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:HH:mm}")]
         public SqlDateTime EndTime { get; set; }
     }
 }

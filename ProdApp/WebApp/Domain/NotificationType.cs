@@ -1,13 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Domain.NotMapped;
 
 namespace Domain
 {
-    public class NotificationType : DateTime
+    public class NotificationType : BaseIdentity
     {
-        [MaxLength(36)]
-        public string Name { get; set; }
-        [MaxLength(36)]
-        public string Type { get; set; }
+        [MaxLength(20)] public string Type { get; set; } = default!;
+        
+        public ICollection<UserNotification>? UserNotifications { get; set; }
     }
 }
