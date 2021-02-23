@@ -6,7 +6,6 @@ using DateTime = Domain.NotMapped.DateTime;
 
 namespace Domain
 {
-    /*TODO: Add reference to user*/
     public class ActiveNotification : DateTime
     {
         [MaxLength(50)]
@@ -19,6 +18,9 @@ namespace Domain
         
         public Guid SupplyId { get; set; }
         public Supply? Supply { get; set; }
+        
+        public Guid ApplicationUserId { get; set; }
+        public ApplicationUser? ApplicationUser { get; set; }
 
         public ICollection<ActiveNotification>? ActiveNotifications { get; set; }
         

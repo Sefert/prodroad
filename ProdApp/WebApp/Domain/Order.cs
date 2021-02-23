@@ -5,7 +5,6 @@ using Domain.NotMapped;
 
 namespace Domain
 {
-    /*TODO: Add fk user*/
     public class Order : BaseIdentity
     {
         [MaxLength(50)]
@@ -22,5 +21,8 @@ namespace Domain
         
         public Guid CustomerId { get; set; }
         public Customer? Customer { get; set; }
+        
+        public Guid ApplicationUserId { get; set; }
+        public ApplicationUser? ApplicationUser { get; set; }
     }
 }

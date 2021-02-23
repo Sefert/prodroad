@@ -5,7 +5,6 @@ using Domain.NotMapped;
 
 namespace Domain
 {
-    //TODO: Add production
     public class Component : BaseIdentity
     {
         [MaxLength(50)] public string Name { get; set; } = default!;

@@ -5,7 +5,6 @@ using Domain.NotMapped;
 
 namespace Domain
 {
-    /*TODO: Add reference to user*/
     public class UserNotification : BaseIdentity
     {
         [MaxLength(20)]
@@ -16,5 +15,8 @@ namespace Domain
         
         public Guid NotificationTypeId { get; set; }
         public NotificationType NotificationType { get; set; } = default!;
+        
+        public Guid ApplicationUserId { get; set; }
+        public ApplicationUser? ApplicationUser { get; set; }
     }
 }

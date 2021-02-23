@@ -4,13 +4,8 @@ using Domain.NotMapped;
 
 namespace Domain
 {
-    //TODO: Add reference to user
     public class Supply : BaseIdentity
     {
-        [MaxLength(50)]
-        public string Name { get; set; } = default!;
-        [MaxLength(50)]
-        public string Address { get; set; } = default!;
         public decimal Quantity { get; set; } = default!;
 
         public Guid ItemId { get; set; }
@@ -18,5 +13,8 @@ namespace Domain
 
         public Guid ComponentId { get; set; }
         public Component? Component { get; set; }
+        
+        public Guid WarehouseId { get; set; }
+        public Warehouse Warehouse { get; set; } = default!;
     }
 }
