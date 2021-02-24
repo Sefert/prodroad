@@ -15,7 +15,7 @@ namespace Domain
         [MaxLength(100)]
         public string DeliveryAddress { get; set; } = default!;
         [DataType(DataType.Date)]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:DD/mm/yyyy}")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime DueDate { get; set; } = default!;
         [MaxLength(200)]
         public string? Info { get; set; }

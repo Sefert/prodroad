@@ -4,10 +4,11 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Domain
 {
+    /*TODO: Change to non nullable, too much hassle to do for mvc razor*/
     public class ApplicationUser /*: BaseIdentity*/ : IdentityUser
     {
-        [MaxLength(30)] public string FirstName { get; set; } = default!;
-        [MaxLength(30)] public string LastName { get; set; } = default!;
+        [MaxLength(30)] public string? FirstName { get; set; }
+        [MaxLength(30)] public string? LastName { get; set; }
 
         public ICollection<UserTeam>? UserTeams { get; set; }
         public ICollection<UserNotification>? UserNotifications { get; set; }
