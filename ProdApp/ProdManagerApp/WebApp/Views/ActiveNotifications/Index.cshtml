@@ -1,4 +1,4 @@
-@model IEnumerable<Domain.ActiveNotification>
+@model IEnumerable<Domain.App.ActiveNotification>
 
 @{
     ViewData["Title"] = "Index";
@@ -55,16 +55,16 @@
                 @Html.DisplayFor(modelItem => item.Info)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Order.DeliveryAddress)
+                @Html.DisplayFor(modelItem => item.Order!.DeliveryAddress)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Supply.Id)
+                @Html.DisplayFor(modelItem => item.Supply!.Id)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ApplicationUserId)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.MasterNotification.Head)
+                @Html.DisplayFor(modelItem => item.MasterNotification!.Head)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.StartDate)

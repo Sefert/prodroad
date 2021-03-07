@@ -1,5 +1,5 @@
 using DAL.App.EF;
-using Domain;
+using Domain.App;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;

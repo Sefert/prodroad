@@ -1,4 +1,4 @@
-@model IEnumerable<Domain.Order>
+@model IEnumerable<Domain.App.Order>
 
 @{
     ViewData["Title"] = "Index";
@@ -55,7 +55,7 @@
                 @Html.DisplayFor(modelItem => item.Info)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Customer.Address)
+                @Html.DisplayFor(modelItem => item.Customer!.Address)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ApplicationUserId)

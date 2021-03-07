@@ -1,4 +1,4 @@
-@model IEnumerable<Domain.Production>
+@model IEnumerable<Domain.App.Production>
 
 @{
     ViewData["Title"] = "Index";
@@ -55,10 +55,10 @@
                 @Html.DisplayFor(modelItem => item.ProductionMeta.Line)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Component.Name)
+                @Html.DisplayFor(modelItem => item.Component!.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Item.Name)
+                @Html.DisplayFor(modelItem => item.Item!.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.StartDate)

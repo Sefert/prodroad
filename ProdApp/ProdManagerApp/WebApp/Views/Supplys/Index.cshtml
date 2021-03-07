@@ -1,4 +1,4 @@
-@model IEnumerable<Domain.Supply>
+@model IEnumerable<Domain.App.Supply>
 
 @{
     ViewData["Title"] = "Index";
@@ -34,10 +34,10 @@
                 @Html.DisplayFor(modelItem => item.Quantity)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Item.Name)
+                @Html.DisplayFor(modelItem => item.Item!.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Component.Name)
+                @Html.DisplayFor(modelItem => item.Component!.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Warehouse.Address)

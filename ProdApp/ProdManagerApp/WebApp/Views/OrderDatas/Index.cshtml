@@ -1,4 +1,4 @@
-@model IEnumerable<Domain.OrderData>
+@model IEnumerable<Domain.App.OrderData>
 
 @{
     ViewData["Title"] = "Index";
@@ -46,13 +46,13 @@
                 @Html.DisplayFor(modelItem => item.Order.DeliveryAddress)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Component.Name)
+                @Html.DisplayFor(modelItem => item.Component!.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Supply.Id)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Item.Name)
+                @Html.DisplayFor(modelItem => item.Item!.Name)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
