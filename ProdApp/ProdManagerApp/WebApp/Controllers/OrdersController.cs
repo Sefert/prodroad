@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.Controllers
@@ -13,17 +15,18 @@ namespace WebApp.Controllers
     public class OrdersController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IOrderRepo _repo;
 
         public OrdersController(AppDbContext context)
         {
             _context = context;
+            _repo = new OrderRepo(context);
         }
 
         // GET: Orders
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.Orders.Include(o => o.Customer);
-            return View(await appDbContext.ToListAsync());
+            return View(await _repo.GetAllAsync());
         }
 
         // GET: Orders/Details/5
@@ -34,15 +37,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var order = await _context.Orders
-                .Include(o => o.Customer)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (order == null)
-            {
-                return NotFound();
-            }
-
-            return View(order);
+            return View(await _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // GET: Orders/Create
@@ -62,7 +57,7 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 order.Id = Guid.NewGuid();
-                _context.Add(order);
+                _repo.Add(order);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -78,11 +73,8 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var order = await _context.Orders.FindAsync(id);
-            if (order == null)
-            {
-                return NotFound();
-            }
+            var order = await _repo.FirstOrDefaultAsync((Guid) id);
+
             ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Address", order.CustomerId);
             return View(order);
         }
@@ -103,12 +95,12 @@ namespace WebApp.Controllers
             {
                 try
                 {
-                    _context.Update(order);
+                    _repo.Update(order);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!OrderExists(order.Id))
+                    if (!_repo.ExistsAsync(id).Result)
                     {
                         return NotFound();
                     }
@@ -131,15 +123,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var order = await _context.Orders
-                .Include(o => o.Customer)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (order == null)
-            {
-                return NotFound();
-            }
-
-            return View(order);
+            return View(await _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // POST: Orders/Delete/5
@@ -147,15 +131,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var order = await _context.Orders.FindAsync(id);
-            _context.Orders.Remove(order);
+            var order = await _repo.FirstOrDefaultAsync(id);
+            _repo.Remove(order);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool OrderExists(Guid id)
-        {
-            return _context.Orders.Any(e => e.Id == id);
         }
     }
 }

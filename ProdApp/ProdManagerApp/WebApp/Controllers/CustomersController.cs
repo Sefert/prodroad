@@ -1,11 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.Controllers
@@ -13,16 +12,18 @@ namespace WebApp.Controllers
     public class CustomersController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly ICustomerRepo _repo;
 
         public CustomersController(AppDbContext context)
         {
             _context = context;
+            _repo = new CustomerRepo(context);
         }
 
         // GET: Customers
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Customers.ToListAsync());
+            return View(await _repo.GetAllAsync());
         }
 
         // GET: Customers/Details/5
@@ -33,14 +34,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var customer = await _context.Customers
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (customer == null)
-            {
-                return NotFound();
-            }
-
-            return View(customer);
+            return View(await _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // GET: Customers/Create
@@ -59,7 +53,7 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 customer.Id = Guid.NewGuid();
-                _context.Add(customer);
+                _repo.Add(customer);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -74,12 +68,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var customer = await _context.Customers.FindAsync(id);
-            if (customer == null)
-            {
-                return NotFound();
-            }
-            return View(customer);
+            return View(await _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // POST: Customers/Edit/5
@@ -98,12 +87,12 @@ namespace WebApp.Controllers
             {
                 try
                 {
-                    _context.Update(customer);
+                    _repo.Update(customer);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CustomerExists(customer.Id))
+                    if (!_repo.ExistsAsync(id).Result)
                     {
                         return NotFound();
                     }
@@ -124,15 +113,8 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-
-            var customer = await _context.Customers
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (customer == null)
-            {
-                return NotFound();
-            }
-
-            return View(customer);
+            
+            return View(await _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // POST: Customers/Delete/5
@@ -140,15 +122,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var customer = await _context.Customers.FindAsync(id);
-            _context.Customers.Remove(customer);
+            var customer = await _repo.FirstOrDefaultAsync(id);
+            _repo.Remove(customer);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool CustomerExists(Guid id)
-        {
-            return _context.Customers.Any(e => e.Id == id);
         }
     }
 }

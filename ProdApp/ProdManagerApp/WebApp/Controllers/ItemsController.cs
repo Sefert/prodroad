@@ -1,11 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.Controllers
@@ -13,16 +12,18 @@ namespace WebApp.Controllers
     public class ItemsController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IItemRepo _repo;
 
         public ItemsController(AppDbContext context)
         {
             _context = context;
+            _repo = new ItemRepo(_context);
         }
 
         // GET: Items
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Items.ToListAsync());
+            return View(await _repo.GetAllAsync());
         }
 
         // GET: Items/Details/5
@@ -32,15 +33,8 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-
-            var item = await _context.Items
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (item == null)
-            {
-                return NotFound();
-            }
-
-            return View(item);
+            
+            return View(await _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // GET: Items/Create
@@ -59,7 +53,7 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 item.Id = Guid.NewGuid();
-                _context.Add(item);
+                _repo.Add(item);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -73,13 +67,8 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-
-            var item = await _context.Items.FindAsync(id);
-            if (item == null)
-            {
-                return NotFound();
-            }
-            return View(item);
+            
+            return View(await _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // POST: Items/Edit/5
@@ -98,12 +87,12 @@ namespace WebApp.Controllers
             {
                 try
                 {
-                    _context.Update(item);
+                    _repo.Update(item);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ItemExists(item.Id))
+                    if (!_repo.ExistsAsync(id).Result)
                     {
                         return NotFound();
                     }
@@ -124,15 +113,8 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-
-            var item = await _context.Items
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (item == null)
-            {
-                return NotFound();
-            }
-
-            return View(item);
+            
+            return View(await _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // POST: Items/Delete/5
@@ -140,15 +122,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var item = await _context.Items.FindAsync(id);
-            _context.Items.Remove(item);
+            var item = await _repo.FirstOrDefaultAsync(id);
+            _repo.Remove(item);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool ItemExists(Guid id)
-        {
-            return _context.Items.Any(e => e.Id == id);
         }
     }
 }

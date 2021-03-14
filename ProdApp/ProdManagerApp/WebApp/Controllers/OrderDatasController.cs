@@ -1,11 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.Controllers
@@ -13,17 +14,18 @@ namespace WebApp.Controllers
     public class OrderDatasController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IOrderDataRepo _repo;
 
         public OrderDatasController(AppDbContext context)
         {
             _context = context;
+            _repo = new OrderDataRepo(context);
         }
 
         // GET: OrderDatas
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.OrderDatas.Include(o => o.Component).Include(o => o.Item).Include(o => o.Order).Include(o => o.Supply);
-            return View(await appDbContext.ToListAsync());
+            return View(await _repo.GetAllAsync());
         }
 
         // GET: OrderDatas/Details/5
@@ -34,18 +36,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var orderData = await _context.OrderDatas
-                .Include(o => o.Component)
-                .Include(o => o.Item)
-                .Include(o => o.Order)
-                .Include(o => o.Supply)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (orderData == null)
-            {
-                return NotFound();
-            }
-
-            return View(orderData);
+            return View(await _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // GET: OrderDatas/Create
@@ -68,7 +59,7 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 orderData.Id = Guid.NewGuid();
-                _context.Add(orderData);
+                _repo.Add(orderData);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -87,11 +78,8 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var orderData = await _context.OrderDatas.FindAsync(id);
-            if (orderData == null)
-            {
-                return NotFound();
-            }
+            var orderData = await _repo.FirstOrDefaultAsync((Guid) id);
+
             ViewData["ComponentId"] = new SelectList(_context.Components, "Id", "Name", orderData.ComponentId);
             ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Name", orderData.ItemId);
             ViewData["OrderId"] = new SelectList(_context.Orders, "Id", "DeliveryAddress", orderData.OrderId);
@@ -115,12 +103,12 @@ namespace WebApp.Controllers
             {
                 try
                 {
-                    _context.Update(orderData);
+                    _repo.Update(orderData);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!OrderDataExists(orderData.Id))
+                    if (!_repo.ExistsAsync(id).Result)
                     {
                         return NotFound();
                     }
@@ -146,18 +134,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var orderData = await _context.OrderDatas
-                .Include(o => o.Component)
-                .Include(o => o.Item)
-                .Include(o => o.Order)
-                .Include(o => o.Supply)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (orderData == null)
-            {
-                return NotFound();
-            }
-
-            return View(orderData);
+            return View(await _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // POST: OrderDatas/Delete/5
@@ -165,15 +142,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var orderData = await _context.OrderDatas.FindAsync(id);
-            _context.OrderDatas.Remove(orderData);
+            var orderData = await _repo.FirstOrDefaultAsync(id);
+            _repo.Remove(orderData);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool OrderDataExists(Guid id)
-        {
-            return _context.OrderDatas.Any(e => e.Id == id);
         }
     }
 }

@@ -1,11 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.Controllers
@@ -13,16 +12,18 @@ namespace WebApp.Controllers
     public class NotificationTypesController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly INotificationTypeRepo _repo;
 
         public NotificationTypesController(AppDbContext context)
         {
             _context = context;
+            _repo = new NotificationTypeRepo(context);
         }
 
         // GET: NotificationTypes
         public async Task<IActionResult> Index()
         {
-            return View(await _context.NotificationTypes.ToListAsync());
+            return View(await _repo.GetAllAsync());
         }
 
         // GET: NotificationTypes/Details/5
@@ -33,14 +34,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var notificationType = await _context.NotificationTypes
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (notificationType == null)
-            {
-                return NotFound();
-            }
-
-            return View(notificationType);
+            return View(await _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // GET: NotificationTypes/Create
@@ -59,7 +53,7 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 notificationType.Id = Guid.NewGuid();
-                _context.Add(notificationType);
+                _repo.Add(notificationType);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -73,13 +67,8 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-
-            var notificationType = await _context.NotificationTypes.FindAsync(id);
-            if (notificationType == null)
-            {
-                return NotFound();
-            }
-            return View(notificationType);
+            
+            return View(await _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // POST: NotificationTypes/Edit/5
@@ -98,12 +87,12 @@ namespace WebApp.Controllers
             {
                 try
                 {
-                    _context.Update(notificationType);
+                    _repo.Update(notificationType);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!NotificationTypeExists(notificationType.Id))
+                    if (!_repo.ExistsAsync(id).Result)
                     {
                         return NotFound();
                     }
@@ -125,14 +114,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var notificationType = await _context.NotificationTypes
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (notificationType == null)
-            {
-                return NotFound();
-            }
-
-            return View(notificationType);
+            return View(await _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // POST: NotificationTypes/Delete/5
@@ -140,15 +122,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var notificationType = await _context.NotificationTypes.FindAsync(id);
-            _context.NotificationTypes.Remove(notificationType);
+            var notificationType = await _repo.FirstOrDefaultAsync(id);
+            _repo.Remove(notificationType);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool NotificationTypeExists(Guid id)
-        {
-            return _context.NotificationTypes.Any(e => e.Id == id);
         }
     }
 }

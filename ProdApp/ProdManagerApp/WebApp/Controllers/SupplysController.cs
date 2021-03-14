@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.Controllers
@@ -13,17 +15,18 @@ namespace WebApp.Controllers
     public class SupplysController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly ISupplyRepo _repo;
 
         public SupplysController(AppDbContext context)
         {
             _context = context;
+            _repo = new SupplyRepo(context);
         }
 
         // GET: Supplys
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.Supplys.Include(s => s.Component).Include(s => s.Item).Include(s => s.Warehouse);
-            return View(await appDbContext.ToListAsync());
+            return View(await _repo.GetAllAsync());
         }
 
         // GET: Supplys/Details/5
@@ -34,17 +37,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var supply = await _context.Supplys
-                .Include(s => s.Component)
-                .Include(s => s.Item)
-                .Include(s => s.Warehouse)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (supply == null)
-            {
-                return NotFound();
-            }
-
-            return View(supply);
+            return View(await _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // GET: Supplys/Create
@@ -66,7 +59,7 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 supply.Id = Guid.NewGuid();
-                _context.Add(supply);
+                _repo.Add(supply);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -84,11 +77,8 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var supply = await _context.Supplys.FindAsync(id);
-            if (supply == null)
-            {
-                return NotFound();
-            }
+            var supply = await _repo.FirstOrDefaultAsync((Guid) id);
+
             ViewData["ComponentId"] = new SelectList(_context.Components, "Id", "Name", supply.ComponentId);
             ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Name", supply.ItemId);
             ViewData["WarehouseId"] = new SelectList(_context.Warehouses, "Id", "Address", supply.WarehouseId);
@@ -111,12 +101,12 @@ namespace WebApp.Controllers
             {
                 try
                 {
-                    _context.Update(supply);
+                    _repo.Update(supply);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!SupplyExists(supply.Id))
+                    if (!_repo.ExistsAsync(id).Result)
                     {
                         return NotFound();
                     }
@@ -141,17 +131,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var supply = await _context.Supplys
-                .Include(s => s.Component)
-                .Include(s => s.Item)
-                .Include(s => s.Warehouse)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (supply == null)
-            {
-                return NotFound();
-            }
-
-            return View(supply);
+            return View(await  _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // POST: Supplys/Delete/5
@@ -159,15 +139,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var supply = await _context.Supplys.FindAsync(id);
-            _context.Supplys.Remove(supply);
+            var supply = await _repo.FirstOrDefaultAsync(id);
+            _repo.Remove(supply);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool SupplyExists(Guid id)
-        {
-            return _context.Supplys.Any(e => e.Id == id);
         }
     }
 }

@@ -1,10 +1,11 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using Contracts.Domain.Base;
 using Domain.Base;
 
 namespace Domain.App
 {
-    public class Production : DomainEntityDateTime
+    public class Production : DomainEntityDateTime, IDomainEntityId
     {
         [Column(TypeName = "decimal(18,2)")]
         public decimal Quantity { get; set; }

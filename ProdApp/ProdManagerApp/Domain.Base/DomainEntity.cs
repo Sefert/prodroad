@@ -3,7 +3,7 @@ using Contracts.Domain.Base;
 
 namespace Domain.Base
 {
-    public abstract class DomainEntity : DomainEntity<Guid>
+    public abstract class DomainEntity : DomainEntity<Guid>, IDomainEntity
     {
     }
 

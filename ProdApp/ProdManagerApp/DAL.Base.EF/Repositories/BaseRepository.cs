@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DAL.Base.EF.Repositories
 {
     public class BaseRepository<TEntity> : BaseRepository<TEntity, Guid>, IBaseRepository<TEntity>
-        where TEntity : class , IDomainEntity, IDomainEntityId
+        where TEntity : class, IDomainEntityId
     {
         public BaseRepository(DbContext dbContext) : base(dbContext)
         {
@@ -16,7 +16,7 @@ namespace DAL.Base.EF.Repositories
     }
     
     public class BaseRepository<TEntity, TKey> : IBaseRepository<TEntity, TKey>
-        where TEntity : class, IDomainEntity<TKey>
+        where TEntity : class, IDomainEntityId<TKey>
         where TKey : IEquatable<TKey>
     {
         protected readonly DbContext RepoDbContext;

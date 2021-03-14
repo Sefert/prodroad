@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Contracts.Domain.Base;
 using Domain.Base;
 
 namespace Domain.App
 {
-    public class UserTeam : DomainEntityDate
+    public class UserTeam : DomainEntityDate, IDomainEntityId
     {
         public bool MasterTeam { get; set; }
         public bool Accepted { get; set; }

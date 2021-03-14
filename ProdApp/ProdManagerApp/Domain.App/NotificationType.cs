@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Domain.Base;
 
+
 namespace Domain.App
 {
     public class NotificationType : DomainEntityId

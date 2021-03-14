@@ -4,7 +4,7 @@ using Contracts.Domain.Base;
 
 namespace Domain.Base
 {
-    public abstract class DomainEntityDate : DomainEntityDate<Guid>
+    public abstract class DomainEntityDate : DomainEntityDate<Guid>, IDomainEntityDate
     {
 
     }

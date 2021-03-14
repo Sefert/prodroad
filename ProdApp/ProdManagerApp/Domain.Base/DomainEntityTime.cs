@@ -4,7 +4,7 @@ using Contracts.Domain.Base;
 
 namespace Domain.Base
 {
-    public abstract class DomainEntityTime : DomainEntityTime<Guid>
+    public abstract class DomainEntityTime : DomainEntityTime<Guid>, IDomainEntityTime
     {
 
     }

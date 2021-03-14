@@ -1,11 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Contracts.Domain.Base;
 using Microsoft.AspNetCore.Identity;
 
 namespace Domain.App
 {
     /*TODO: Change to non nullable, too much hassle to do for mvc razor*/
-    public class ApplicationUser /*: BaseIdentity*/ : IdentityUser
+    public class ApplicationUser /*: BaseIdentity*/ : IdentityUser<Guid>, IDomainEntityId
     {
         [MaxLength(30)] public string? FirstName { get; set; }
         [MaxLength(30)] public string? LastName { get; set; }

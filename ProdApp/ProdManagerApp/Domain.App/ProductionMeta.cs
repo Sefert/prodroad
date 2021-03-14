@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Contracts.Domain.Base;
 using Domain.Base;
 
 namespace Domain.App
 {
-    public class ProductionMeta : DomainEntityDateTime
+    public class ProductionMeta : DomainEntityDateTime, IDomainEntityId
     {
         public string Line { get; set; } = default!;
         [DataType(DataType.Date)]

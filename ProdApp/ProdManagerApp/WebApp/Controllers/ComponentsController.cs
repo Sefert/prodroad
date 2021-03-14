@@ -1,9 +1,10 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.Controllers
@@ -11,16 +12,18 @@ namespace WebApp.Controllers
     public class ComponentsController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IComponentRepo _repo;
 
         public ComponentsController(AppDbContext context)
         {
             _context = context;
+            _repo = new ComponentRepo(context);
         }
 
         // GET: Components
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Components.ToListAsync());
+            return View(await _repo.GetAllAsync());
         }
 
         // GET: Components/Details/5
@@ -30,15 +33,8 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-
-            var component = await _context.Components
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (component == null)
-            {
-                return NotFound();
-            }
-
-            return View(component);
+            
+            return View(await _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // GET: Components/Create
@@ -57,7 +53,7 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 component.Id = Guid.NewGuid();
-                _context.Add(component);
+                _repo.Add(component);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -71,13 +67,8 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-
-            var component = await _context.Components.FindAsync(id);
-            if (component == null)
-            {
-                return NotFound();
-            }
-            return View(component);
+            
+            return View(await _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // POST: Components/Edit/5
@@ -96,12 +87,12 @@ namespace WebApp.Controllers
             {
                 try
                 {
-                    _context.Update(component);
+                    _repo.Update(component);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ComponentExists(component.Id))
+                    if (!_repo.ExistsAsync(id).Result)
                     {
                         return NotFound();
                     }
@@ -122,15 +113,7 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-
-            var component = await _context.Components
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (component == null)
-            {
-                return NotFound();
-            }
-
-            return View(component);
+            return View(await _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // POST: Components/Delete/5
@@ -138,15 +121,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var component = await _context.Components.FindAsync(id);
-            _context.Components.Remove(component);
+            var component = await _repo.FirstOrDefaultAsync(id);
+            _repo.Remove(component);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool ComponentExists(Guid id)
-        {
-            return _context.Components.Any(e => e.Id == id);
         }
     }
 }

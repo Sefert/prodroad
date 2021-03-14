@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.Controllers
@@ -13,10 +15,12 @@ namespace WebApp.Controllers
     public class PricesController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IPriceRepo _repo;
 
         public PricesController(AppDbContext context)
         {
             _context = context;
+            _repo = new PriceRepo(context);
         }
 
         // GET: Prices
@@ -33,17 +37,8 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-
-            var price = await _context.Prices
-                .Include(p => p.Component)
-                .Include(p => p.Item)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (price == null)
-            {
-                return NotFound();
-            }
-
-            return View(price);
+            
+            return View(await _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // GET: Prices/Create
@@ -64,7 +59,7 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 price.Id = Guid.NewGuid();
-                _context.Add(price);
+                _repo.Add(price);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -107,12 +102,12 @@ namespace WebApp.Controllers
             {
                 try
                 {
-                    _context.Update(price);
+                    _repo.Update(price);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PriceExists(price.Id))
+                    if (!_repo.ExistsAsync(id).Result)
                     {
                         return NotFound();
                     }
@@ -136,16 +131,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var price = await _context.Prices
-                .Include(p => p.Component)
-                .Include(p => p.Item)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (price == null)
-            {
-                return NotFound();
-            }
-
-            return View(price);
+            return View(await _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // POST: Prices/Delete/5
@@ -153,15 +139,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var price = await _context.Prices.FindAsync(id);
-            _context.Prices.Remove(price);
+            var price = await _repo.FirstOrDefaultAsync(id);
+            _repo.Remove(price);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool PriceExists(Guid id)
-        {
-            return _context.Prices.Any(e => e.Id == id);
         }
     }
 }

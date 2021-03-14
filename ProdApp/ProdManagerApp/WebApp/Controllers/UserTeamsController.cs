@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.Controllers
@@ -13,17 +15,18 @@ namespace WebApp.Controllers
     public class UserTeamsController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IUserTeamRepo _repo;
 
         public UserTeamsController(AppDbContext context)
         {
             _context = context;
+            _repo = new UserTeamRepo(context);
         }
 
         // GET: UserTeams
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.UserTeams.Include(u => u.Team);
-            return View(await appDbContext.ToListAsync());
+            return View(await _repo.GetAllAsync());
         }
 
         // GET: UserTeams/Details/5
@@ -34,15 +37,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var userTeam = await _context.UserTeams
-                .Include(u => u.Team)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (userTeam == null)
-            {
-                return NotFound();
-            }
-
-            return View(userTeam);
+            return View(await _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // GET: UserTeams/Create
@@ -62,7 +57,7 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 userTeam.Id = Guid.NewGuid();
-                _context.Add(userTeam);
+                _repo.Add(userTeam);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -78,11 +73,8 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var userTeam = await _context.UserTeams.FindAsync(id);
-            if (userTeam == null)
-            {
-                return NotFound();
-            }
+            var userTeam = await _repo.FirstOrDefaultAsync((Guid) id);
+
             ViewData["TeamId"] = new SelectList(_context.Teams, "Id", "Code", userTeam.TeamId);
             return View(userTeam);
         }
@@ -103,12 +95,12 @@ namespace WebApp.Controllers
             {
                 try
                 {
-                    _context.Update(userTeam);
+                    _repo.Update(userTeam);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UserTeamExists(userTeam.Id))
+                    if (!_repo.ExistsAsync(id).Result)
                     {
                         return NotFound();
                     }
@@ -130,16 +122,8 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-
-            var userTeam = await _context.UserTeams
-                .Include(u => u.Team)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (userTeam == null)
-            {
-                return NotFound();
-            }
-
-            return View(userTeam);
+            
+            return View(await _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // POST: UserTeams/Delete/5
@@ -147,15 +131,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var userTeam = await _context.UserTeams.FindAsync(id);
-            _context.UserTeams.Remove(userTeam);
+            var userTeam = await _repo.FirstOrDefaultAsync(id);
+            _repo.Remove(userTeam);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool UserTeamExists(Guid id)
-        {
-            return _context.UserTeams.Any(e => e.Id == id);
         }
     }
 }

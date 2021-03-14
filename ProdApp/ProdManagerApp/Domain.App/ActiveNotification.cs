@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Contracts.Domain.Base;
 using Domain.Base;
 
 
 namespace Domain.App
 {
-    public class ActiveNotification : DomainEntityDateTime
+    public class ActiveNotification : DomainEntityDateTime, IDomainEntityId
     {
         [MaxLength(50)]
         public string Head { get; set; } = default!;

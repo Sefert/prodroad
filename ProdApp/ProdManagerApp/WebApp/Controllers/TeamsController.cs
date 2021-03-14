@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.Controllers
@@ -13,16 +15,18 @@ namespace WebApp.Controllers
     public class TeamsController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly ITeamRepo _repo;
 
         public TeamsController(AppDbContext context)
         {
             _context = context;
+            _repo = new TeamRepo(context);
         }
 
         // GET: Teams
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Teams.ToListAsync());
+            return View(await _repo.GetAllAsync());
         }
 
         // GET: Teams/Details/5
@@ -33,12 +37,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var team = await _context.Teams
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (team == null)
-            {
-                return NotFound();
-            }
+            var team = await _repo.FirstOrDefaultAsync((Guid) id);
 
             return View(team);
         }
@@ -59,7 +58,7 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 team.Id = Guid.NewGuid();
-                _context.Add(team);
+                _repo.Add(team);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -73,13 +72,8 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-
-            var team = await _context.Teams.FindAsync(id);
-            if (team == null)
-            {
-                return NotFound();
-            }
-            return View(team);
+            
+            return View(await _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // POST: Teams/Edit/5
@@ -98,12 +92,12 @@ namespace WebApp.Controllers
             {
                 try
                 {
-                    _context.Update(team);
+                    _repo.Update(team);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!TeamExists(team.Id))
+                    if (!_repo.ExistsAsync(id).Result)
                     {
                         return NotFound();
                     }
@@ -125,14 +119,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var team = await _context.Teams
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (team == null)
-            {
-                return NotFound();
-            }
-
-            return View(team);
+            return View(await _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // POST: Teams/Delete/5
@@ -140,15 +127,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var team = await _context.Teams.FindAsync(id);
-            _context.Teams.Remove(team);
+            var team = await _repo.FirstOrDefaultAsync(id);
+            _repo.Remove(team);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool TeamExists(Guid id)
-        {
-            return _context.Teams.Any(e => e.Id == id);
         }
     }
 }

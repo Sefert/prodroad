@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.Controllers
@@ -13,17 +15,19 @@ namespace WebApp.Controllers
     public class ProductionsController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IProductionRepo _repo;
 
         public ProductionsController(AppDbContext context)
         {
             _context = context;
+            _repo = new ProductionRepo(context);
         }
 
         // GET: Productions
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.Productions.Include(p => p.Component).Include(p => p.Item).Include(p => p.ProductionMeta);
-            return View(await appDbContext.ToListAsync());
+            
+            return View(await _repo.GetAllAsync());
         }
 
         // GET: Productions/Details/5
@@ -34,17 +38,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var production = await _context.Productions
-                .Include(p => p.Component)
-                .Include(p => p.Item)
-                .Include(p => p.ProductionMeta)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (production == null)
-            {
-                return NotFound();
-            }
-
-            return View(production);
+            return View(await _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // GET: Productions/Create
@@ -66,7 +60,7 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 production.Id = Guid.NewGuid();
-                _context.Add(production);
+                _repo.Add(production);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -84,11 +78,8 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var production = await _context.Productions.FindAsync(id);
-            if (production == null)
-            {
-                return NotFound();
-            }
+            var production = await _repo.FirstOrDefaultAsync((Guid) id);
+
             ViewData["ComponentId"] = new SelectList(_context.Components, "Id", "Name", production.ComponentId);
             ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Name", production.ItemId);
             ViewData["ProductionMetaId"] = new SelectList(_context.ProductionMetas, "Id", "Line", production.ProductionMetaId);
@@ -111,12 +102,12 @@ namespace WebApp.Controllers
             {
                 try
                 {
-                    _context.Update(production);
+                    _repo.Update(production);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductionExists(production.Id))
+                    if (!_repo.ExistsAsync(id).Result)
                     {
                         return NotFound();
                     }
@@ -141,17 +132,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var production = await _context.Productions
-                .Include(p => p.Component)
-                .Include(p => p.Item)
-                .Include(p => p.ProductionMeta)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (production == null)
-            {
-                return NotFound();
-            }
-
-            return View(production);
+            return View(await _repo.FirstOrDefaultAsync((Guid) id));
         }
 
         // POST: Productions/Delete/5
@@ -159,15 +140,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var production = await _context.Productions.FindAsync(id);
-            _context.Productions.Remove(production);
+            var production = await _repo.FirstOrDefaultAsync(id);
+            _repo.Remove(production);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool ProductionExists(Guid id)
-        {
-            return _context.Productions.Any(e => e.Id == id);
         }
     }
 }
