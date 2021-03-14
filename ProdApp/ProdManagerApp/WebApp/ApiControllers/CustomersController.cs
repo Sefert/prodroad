@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.ApiControllers
@@ -15,31 +17,31 @@ namespace WebApp.ApiControllers
     public class CustomersController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly ICustomerRepo _repo;
 
         public CustomersController(AppDbContext context)
         {
             _context = context;
+            _repo = new CustomerRepo(context);
         }
 
         // GET: api/Customers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
         {
-            return await _context.Customers.ToListAsync();
+            return Ok(await _repo.GetAllAsync());
         }
 
         // GET: api/Customers/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Customer>> GetCustomer(Guid id)
         {
-            var customer = await _context.Customers.FindAsync(id);
-
-            if (customer == null)
+            if (!await _repo.ExistsAsync(id))
             {
                 return NotFound();
             }
 
-            return customer;
+            return Ok(await _repo.FirstOrDefaultAsync(id));
         }
 
         // PUT: api/Customers/5
@@ -60,7 +62,7 @@ namespace WebApp.ApiControllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CustomerExists(id))
+                if (!await _repo.ExistsAsync(id))
                 {
                     return NotFound();
                 }
@@ -78,7 +80,7 @@ namespace WebApp.ApiControllers
         [HttpPost]
         public async Task<ActionResult<Customer>> PostCustomer(Customer customer)
         {
-            _context.Customers.Add(customer);
+            _repo.Add(customer);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetCustomer", new { id = customer.Id }, customer);
@@ -88,21 +90,16 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomer(Guid id)
         {
-            var customer = await _context.Customers.FindAsync(id);
-            if (customer == null)
+            if (!await _repo.ExistsAsync(id))
             {
                 return NotFound();
             }
-
-            _context.Customers.Remove(customer);
+            
+            var component = await _repo.FirstOrDefaultAsync(id);
+            _repo.Remove(component);
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool CustomerExists(Guid id)
-        {
-            return _context.Customers.Any(e => e.Id == id);
         }
     }
 }

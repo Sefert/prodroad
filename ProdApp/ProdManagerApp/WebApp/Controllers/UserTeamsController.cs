@@ -61,7 +61,7 @@ namespace WebApp.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TeamId"] = new SelectList(_context.Teams, "Id", "Code", userTeam.TeamId);
+            ViewData["TeamId"] = new SelectList(_repo.GetAllAsync().Result, "Id", "Code", userTeam.TeamId);
             return View(userTeam);
         }
 
@@ -75,7 +75,7 @@ namespace WebApp.Controllers
 
             var userTeam = await _repo.FirstOrDefaultAsync((Guid) id);
 
-            ViewData["TeamId"] = new SelectList(_context.Teams, "Id", "Code", userTeam.TeamId);
+            ViewData["TeamId"] = new SelectList(_repo.GetAllAsync().Result, "Id", "Code", userTeam.TeamId);
             return View(userTeam);
         }
 
@@ -111,7 +111,7 @@ namespace WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TeamId"] = new SelectList(_context.Teams, "Id", "Code", userTeam.TeamId);
+            ViewData["TeamId"] = new SelectList(_repo.GetAllAsync().Result, "Id", "Code", userTeam.TeamId);
             return View(userTeam);
         }
 

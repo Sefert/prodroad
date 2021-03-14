@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.ApiControllers
@@ -15,31 +17,31 @@ namespace WebApp.ApiControllers
     public class UserNotificationsController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IUserNotificationRepo _repo;
 
         public UserNotificationsController(AppDbContext context)
         {
             _context = context;
+            _repo = new UserNotificationRepo(context);
         }
 
         // GET: api/UserNotifications
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserNotification>>> GetUserNotifications()
         {
-            return await _context.UserNotifications.ToListAsync();
+            return Ok(await _repo.GetAllAsync(false));
         }
 
         // GET: api/UserNotifications/5
         [HttpGet("{id}")]
         public async Task<ActionResult<UserNotification>> GetUserNotification(Guid id)
         {
-            var userNotification = await _context.UserNotifications.FindAsync(id);
-
-            if (userNotification == null)
+            if (!await _repo.ExistsAsync(id))
             {
                 return NotFound();
             }
 
-            return userNotification;
+            return Ok(await _repo.FirstOrDefaultAsync(id));
         }
 
         // PUT: api/UserNotifications/5
@@ -60,7 +62,7 @@ namespace WebApp.ApiControllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserNotificationExists(id))
+                if (!await _repo.ExistsAsync(id))
                 {
                     return NotFound();
                 }
@@ -78,7 +80,7 @@ namespace WebApp.ApiControllers
         [HttpPost]
         public async Task<ActionResult<UserNotification>> PostUserNotification(UserNotification userNotification)
         {
-            _context.UserNotifications.Add(userNotification);
+            _repo.Add(userNotification);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetUserNotification", new { id = userNotification.Id }, userNotification);
@@ -88,21 +90,16 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUserNotification(Guid id)
         {
-            var userNotification = await _context.UserNotifications.FindAsync(id);
-            if (userNotification == null)
+            if (!await _repo.ExistsAsync(id))
             {
                 return NotFound();
             }
-
-            _context.UserNotifications.Remove(userNotification);
+            
+            var component = await _repo.FirstOrDefaultAsync(id);
+            _repo.Remove(component);
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool UserNotificationExists(Guid id)
-        {
-            return _context.UserNotifications.Any(e => e.Id == id);
         }
     }
 }

@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.ApiControllers
@@ -15,31 +15,30 @@ namespace WebApp.ApiControllers
     public class ActiveNotificationsController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IActiveNotificationRepo _repo;
 
         public ActiveNotificationsController(AppDbContext context)
         {
             _context = context;
+            _repo = new ActiveNotificationRepo(context);
         }
 
         // GET: api/ActiveNotifications
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ActiveNotification>>> GetActiveNotifications()
         {
-            return await _context.ActiveNotifications.ToListAsync();
+            return Ok(await _repo.GetAllAsync(false));
         }
 
         // GET: api/ActiveNotifications/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ActiveNotification>> GetActiveNotification(Guid id)
         {
-            var activeNotification = await _context.ActiveNotifications.FindAsync(id);
-
-            if (activeNotification == null)
+            if (!await _repo.ExistsAsync(id))
             {
                 return NotFound();
             }
-
-            return activeNotification;
+            return Ok(await _repo.FirstOrDefaultAsync(id));
         }
 
         // PUT: api/ActiveNotifications/5
@@ -60,7 +59,7 @@ namespace WebApp.ApiControllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ActiveNotificationExists(id))
+                if (!await _repo.ExistsAsync(id))
                 {
                     return NotFound();
                 }
@@ -78,7 +77,7 @@ namespace WebApp.ApiControllers
         [HttpPost]
         public async Task<ActionResult<ActiveNotification>> PostActiveNotification(ActiveNotification activeNotification)
         {
-            _context.ActiveNotifications.Add(activeNotification);
+            _repo.Add(activeNotification);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetActiveNotification", new { id = activeNotification.Id }, activeNotification);
@@ -88,21 +87,17 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteActiveNotification(Guid id)
         {
-            var activeNotification = await _context.ActiveNotifications.FindAsync(id);
-            if (activeNotification == null)
+            
+            if (!await _repo.ExistsAsync(id))
             {
                 return NotFound();
             }
-
-            _context.ActiveNotifications.Remove(activeNotification);
+            
+            var activeNotification = await _repo.FirstOrDefaultAsync(id);
+            _repo.Remove(activeNotification);
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool ActiveNotificationExists(Guid id)
-        {
-            return _context.ActiveNotifications.Any(e => e.Id == id);
         }
     }
 }

@@ -37,7 +37,7 @@ namespace WebApp.Controllers
         // GET: ActiveNotifications/Create
         public IActionResult Create()
         {
-            ViewData["MasterNotificationId"] = new SelectList(_context.ActiveNotifications, "Id", "Head");
+            ViewData["MasterNotificationId"] = new SelectList(_repo.GetAllAsync().Result, "Id", "Head");
             ViewData["OrderId"] = new SelectList(_context.Orders, "Id", "DeliveryAddress");
             ViewData["SupplyId"] = new SelectList(_context.Supplys, "Id", "Id");
             return View();

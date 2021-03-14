@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.ApiControllers
@@ -15,31 +17,31 @@ namespace WebApp.ApiControllers
     public class WarehouseController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IWarehouseRepo _repo;
 
         public WarehouseController(AppDbContext context)
         {
             _context = context;
+            _repo = new WarehouseRepo(context);
         }
 
         // GET: api/Warehouse
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Warehouse>>> GetWarehouses()
         {
-            return await _context.Warehouses.ToListAsync();
+            return Ok(await _repo.GetAllAsync(false));
         }
 
         // GET: api/Warehouse/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Warehouse>> GetWarehouse(Guid id)
         {
-            var warehouse = await _context.Warehouses.FindAsync(id);
-
-            if (warehouse == null)
+            if (!await _repo.ExistsAsync(id))
             {
                 return NotFound();
             }
 
-            return warehouse;
+            return Ok(await _repo.FirstOrDefaultAsync(id));
         }
 
         // PUT: api/Warehouse/5
@@ -60,7 +62,7 @@ namespace WebApp.ApiControllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!WarehouseExists(id))
+                if (!await _repo.ExistsAsync(id))
                 {
                     return NotFound();
                 }
@@ -78,7 +80,7 @@ namespace WebApp.ApiControllers
         [HttpPost]
         public async Task<ActionResult<Warehouse>> PostWarehouse(Warehouse warehouse)
         {
-            _context.Warehouses.Add(warehouse);
+            _repo.Add(warehouse);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetWarehouse", new { id = warehouse.Id }, warehouse);
@@ -88,21 +90,16 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteWarehouse(Guid id)
         {
-            var warehouse = await _context.Warehouses.FindAsync(id);
-            if (warehouse == null)
+            if (!await _repo.ExistsAsync(id))
             {
                 return NotFound();
             }
-
-            _context.Warehouses.Remove(warehouse);
+            
+            var component = await _repo.FirstOrDefaultAsync(id);
+            _repo.Remove(component);
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool WarehouseExists(Guid id)
-        {
-            return _context.Warehouses.Any(e => e.Id == id);
         }
     }
 }

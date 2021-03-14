@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.ApiControllers
@@ -15,31 +17,31 @@ namespace WebApp.ApiControllers
     public class ProductionMetasController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IProductionMetaRepo _repo;
 
         public ProductionMetasController(AppDbContext context)
         {
             _context = context;
+            _repo = new ProductionMetaRepo(context);
         }
 
         // GET: api/ProductionMetas
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductionMeta>>> GetProductionMetas()
         {
-            return await _context.ProductionMetas.ToListAsync();
+            return Ok(await _repo.GetAllAsync(false));
         }
 
         // GET: api/ProductionMetas/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductionMeta>> GetProductionMeta(Guid id)
         {
-            var productionMeta = await _context.ProductionMetas.FindAsync(id);
-
-            if (productionMeta == null)
+            if (!await _repo.ExistsAsync(id))
             {
                 return NotFound();
             }
 
-            return productionMeta;
+            return Ok(await _repo.FirstOrDefaultAsync(id));
         }
 
         // PUT: api/ProductionMetas/5
@@ -60,7 +62,7 @@ namespace WebApp.ApiControllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ProductionMetaExists(id))
+                if (!await _repo.ExistsAsync(id))
                 {
                     return NotFound();
                 }
@@ -78,7 +80,7 @@ namespace WebApp.ApiControllers
         [HttpPost]
         public async Task<ActionResult<ProductionMeta>> PostProductionMeta(ProductionMeta productionMeta)
         {
-            _context.ProductionMetas.Add(productionMeta);
+            _repo.Add(productionMeta);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetProductionMeta", new { id = productionMeta.Id }, productionMeta);
@@ -88,21 +90,16 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProductionMeta(Guid id)
         {
-            var productionMeta = await _context.ProductionMetas.FindAsync(id);
-            if (productionMeta == null)
+            if (!await _repo.ExistsAsync(id))
             {
                 return NotFound();
             }
-
-            _context.ProductionMetas.Remove(productionMeta);
+            
+            var component = await _repo.FirstOrDefaultAsync(id);
+            _repo.Remove(component);
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool ProductionMetaExists(Guid id)
-        {
-            return _context.ProductionMetas.Any(e => e.Id == id);
         }
     }
 }

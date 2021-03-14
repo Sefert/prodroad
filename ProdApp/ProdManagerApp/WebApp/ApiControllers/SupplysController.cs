@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.ApiControllers
@@ -15,31 +17,31 @@ namespace WebApp.ApiControllers
     public class SupplysController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly ISupplyRepo _repo;
 
         public SupplysController(AppDbContext context)
         {
             _context = context;
+            _repo = new SupplyRepo(context);
         }
 
         // GET: api/Supplys
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Supply>>> GetSupplys()
         {
-            return await _context.Supplys.ToListAsync();
+            return Ok(await _repo.GetAllAsync(false));
         }
 
         // GET: api/Supplys/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Supply>> GetSupply(Guid id)
         {
-            var supply = await _context.Supplys.FindAsync(id);
-
-            if (supply == null)
+            if (!await _repo.ExistsAsync(id))
             {
                 return NotFound();
             }
 
-            return supply;
+            return Ok(await _repo.FirstOrDefaultAsync(id));
         }
 
         // PUT: api/Supplys/5
@@ -60,7 +62,7 @@ namespace WebApp.ApiControllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!SupplyExists(id))
+                if (!await _repo.ExistsAsync(id))
                 {
                     return NotFound();
                 }
@@ -78,7 +80,7 @@ namespace WebApp.ApiControllers
         [HttpPost]
         public async Task<ActionResult<Supply>> PostSupply(Supply supply)
         {
-            _context.Supplys.Add(supply);
+            _repo.Add(supply);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetSupply", new { id = supply.Id }, supply);
@@ -88,21 +90,16 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSupply(Guid id)
         {
-            var supply = await _context.Supplys.FindAsync(id);
-            if (supply == null)
+            if (!await _repo.ExistsAsync(id))
             {
                 return NotFound();
             }
-
-            _context.Supplys.Remove(supply);
+            
+            var component = await _repo.FirstOrDefaultAsync(id);
+            _repo.Remove(component);
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool SupplyExists(Guid id)
-        {
-            return _context.Supplys.Any(e => e.Id == id);
         }
     }
 }

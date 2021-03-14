@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.ApiControllers
@@ -15,31 +17,31 @@ namespace WebApp.ApiControllers
     public class ItemComponentsController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IItemComponentRepo _repo;
 
         public ItemComponentsController(AppDbContext context)
         {
             _context = context;
+            _repo = new ItemComponentRepo(context);
         }
 
         // GET: api/ItemComponents
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ItemComponent>>> GetItemComponents()
         {
-            return await _context.ItemComponents.ToListAsync();
+            return Ok(await _repo.GetAllAsync(false));
         }
 
         // GET: api/ItemComponents/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ItemComponent>> GetItemComponent(Guid id)
         {
-            var itemComponent = await _context.ItemComponents.FindAsync(id);
-
-            if (itemComponent == null)
+            if (!await _repo.ExistsAsync(id))
             {
                 return NotFound();
             }
 
-            return itemComponent;
+            return Ok(await _repo.FirstOrDefaultAsync(id));
         }
 
         // PUT: api/ItemComponents/5
@@ -60,7 +62,7 @@ namespace WebApp.ApiControllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ItemComponentExists(id))
+                if (!await _repo.ExistsAsync(id))
                 {
                     return NotFound();
                 }
@@ -78,7 +80,7 @@ namespace WebApp.ApiControllers
         [HttpPost]
         public async Task<ActionResult<ItemComponent>> PostItemComponent(ItemComponent itemComponent)
         {
-            _context.ItemComponents.Add(itemComponent);
+            _repo.Add(itemComponent);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetItemComponent", new { id = itemComponent.Id }, itemComponent);
@@ -88,21 +90,16 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteItemComponent(Guid id)
         {
-            var itemComponent = await _context.ItemComponents.FindAsync(id);
-            if (itemComponent == null)
+            if (!await _repo.ExistsAsync(id))
             {
                 return NotFound();
             }
-
-            _context.ItemComponents.Remove(itemComponent);
+            
+            var component = await _repo.FirstOrDefaultAsync(id);
+            _repo.Remove(component);
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool ItemComponentExists(Guid id)
-        {
-            return _context.ItemComponents.Any(e => e.Id == id);
         }
     }
 }

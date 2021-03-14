@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.ApiControllers
@@ -15,31 +17,31 @@ namespace WebApp.ApiControllers
     public class ProductionsController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IProductionRepo _repo;
 
         public ProductionsController(AppDbContext context)
         {
             _context = context;
+            _repo = new ProductionRepo(context);
         }
 
         // GET: api/Productions
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Production>>> GetProductions()
         {
-            return await _context.Productions.ToListAsync();
+            return Ok(await _repo.GetAllAsync(false));
         }
 
         // GET: api/Productions/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Production>> GetProduction(Guid id)
         {
-            var production = await _context.Productions.FindAsync(id);
-
-            if (production == null)
+            if (!await _repo.ExistsAsync(id))
             {
                 return NotFound();
             }
 
-            return production;
+            return Ok(await _repo.FirstOrDefaultAsync(id));
         }
 
         // PUT: api/Productions/5
@@ -60,7 +62,7 @@ namespace WebApp.ApiControllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ProductionExists(id))
+                if (!await _repo.ExistsAsync(id))
                 {
                     return NotFound();
                 }
@@ -78,9 +80,9 @@ namespace WebApp.ApiControllers
         [HttpPost]
         public async Task<ActionResult<Production>> PostProduction(Production production)
         {
-            _context.Productions.Add(production);
+            _repo.Add(production);
             await _context.SaveChangesAsync();
-
+            
             return CreatedAtAction("GetProduction", new { id = production.Id }, production);
         }
 
@@ -88,21 +90,16 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduction(Guid id)
         {
-            var production = await _context.Productions.FindAsync(id);
-            if (production == null)
+            if (!await _repo.ExistsAsync(id))
             {
                 return NotFound();
             }
-
-            _context.Productions.Remove(production);
+            
+            var component = await _repo.FirstOrDefaultAsync(id);
+            _repo.Remove(component);
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool ProductionExists(Guid id)
-        {
-            return _context.Productions.Any(e => e.Id == id);
         }
     }
 }

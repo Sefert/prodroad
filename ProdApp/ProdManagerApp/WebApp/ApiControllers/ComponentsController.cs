@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.ApiControllers
@@ -15,31 +17,30 @@ namespace WebApp.ApiControllers
     public class ComponentsController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IComponentRepo _repo;
 
         public ComponentsController(AppDbContext context)
         {
             _context = context;
+            _repo = new ComponentRepo(context);
         }
 
         // GET: api/Components
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Component>>> GetComponents()
         {
-            return await _context.Components.ToListAsync();
+            return Ok(await _repo.GetAllAsync(false));
         }
 
         // GET: api/Components/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Component>> GetComponent(Guid id)
         {
-            var component = await _context.Components.FindAsync(id);
-
-            if (component == null)
+            if (!await _repo.ExistsAsync(id))
             {
                 return NotFound();
             }
-
-            return component;
+            return Ok(await _repo.FirstOrDefaultAsync(id));
         }
 
         // PUT: api/Components/5
@@ -60,7 +61,7 @@ namespace WebApp.ApiControllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ComponentExists(id))
+                if (!await _repo.ExistsAsync(id))
                 {
                     return NotFound();
                 }
@@ -78,7 +79,7 @@ namespace WebApp.ApiControllers
         [HttpPost]
         public async Task<ActionResult<Component>> PostComponent(Component component)
         {
-            _context.Components.Add(component);
+            _repo.Add(component);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetComponent", new { id = component.Id }, component);
@@ -88,21 +89,16 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteComponent(Guid id)
         {
-            var component = await _context.Components.FindAsync(id);
-            if (component == null)
+            if (!await _repo.ExistsAsync(id))
             {
                 return NotFound();
             }
-
-            _context.Components.Remove(component);
+            
+            var component = await _repo.FirstOrDefaultAsync(id);
+            _repo.Remove(component);
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool ComponentExists(Guid id)
-        {
-            return _context.Components.Any(e => e.Id == id);
         }
     }
 }

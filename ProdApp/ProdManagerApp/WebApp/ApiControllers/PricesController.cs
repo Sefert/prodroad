@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.ApiControllers
@@ -15,31 +17,31 @@ namespace WebApp.ApiControllers
     public class PricesController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IPriceRepo _repo;
 
         public PricesController(AppDbContext context)
         {
             _context = context;
+            _repo = new PriceRepo(context);
         }
 
         // GET: api/Prices
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Price>>> GetPrices()
         {
-            return await _context.Prices.ToListAsync();
+            return Ok(await _repo.GetAllAsync(false));
         }
 
         // GET: api/Prices/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Price>> GetPrice(Guid id)
         {
-            var price = await _context.Prices.FindAsync(id);
-
-            if (price == null)
+            if (!await _repo.ExistsAsync(id))
             {
                 return NotFound();
             }
 
-            return price;
+            return Ok(await _repo.FirstOrDefaultAsync(id));
         }
 
         // PUT: api/Prices/5
@@ -60,7 +62,7 @@ namespace WebApp.ApiControllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!PriceExists(id))
+                if (!await _repo.ExistsAsync(id))
                 {
                     return NotFound();
                 }
@@ -78,7 +80,7 @@ namespace WebApp.ApiControllers
         [HttpPost]
         public async Task<ActionResult<Price>> PostPrice(Price price)
         {
-            _context.Prices.Add(price);
+            _repo.Add(price);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetPrice", new { id = price.Id }, price);
@@ -88,21 +90,16 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePrice(Guid id)
         {
-            var price = await _context.Prices.FindAsync(id);
-            if (price == null)
+            if (!await _repo.ExistsAsync(id))
             {
                 return NotFound();
             }
-
-            _context.Prices.Remove(price);
+            
+            var component = await _repo.FirstOrDefaultAsync(id);
+            _repo.Remove(component);
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool PriceExists(Guid id)
-        {
-            return _context.Prices.Any(e => e.Id == id);
         }
     }
 }

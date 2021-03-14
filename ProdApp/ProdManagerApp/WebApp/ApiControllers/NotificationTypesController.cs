@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.DAL.App.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.ApiControllers
@@ -15,31 +17,31 @@ namespace WebApp.ApiControllers
     public class NotificationTypesController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly INotificationTypeRepo _repo;
 
         public NotificationTypesController(AppDbContext context)
         {
             _context = context;
+            _repo = new NotificationTypeRepo(context);
         }
 
         // GET: api/NotificationTypes
         [HttpGet]
         public async Task<ActionResult<IEnumerable<NotificationType>>> GetNotificationTypes()
         {
-            return await _context.NotificationTypes.ToListAsync();
+            return Ok(await _repo.GetAllAsync(false));
         }
 
         // GET: api/NotificationTypes/5
         [HttpGet("{id}")]
         public async Task<ActionResult<NotificationType>> GetNotificationType(Guid id)
         {
-            var notificationType = await _context.NotificationTypes.FindAsync(id);
-
-            if (notificationType == null)
+            if (!await _repo.ExistsAsync(id))
             {
                 return NotFound();
             }
 
-            return notificationType;
+            return Ok(await _repo.FirstOrDefaultAsync(id));
         }
 
         // PUT: api/NotificationTypes/5
@@ -60,7 +62,7 @@ namespace WebApp.ApiControllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!NotificationTypeExists(id))
+                if (!await _repo.ExistsAsync(id))
                 {
                     return NotFound();
                 }
@@ -78,7 +80,7 @@ namespace WebApp.ApiControllers
         [HttpPost]
         public async Task<ActionResult<NotificationType>> PostNotificationType(NotificationType notificationType)
         {
-            _context.NotificationTypes.Add(notificationType);
+            _repo.Add(notificationType);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetNotificationType", new { id = notificationType.Id }, notificationType);
@@ -88,21 +90,16 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteNotificationType(Guid id)
         {
-            var notificationType = await _context.NotificationTypes.FindAsync(id);
-            if (notificationType == null)
+            if (!await _repo.ExistsAsync(id))
             {
                 return NotFound();
             }
-
-            _context.NotificationTypes.Remove(notificationType);
+            
+            var component = await _repo.FirstOrDefaultAsync(id);
+            _repo.Remove(component);
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool NotificationTypeExists(Guid id)
-        {
-            return _context.NotificationTypes.Any(e => e.Id == id);
         }
     }
 }
