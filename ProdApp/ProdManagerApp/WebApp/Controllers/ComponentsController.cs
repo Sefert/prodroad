@@ -1,40 +1,36 @@
 using System;
 using System.Threading.Tasks;
-using Contracts.DAL.App.Repositories;
+using Contracts.DAL.App;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DAL.App.EF;
-using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.Controllers
 {
     public class ComponentsController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly IComponentRepo _repo;
+        private readonly IAppUnitOfWork _uow;
 
-        public ComponentsController(AppDbContext context)
+        public ComponentsController(IAppUnitOfWork uow)
         {
-            _context = context;
-            _repo = new ComponentRepo(context);
+            _uow = uow;
         }
 
         // GET: Components
         public async Task<IActionResult> Index()
         {
-            return View(await _repo.GetAllAsync());
+            return View(await _uow.Components.GetAllAsync());
         }
 
         // GET: Components/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
+
+            var component = await _uow.Components.FirstOrDefaultAsync(id.Value, false);
             
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            if (component == null) return NotFound();
+
+            return View(component);
         }
 
         // GET: Components/Create
@@ -53,8 +49,8 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 component.Id = Guid.NewGuid();
-                _repo.Add(component);
-                await _context.SaveChangesAsync();
+                _uow.Components.Add(component);
+                await _uow.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(component);
@@ -63,12 +59,13 @@ namespace WebApp.Controllers
         // GET: Components/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            if (id == null) return NotFound();
+
+            var component = await _uow.Components.FirstOrDefaultAsync(id.Value, false);
+
+            if (component == null) return NotFound();
+
+            return View(component);
         }
 
         // POST: Components/Edit/5
@@ -78,42 +75,26 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Name,Type,Unit,Id")] Component component)
         {
-            if (id != component.Id)
-            {
-                return NotFound();
-            }
+            if (id != component.Id) return NotFound();
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _repo.Update(component);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_repo.ExistsAsync(id).Result)
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(component);
+            if (!ModelState.IsValid || !await _uow.Components.ExistsAsync(component.Id))
+                return View(component);
+            
+            _uow.Components.Update(component);
+            await _uow.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Components/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            if (id == null) return NotFound();
+
+            var component = await _uow.Components.FirstOrDefaultAsync(id.Value, false);
+
+            if (component == null) return NotFound();
+            
+            return View(component);
         }
 
         // POST: Components/Delete/5
@@ -121,9 +102,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var component = await _repo.FirstOrDefaultAsync(id);
-            _repo.Remove(component);
-            await _context.SaveChangesAsync();
+            var component = await _uow.Components.FirstOrDefaultAsync(id);
+            if (component == null) return NotFound();
+            _uow.Components.Remove(component);
+            await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
     }

@@ -1,49 +1,42 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Contracts.DAL.App.Repositories;
+using Contracts.DAL.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using DAL.App.EF;
-using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.Controllers
 {
     public class OrdersController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly IOrderRepo _repo;
+        private readonly IAppUnitOfWork _uow;
 
-        public OrdersController(AppDbContext context)
+        public OrdersController(IAppUnitOfWork uow)
         {
-            _context = context;
-            _repo = new OrderRepo(context);
+            _uow = uow;
         }
 
         // GET: Orders
         public async Task<IActionResult> Index()
         {
-            return View(await _repo.GetAllAsync());
+            return View(await _uow.Orders.GetAllAsync());
         }
 
         // GET: Orders/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            var order = await _uow.Orders.FirstOrDefaultAsync(id.Value, false);
+
+            if (order == null) return NotFound();
+            return View(order);
         }
 
         // GET: Orders/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Address");
+            ViewData["CustomerId"] = new SelectList(await _uow.Customers.GetAllAsync(), "Id", "Address");
             return View();
         }
 
@@ -57,25 +50,25 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 order.Id = Guid.NewGuid();
-                _repo.Add(order);
-                await _context.SaveChangesAsync();
+                _uow.Orders.Add(order);
+                await _uow.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Address", order.CustomerId);
+            ViewData["CustomerId"] = new SelectList(await _uow.Customers.GetAllAsync(), "Id", "Address", order.CustomerId);
             return View(order);
         }
 
         // GET: Orders/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var order = await _repo.FirstOrDefaultAsync((Guid) id);
+            var order = await _uow.Orders.FirstOrDefaultAsync(id.Value, false);
 
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Address", order.CustomerId);
+            if (order == null) return NotFound();
+
+            ViewData["CustomerId"] =
+                new SelectList(await _uow.Customers.GetAllAsync(), "Id", "Address", order.CustomerId);
             return View(order);
         }
 
@@ -86,44 +79,27 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Number,Name,DeliveryAddress,DueDate,Info,CustomerId,ApplicationUserId,Id")] Order order)
         {
-            if (id != order.Id)
-            {
-                return NotFound();
-            }
+            if (id != order.Id) return NotFound();
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _repo.Update(order);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_repo.ExistsAsync(id).Result)
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Address", order.CustomerId);
-            return View(order);
+            if (!ModelState.IsValid || !await _uow.Orders.ExistsAsync(order.Id))
+                return View(order);
+
+            ViewData["CustomerId"] =
+                new SelectList(await _uow.Customers.GetAllAsync(), "Id", "Address", order.CustomerId);
+            _uow.Orders.Update(order);
+            await _uow.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Orders/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
+            
+            var order = await _uow.Orders.FirstOrDefaultAsync(id.Value, false);
 
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            if (order == null) return NotFound();
+            return View(order);
         }
 
         // POST: Orders/Delete/5
@@ -131,9 +107,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var order = await _repo.FirstOrDefaultAsync(id);
-            _repo.Remove(order);
-            await _context.SaveChangesAsync();
+            var order = await _uow.Orders.FirstOrDefaultAsync(id);
+            if (order == null) return NotFound();
+            _uow.Orders.Remove(order);
+            await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
     }

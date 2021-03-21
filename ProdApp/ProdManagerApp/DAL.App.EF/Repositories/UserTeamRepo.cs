@@ -23,7 +23,7 @@ namespace DAL.App.EF.Repositories
             return await query.Include(u => u.Team).ToListAsync();
         }
         
-        public override async Task<UserTeam> FirstOrDefaultAsync(Guid id, bool noTracking = true)
+        public override async Task<UserTeam?> FirstOrDefaultAsync(Guid id, bool noTracking = true)
         {
             var query = RepoDbSet.AsQueryable();
 

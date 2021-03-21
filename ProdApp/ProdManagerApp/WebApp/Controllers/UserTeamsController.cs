@@ -1,49 +1,42 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Contracts.DAL.App.Repositories;
+using Contracts.DAL.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using DAL.App.EF;
-using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.Controllers
 {
     public class UserTeamsController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly IUserTeamRepo _repo;
+        private readonly IAppUnitOfWork _uow;
 
-        public UserTeamsController(AppDbContext context)
+        public UserTeamsController(IAppUnitOfWork uow)
         {
-            _context = context;
-            _repo = new UserTeamRepo(context);
+            _uow = uow;
         }
 
         // GET: UserTeams
         public async Task<IActionResult> Index()
         {
-            return View(await _repo.GetAllAsync());
+            return View(await _uow.UserTeams.GetAllAsync());
         }
 
         // GET: UserTeams/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            var userTeam = await _uow.UserTeams.FirstOrDefaultAsync(id.Value, false);
+
+            if (userTeam == null) return NotFound();
+            return View(userTeam);
         }
 
         // GET: UserTeams/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["TeamId"] = new SelectList(_context.Teams, "Id", "Code");
+            ViewData["TeamId"] = new SelectList(await _uow.Teams.GetAllAsync(), "Id", "Code");
             return View();
         }
 
@@ -57,25 +50,24 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 userTeam.Id = Guid.NewGuid();
-                _repo.Add(userTeam);
-                await _context.SaveChangesAsync();
+                _uow.UserTeams.Add(userTeam);
+                await _uow.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TeamId"] = new SelectList(_repo.GetAllAsync().Result, "Id", "Code", userTeam.TeamId);
+            ViewData["TeamId"] = new SelectList(await _uow.Teams.GetAllAsync(), "Id", "Code", userTeam.TeamId);
             return View(userTeam);
         }
 
         // GET: UserTeams/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var userTeam = await _repo.FirstOrDefaultAsync((Guid) id);
+            var userTeam = await _uow.UserTeams.FirstOrDefaultAsync(id.Value, false);
 
-            ViewData["TeamId"] = new SelectList(_repo.GetAllAsync().Result, "Id", "Code", userTeam.TeamId);
+            if (userTeam == null) return NotFound();
+
+            ViewData["TeamId"] = new SelectList(await _uow.Teams.GetAllAsync(), "Id", "Code", userTeam.TeamId);
             return View(userTeam);
         }
 
@@ -86,44 +78,28 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("MasterTeam,Accepted,ApplicationUserId,TeamId,StartDate,EndDate,Id")] UserTeam userTeam)
         {
-            if (id != userTeam.Id)
-            {
-                return NotFound();
-            }
+            if (id != userTeam.Id) return NotFound();
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _repo.Update(userTeam);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_repo.ExistsAsync(id).Result)
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["TeamId"] = new SelectList(_repo.GetAllAsync().Result, "Id", "Code", userTeam.TeamId);
-            return View(userTeam);
+            if (!ModelState.IsValid || !await _uow.UserTeams.ExistsAsync(userTeam.Id))
+                return View(userTeam);
+
+            ViewData["TeamId"] = new SelectList(await _uow.Teams.GetAllAsync(), "Id", "Code", userTeam.TeamId);
+
+            _uow.UserTeams.Update(userTeam);
+            await _uow.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: UserTeams/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            if (id == null) return NotFound();
+
+            var userTeam = await _uow.UserTeams.FirstOrDefaultAsync(id.Value, false);
+
+            if (userTeam == null) return NotFound();
+            return View(userTeam);
         }
 
         // POST: UserTeams/Delete/5
@@ -131,9 +107,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var userTeam = await _repo.FirstOrDefaultAsync(id);
-            _repo.Remove(userTeam);
-            await _context.SaveChangesAsync();
+            var userTeam = await _uow.UserTeams.FirstOrDefaultAsync(id);
+            if (userTeam == null) return NotFound();
+            _uow.UserTeams.Remove(userTeam);
+            await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
     }

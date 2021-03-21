@@ -1,43 +1,36 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Contracts.DAL.App.Repositories;
+using Contracts.DAL.App;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using DAL.App.EF;
-using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.Controllers
 {
     public class WarehouseController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly IWarehouseRepo _repo;
+        private readonly IAppUnitOfWork _uow;
 
-        public WarehouseController(AppDbContext context)
+        public WarehouseController(IAppUnitOfWork uow)
         {
-            _context = context;
-            _repo = new WarehouseRepo(context);
+            _uow = uow;
         }
 
         // GET: Warehouse
         public async Task<IActionResult> Index()
         {
-            return View(await _repo.GetAllAsync());
+            return View(await _uow.Warehouses.GetAllAsync());
         }
 
         // GET: Warehouse/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            var warehouse = await _uow.Warehouses.FirstOrDefaultAsync(id.Value, false);
+
+            if (warehouse == null) return NotFound();
+
+            return View(warehouse);
         }
 
         // GET: Warehouse/Create
@@ -56,8 +49,8 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 warehouse.Id = Guid.NewGuid();
-                _repo.Add(warehouse);
-                await _context.SaveChangesAsync();
+                _uow.Warehouses.Add(warehouse);
+                await _uow.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(warehouse);
@@ -66,12 +59,12 @@ namespace WebApp.Controllers
         // GET: Warehouse/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            if (id == null) return NotFound();
+
+            var warehouse = await _uow.Warehouses.FirstOrDefaultAsync(id.Value, false);
+
+            if (warehouse == null) return NotFound();
+            return View(warehouse);
         }
 
         // POST: Warehouse/Edit/5
@@ -81,43 +74,25 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Name,Address,ApplicationUserId,Id")] Warehouse warehouse)
         {
-            if (id != warehouse.Id)
-            {
-                return NotFound();
-            }
+            if (id != warehouse.Id) return NotFound();
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _repo.Update(warehouse);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_repo.ExistsAsync(id).Result)
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(warehouse);
+            if (!ModelState.IsValid || !await _uow.Warehouses.ExistsAsync(warehouse.Id))
+                return View(warehouse);
+
+            _uow.Warehouses.Update(warehouse);
+            await _uow.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Warehouse/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            var warehouse = await _uow.Warehouses.FirstOrDefaultAsync(id.Value, false);
+
+            if (warehouse == null) return NotFound();
+            return View(warehouse);
         }
 
         // POST: Warehouse/Delete/5
@@ -125,9 +100,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var warehouse = await _repo.FirstOrDefaultAsync(id);
-            _repo.Remove(warehouse);
-            await _context.SaveChangesAsync();
+            var warehouse = await _uow.Warehouses.FirstOrDefaultAsync(id);
+            if (warehouse == null) return NotFound();
+            _uow.Warehouses.Remove(warehouse);
+            await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

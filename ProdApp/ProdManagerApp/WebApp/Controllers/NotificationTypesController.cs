@@ -1,40 +1,35 @@
 using System;
 using System.Threading.Tasks;
-using Contracts.DAL.App.Repositories;
+using Contracts.DAL.App;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DAL.App.EF;
-using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.Controllers
 {
     public class NotificationTypesController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly INotificationTypeRepo _repo;
+        private readonly IAppUnitOfWork _uow;
 
-        public NotificationTypesController(AppDbContext context)
+        public NotificationTypesController(IAppUnitOfWork uow)
         {
-            _context = context;
-            _repo = new NotificationTypeRepo(context);
+            _uow = uow;
         }
 
         // GET: NotificationTypes
         public async Task<IActionResult> Index()
         {
-            return View(await _repo.GetAllAsync());
+            return View(await _uow.NotificationTypes.GetAllAsync());
         }
 
         // GET: NotificationTypes/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            var notificationType = await _uow.NotificationTypes.FirstOrDefaultAsync((Guid) id, false);
+
+            if (notificationType == null) return NotFound();
+            return View(notificationType);
         }
 
         // GET: NotificationTypes/Create
@@ -53,8 +48,8 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 notificationType.Id = Guid.NewGuid();
-                _repo.Add(notificationType);
-                await _context.SaveChangesAsync();
+                _uow.NotificationTypes.Add(notificationType);
+                await _uow.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(notificationType);
@@ -63,12 +58,12 @@ namespace WebApp.Controllers
         // GET: NotificationTypes/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            if (id == null) return NotFound();
+
+            var notificationType = await _uow.NotificationTypes.FirstOrDefaultAsync((Guid) id, false);
+
+            if (notificationType == null) return NotFound();
+            return View(notificationType);
         }
 
         // POST: NotificationTypes/Edit/5
@@ -78,43 +73,25 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Type,Id")] NotificationType notificationType)
         {
-            if (id != notificationType.Id)
-            {
-                return NotFound();
-            }
+            if (id != notificationType.Id) return NotFound();
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _repo.Update(notificationType);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_repo.ExistsAsync(id).Result)
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(notificationType);
+            if (!ModelState.IsValid || !await _uow.NotificationTypes.ExistsAsync(notificationType.Id))
+                return View(notificationType);
+
+            _uow.NotificationTypes.Update(notificationType);
+            await _uow.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: NotificationTypes/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            var notificationType = await _uow.NotificationTypes.FirstOrDefaultAsync((Guid) id, false);
+
+            if (notificationType == null) return NotFound();
+            return View(notificationType);
         }
 
         // POST: NotificationTypes/Delete/5
@@ -122,9 +99,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var notificationType = await _repo.FirstOrDefaultAsync(id);
-            _repo.Remove(notificationType);
-            await _context.SaveChangesAsync();
+            var notificationType = await _uow.NotificationTypes.FirstOrDefaultAsync(id);
+            if (notificationType == null) return NotFound();
+            _uow.NotificationTypes.Remove(notificationType);
+            await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
     }

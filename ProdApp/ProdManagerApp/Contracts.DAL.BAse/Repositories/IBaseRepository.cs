@@ -14,7 +14,7 @@ namespace Contracts.DAL.BAse.Repositories
         where TKey : IEquatable<TKey> //id.equals(someotherId), like id == someotherId
     {
         Task<IEnumerable<TEntity>> GetAllAsync(bool noTracking = true);
-        Task<TEntity> FirstOrDefaultAsync(TKey id, bool noTracking = true);
+        Task<TEntity?> FirstOrDefaultAsync(TKey id, bool noTracking = true);
         TEntity Add(TEntity entity);
         TEntity Update(TEntity entity);
         TEntity Remove(TEntity entity);

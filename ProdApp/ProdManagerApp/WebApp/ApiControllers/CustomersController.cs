@@ -96,6 +96,7 @@ namespace WebApp.ApiControllers
             }
             
             var component = await _repo.FirstOrDefaultAsync(id);
+            if (component == null) return NotFound();
             _repo.Remove(component);
             await _context.SaveChangesAsync();
 

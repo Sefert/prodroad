@@ -1,47 +1,43 @@
 using System;
 using System.Threading.Tasks;
-using Contracts.DAL.App.Repositories;
+using Contracts.DAL.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using DAL.App.EF;
-using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.Controllers
 {
     public class ItemComponentsController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly IItemComponentRepo _repo;
+        private readonly IAppUnitOfWork _uow;
 
-        public ItemComponentsController(AppDbContext context)
+        public ItemComponentsController(IAppUnitOfWork uow)
         {
-            _context = context;
-            _repo = new ItemComponentRepo(_context);
+            _uow = uow;
         }
 
         // GET: ItemComponents
         public async Task<IActionResult> Index()
         {
-            return View(await _repo.GetAllAsync());
+            return View(await _uow.ItemComponents.GetAllAsync());
         }
 
         // GET: ItemComponents/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            if (id == null) return NotFound();
+
+            var itemComponent = await _uow.ItemComponents.FirstOrDefaultAsync(id.Value, false);
+
+            if (itemComponent == null) return NotFound();
+            return View(itemComponent);
         }
 
         // GET: ItemComponents/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["ComponentId"] = new SelectList(_context.Components, "Id", "Name");
-            ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Name");
+            ViewData["ComponentId"] = new SelectList(await _uow.Components.GetAllAsync(), "Id", "Name");
+            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(), "Id", "Name");
             return View();
         }
 
@@ -55,27 +51,28 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 itemComponent.Id = Guid.NewGuid();
-                _repo.Add(itemComponent);
-                await _context.SaveChangesAsync();
+                _uow.ItemComponents.Add(itemComponent);
+                await _uow.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ComponentId"] = new SelectList(_context.Components, "Id", "Name", itemComponent.ComponentId);
-            ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Name", itemComponent.ItemId);
+            ViewData["ComponentId"] = new SelectList(await _uow.Components.GetAllAsync(), "Id", "Name", itemComponent.ComponentId);
+            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(), "Id", "Name", itemComponent.ItemId);
             return View(itemComponent);
         }
 
         // GET: ItemComponents/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var itemComponent = await _repo.FirstOrDefaultAsync((Guid) id);
+            var itemComponent = await _uow.ItemComponents.FirstOrDefaultAsync(id.Value, false);
 
-            ViewData["ComponentId"] = new SelectList(_context.Components, "Id", "Name", itemComponent.ComponentId);
-            ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Name", itemComponent.ItemId);
+            if (itemComponent == null) return NotFound();
+
+            ViewData["ComponentId"] = new SelectList(await _uow.Components.GetAllAsync(), "Id", "Name",
+                itemComponent.ComponentId);
+            ViewData["ItemId"] =
+                new SelectList(await _uow.Components.GetAllAsync(), "Id", "Name", itemComponent.ItemId);
             return View(itemComponent);
         }
 
@@ -86,45 +83,26 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("ComponentId,ItemId,Id")] ItemComponent itemComponent)
         {
-            if (id != itemComponent.Id)
-            {
-                return NotFound();
-            }
+            if (id != itemComponent.Id) return NotFound();
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _repo.Update(itemComponent);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_repo.ExistsAsync(id).Result)
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["ComponentId"] = new SelectList(_context.Components, "Id", "Name", itemComponent.ComponentId);
-            ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Name", itemComponent.ItemId);
+            if (!ModelState.IsValid || !await _uow.ItemComponents.ExistsAsync(itemComponent.Id))
+                return View(itemComponent);
+
+            ViewData["ComponentId"] = new SelectList(await _uow.Components.GetAllAsync(), "Id", "Name",
+                itemComponent.ComponentId);
+            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(), "Id", "Name", itemComponent.ItemId);
             return View(itemComponent);
         }
 
         // GET: ItemComponents/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            var itemComponent = await _uow.ItemComponents.FirstOrDefaultAsync(id.Value, false);
+
+            if (itemComponent == null) return NotFound();
+            return View(itemComponent);
         }
 
         // POST: ItemComponents/Delete/5
@@ -132,9 +110,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var itemComponent = await _repo.FirstOrDefaultAsync(id);
-            _repo.Remove(itemComponent);
-            await _context.SaveChangesAsync();
+            var itemComponent = await _uow.ItemComponents.FirstOrDefaultAsync(id);
+            if (itemComponent == null) return NotFound();
+            _uow.ItemComponents.Remove(itemComponent);
+            await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
     }

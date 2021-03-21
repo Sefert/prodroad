@@ -1,49 +1,42 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Contracts.DAL.App.Repositories;
+using Contracts.DAL.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using DAL.App.EF;
-using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.Controllers
 {
     public class UserNotificationsController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly IUserNotificationRepo _repo;
+        private readonly IAppUnitOfWork _uow;
 
-        public UserNotificationsController(AppDbContext context)
+        public UserNotificationsController(IAppUnitOfWork uow)
         {
-            _context = context;
-            _repo = new UserNotificationRepo(context);
+            _uow = uow;
         }
 
         // GET: UserNotifications
         public async Task<IActionResult> Index()
         {
-            return View(await _repo.GetAllAsync());
+            return View(await _uow.UserNotifications.GetAllAsync());
         }
 
         // GET: UserNotifications/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            var userNotification = await _uow.UserNotifications.FirstOrDefaultAsync(id.Value, false);
+
+            if (userNotification == null) return NotFound();
+            return View(userNotification);
         }
 
         // GET: UserNotifications/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["NotificationTypeId"] = new SelectList(_context.NotificationTypes, "Id", "Type");
+            ViewData["NotificationTypeId"] = new SelectList(await _uow.NotificationTypes.GetAllAsync(), "Id", "Type");
             return View();
         }
 
@@ -57,25 +50,25 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 userNotification.Id = Guid.NewGuid();
-                _repo.Add(userNotification);
-                await _context.SaveChangesAsync();
+                _uow.UserNotifications.Add(userNotification);
+                await _uow.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["NotificationTypeId"] = new SelectList(_context.NotificationTypes, "Id", "Type", userNotification.NotificationTypeId);
+            ViewData["NotificationTypeId"] = new SelectList(await _uow.NotificationTypes.GetAllAsync(), "Id", "Type", userNotification.NotificationTypeId);
             return View(userNotification);
         }
 
         // GET: UserNotifications/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var userNotification = await _repo.FirstOrDefaultAsync((Guid) id);
+            var userNotification = await _uow.UserNotifications.FirstOrDefaultAsync(id.Value, false);
 
-            ViewData["NotificationTypeId"] = new SelectList(_context.NotificationTypes, "Id", "Type", userNotification.NotificationTypeId);
+            if (userNotification == null) return NotFound();
+
+            ViewData["NotificationTypeId"] = new SelectList(await _uow.NotificationTypes.GetAllAsync(), "Id", "Type",
+                userNotification.NotificationTypeId);
             return View(userNotification);
         }
 
@@ -86,44 +79,28 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Name,Color,Active,NotificationTypeId,ApplicationUserId,Id")] UserNotification userNotification)
         {
-            if (id != userNotification.Id)
-            {
-                return NotFound();
-            }
+            if (id != userNotification.Id) return NotFound();
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _repo.Update(userNotification);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_repo.ExistsAsync(id).Result)
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["NotificationTypeId"] = new SelectList(_context.NotificationTypes, "Id", "Type", userNotification.NotificationTypeId);
-            return View(userNotification);
+            if (!ModelState.IsValid || !await _uow.UserNotifications.ExistsAsync(userNotification.Id))
+                return View(userNotification);
+
+            ViewData["NotificationTypeId"] = new SelectList(await _uow.NotificationTypes.GetAllAsync(), "Id", "Type",
+                userNotification.NotificationTypeId);
+
+            _uow.UserNotifications.Update(userNotification);
+            await _uow.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: UserNotifications/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
+            
+            var userNotification = await _uow.UserNotifications.FirstOrDefaultAsync(id.Value, false);
 
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            if (userNotification == null) return NotFound();
+            return View(userNotification);
         }
 
         // POST: UserNotifications/Delete/5
@@ -131,9 +108,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var userNotification = await _repo.FirstOrDefaultAsync(id);
-            _repo.Remove(userNotification);
-            await _context.SaveChangesAsync();
+            var userNotification = await _uow.UserNotifications.FirstOrDefaultAsync(id);
+            if (userNotification == null) return NotFound();
+            _uow.UserNotifications.Remove(userNotification);
+            await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

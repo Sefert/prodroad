@@ -95,6 +95,7 @@ namespace WebApp.ApiControllers
             }
             
             var team = await _repo.FirstOrDefaultAsync(id);
+            if (team == null) return NotFound();
             _repo.Remove(team);
             await _context.SaveChangesAsync();
 

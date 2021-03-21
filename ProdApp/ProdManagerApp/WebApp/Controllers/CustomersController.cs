@@ -1,40 +1,36 @@
 using System;
 using System.Threading.Tasks;
-using Contracts.DAL.App.Repositories;
+using Contracts.DAL.App;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DAL.App.EF;
-using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.Controllers
 {
     public class CustomersController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly ICustomerRepo _repo;
-
-        public CustomersController(AppDbContext context)
+        private readonly IAppUnitOfWork _uow;
+        
+        public CustomersController(IAppUnitOfWork uow)
         {
-            _context = context;
-            _repo = new CustomerRepo(context);
+            _uow = uow;
         }
 
         // GET: Customers
         public async Task<IActionResult> Index()
         {
-            return View(await _repo.GetAllAsync());
+            return View(await _uow.Customers.GetAllAsync());
         }
 
         // GET: Customers/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            var customer = await _uow.Customers.FirstOrDefaultAsync(id.Value, false);
+
+            if (customer == null) return NotFound();
+
+            return View(customer);
         }
 
         // GET: Customers/Create
@@ -53,8 +49,8 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 customer.Id = Guid.NewGuid();
-                _repo.Add(customer);
-                await _context.SaveChangesAsync();
+                _uow.Customers.Add(customer);
+                await _uow.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(customer);
@@ -63,12 +59,13 @@ namespace WebApp.Controllers
         // GET: Customers/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            var customer = await _uow.Customers.FirstOrDefaultAsync(id.Value, false);
+
+            if (customer == null) return NotFound();
+
+            return View(customer);
         }
 
         // POST: Customers/Edit/5
@@ -78,43 +75,26 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Name,RegNumber,Address,Phone,Email,Id")] Customer customer)
         {
-            if (id != customer.Id)
-            {
-                return NotFound();
-            }
+            if (id != customer.Id) return NotFound();
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _repo.Update(customer);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_repo.ExistsAsync(id).Result)
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(customer);
+            if (!ModelState.IsValid || !await _uow.Customers.ExistsAsync(customer.Id))
+                return View(customer);
+
+            _uow.Customers.Update(customer);
+            await _uow.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Customers/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
+
+            var customer = await _uow.Customers.FirstOrDefaultAsync(id.Value, false);
+
+            if (customer == null) return NotFound();
             
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            return View(customer);
         }
 
         // POST: Customers/Delete/5
@@ -122,9 +102,12 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var customer = await _repo.FirstOrDefaultAsync(id);
-            _repo.Remove(customer);
-            await _context.SaveChangesAsync();
+            var customer = await _uow.Customers.FirstOrDefaultAsync(id);
+            
+            if (customer == null) return NotFound();
+            _uow.Customers.Remove(customer);
+            
+            await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
     }

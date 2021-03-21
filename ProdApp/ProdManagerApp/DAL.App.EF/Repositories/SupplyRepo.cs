@@ -25,7 +25,7 @@ namespace DAL.App.EF.Repositories
                 .Include(s => s.Warehouse).ToListAsync();
         }
         
-        public override async Task<Supply> FirstOrDefaultAsync(Guid id, bool noTracking = true)
+        public override async Task<Supply?> FirstOrDefaultAsync(Guid id, bool noTracking = true)
         {
             var query = RepoDbSet.AsQueryable();
 

@@ -1,9 +1,8 @@
-using System;
+using Contracts.DAL.App;
 using DAL.App.EF;
 using Domain.App;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,7 +30,8 @@ namespace WebApp
                     .EnableSensitiveDataLogging()
             );
 
-
+            services.AddScoped<IAppUnitOfWork, AppUnitOfWork>();
+            
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)

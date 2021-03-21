@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using Contracts.DAL.App;
+using DAL.App.EF;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebApp.Models;
@@ -7,11 +9,13 @@ namespace WebApp.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IAppUnitOfWork _uow;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IAppUnitOfWork uow)
         {
             _logger = logger;
+            _uow = uow;
         }
 
         public IActionResult Index()

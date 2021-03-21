@@ -1,44 +1,34 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Contracts.DAL.App.Repositories;
+using Contracts.DAL.App;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using DAL.App.EF;
-using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.Controllers
 {
     public class TeamsController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly ITeamRepo _repo;
+        private readonly IAppUnitOfWork _uow;
 
-        public TeamsController(AppDbContext context)
+        public TeamsController(IAppUnitOfWork uow)
         {
-            _context = context;
-            _repo = new TeamRepo(context);
+            _uow = uow;
         }
 
         // GET: Teams
         public async Task<IActionResult> Index()
         {
-            return View(await _repo.GetAllAsync());
+            return View(await _uow.Teams.GetAllAsync());
         }
 
         // GET: Teams/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var team = await _repo.FirstOrDefaultAsync((Guid) id);
+            var team = await _uow.Teams.FirstOrDefaultAsync(id.Value);
 
+            if (team == null) return NotFound();
             return View(team);
         }
 
@@ -58,8 +48,8 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 team.Id = Guid.NewGuid();
-                _repo.Add(team);
-                await _context.SaveChangesAsync();
+                _uow.Teams.Add(team);
+                await _uow.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(team);
@@ -68,12 +58,12 @@ namespace WebApp.Controllers
         // GET: Teams/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            if (id == null) return NotFound();
+
+            var team = await _uow.Teams.FirstOrDefaultAsync(id.Value);
+
+            if (team == null) return NotFound();
+            return View(team);
         }
 
         // POST: Teams/Edit/5
@@ -83,43 +73,26 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Name,Code,StartDate,EndDate,Id")] Team team)
         {
-            if (id != team.Id)
-            {
-                return NotFound();
-            }
+            if (id != team.Id) return NotFound();
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _repo.Update(team);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_repo.ExistsAsync(id).Result)
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(team);
+            if (!ModelState.IsValid || !await _uow.Teams.ExistsAsync(team.Id))
+                return View(team);
+
+            _uow.Teams.Update(team);
+            await _uow.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Teams/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            var team = await _uow.Teams.FirstOrDefaultAsync(id.Value);
+
+            if (team == null) return NotFound();
+
+            return View(team);
         }
 
         // POST: Teams/Delete/5
@@ -127,9 +100,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var team = await _repo.FirstOrDefaultAsync(id);
-            _repo.Remove(team);
-            await _context.SaveChangesAsync();
+            var team = await _uow.Teams.FirstOrDefaultAsync(id);
+            if (team == null) return NotFound();
+            _uow.Teams.Remove(team);
+            await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
     }

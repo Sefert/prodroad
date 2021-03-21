@@ -1,49 +1,43 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Contracts.DAL.App.Repositories;
+using Contracts.DAL.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using DAL.App.EF;
-using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.Controllers
 {
     public class ProductionMetasController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly IProductionMetaRepo _repo;
+        private readonly IAppUnitOfWork _uow;
 
-        public ProductionMetasController(AppDbContext context)
+        public ProductionMetasController(IAppUnitOfWork uow)
         {
-            _context = context;
-            _repo = new ProductionMetaRepo(_context);
+            _uow = uow;
         }
 
         // GET: ProductionMetas
         public async Task<IActionResult> Index()
         {
-            return View(await _repo.GetAllAsync());
+            return View(await _uow.ProductionMetas.GetAllAsync());
         }
 
         // GET: ProductionMetas/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            var productionMeta = await _uow.ProductionMetas.FirstOrDefaultAsync(id.Value, false);
+
+            if (productionMeta == null) return NotFound();
+
+            return View(productionMeta);
         }
 
         // GET: ProductionMetas/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["SupplyId"] = new SelectList(_context.Supplys, "Id", "Id");
+            ViewData["SupplyId"] = new SelectList(await _uow.Supplys.GetAllAsync(), "Id", "Id");
             return View();
         }
 
@@ -57,25 +51,25 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 productionMeta.Id = Guid.NewGuid();
-                _repo.Add(productionMeta);
-                await _context.SaveChangesAsync();
+                _uow.ProductionMetas.Add(productionMeta);
+                await _uow.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["SupplyId"] = new SelectList(_context.Supplys, "Id", "Id", productionMeta.SupplyId);
+            ViewData["SupplyId"] = new SelectList(await _uow.Supplys.GetAllAsync(), "Id", "Id", productionMeta.SupplyId);
             return View(productionMeta);
         }
 
         // GET: ProductionMetas/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var productionMeta = await _repo.FirstOrDefaultAsync((Guid) id);
+            var productionMeta = await _uow.ProductionMetas.FirstOrDefaultAsync(id.Value, false);
 
-            ViewData["SupplyId"] = new SelectList(_context.Supplys, "Id", "Id", productionMeta.SupplyId);
+            if (productionMeta == null) return NotFound();
+
+            ViewData["SupplyId"] =
+                new SelectList(await _uow.Supplys.GetAllAsync(), "Id", "Id", productionMeta.SupplyId);
             return View(productionMeta);
         }
 
@@ -86,44 +80,28 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Line,RealStartDate,RealEndDate,SupplyId,ApplicationUserId,StartDate,EndDate,StartTime,EndTime,Id")] ProductionMeta productionMeta)
         {
-            if (id != productionMeta.Id)
-            {
-                return NotFound();
-            }
+            if (id != productionMeta.Id) return NotFound();
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _repo.Update(productionMeta);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_repo.ExistsAsync(id).Result)
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["SupplyId"] = new SelectList(_context.Supplys, "Id", "Id", productionMeta.SupplyId);
-            return View(productionMeta);
+            if (!ModelState.IsValid || !await _uow.ProductionMetas.ExistsAsync(productionMeta.Id))
+                return View(productionMeta);
+
+            ViewData["SupplyId"] =
+                new SelectList(await _uow.Supplys.GetAllAsync(), "Id", "Id", productionMeta.SupplyId);
+
+            _uow.ProductionMetas.Update(productionMeta);
+            await _uow.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: ProductionMetas/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
+            
+            var productionMeta = await _uow.ProductionMetas.FirstOrDefaultAsync(id.Value, false);
 
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            if (productionMeta == null) return NotFound();
+            return View(productionMeta);
         }
 
         // POST: ProductionMetas/Delete/5
@@ -131,9 +109,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var productionMeta = await _repo.FirstOrDefaultAsync(id);
-            _repo.Remove(productionMeta);
-            await _context.SaveChangesAsync();
+            var productionMeta = await _uow.ProductionMetas.FirstOrDefaultAsync(id);
+            if (productionMeta == null) return NotFound();
+            _uow.ProductionMetas.Remove(productionMeta);
+            await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
     }

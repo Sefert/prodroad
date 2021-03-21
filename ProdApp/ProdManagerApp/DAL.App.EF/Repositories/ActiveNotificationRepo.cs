@@ -29,7 +29,7 @@ namespace DAL.App.EF.Repositories
             return res;
         }
         
-        public override async Task<ActiveNotification> FirstOrDefaultAsync(Guid id, bool noTracking = true)
+        public override async Task<ActiveNotification?> FirstOrDefaultAsync(Guid id, bool noTracking = true)
         {
             var query = RepoDbSet.AsQueryable();
 

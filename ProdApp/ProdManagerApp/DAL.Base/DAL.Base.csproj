@@ -6,11 +6,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Contracts.DAL.BAse\Contracts.DAL.BAse.csproj" />
-      <ProjectReference Include="..\DAL.Base\DAL.Base.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.3" />
     </ItemGroup>
 
 </Project>

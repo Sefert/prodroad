@@ -36,7 +36,7 @@ namespace DAL.Base.EF.Repositories
             return await RepoDbSet.ToListAsync();
         }
 
-        public virtual async Task<TEntity> FirstOrDefaultAsync(TKey id, bool noTracking = true)
+        public virtual async Task<TEntity?> FirstOrDefaultAsync(TKey id, bool noTracking = true)
         {
             if (noTracking)
             {
@@ -63,6 +63,7 @@ namespace DAL.Base.EF.Repositories
         public virtual async Task<TEntity> Remove(TKey id)
         {
             var entity = await FirstOrDefaultAsync(id);
+            if (entity == null) throw new NullReferenceException($"Entity with id {id} not found.");
             return Remove(entity);
         }
 

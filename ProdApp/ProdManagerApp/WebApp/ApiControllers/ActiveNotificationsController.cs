@@ -46,10 +46,7 @@ namespace WebApp.ApiControllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutActiveNotification(Guid id, ActiveNotification activeNotification)
         {
-            if (id != activeNotification.Id)
-            {
-                return BadRequest();
-            }
+            if (id != activeNotification.Id) return BadRequest();
 
             _context.Entry(activeNotification).State = EntityState.Modified;
 
@@ -94,6 +91,7 @@ namespace WebApp.ApiControllers
             }
             
             var activeNotification = await _repo.FirstOrDefaultAsync(id);
+            if (activeNotification == null) return NotFound();
             _repo.Remove(activeNotification);
             await _context.SaveChangesAsync();
 

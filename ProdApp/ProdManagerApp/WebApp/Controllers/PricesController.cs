@@ -1,51 +1,44 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Contracts.DAL.App.Repositories;
+using Contracts.DAL.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using DAL.App.EF;
-using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.Controllers
 {
     public class PricesController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly IPriceRepo _repo;
+        private readonly IAppUnitOfWork _uow;
 
-        public PricesController(AppDbContext context)
+        public PricesController(IAppUnitOfWork uow)
         {
-            _context = context;
-            _repo = new PriceRepo(context);
+            _uow = uow;
         }
 
         // GET: Prices
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.Prices.Include(p => p.Component).Include(p => p.Item);
-            return View(await appDbContext.ToListAsync());
+            return View(await _uow.Prices.GetAllAsync());
         }
 
         // GET: Prices/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            if (id == null) return NotFound();
+
+            var price = await _uow.Prices.FirstOrDefaultAsync(id.Value, false);
+
+            if (price == null) return NotFound();
+
+            return View(price);
         }
 
         // GET: Prices/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["ComponentId"] = new SelectList(_context.Components, "Id", "Name");
-            ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Name");
+            ViewData["ComponentId"] = new SelectList(await _uow.Components.GetAllAsync(), "Id", "Name");
+            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(), "Id", "Name");
             return View();
         }
 
@@ -59,30 +52,27 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 price.Id = Guid.NewGuid();
-                _repo.Add(price);
-                await _context.SaveChangesAsync();
+                _uow.Prices.Add(price);
+                await _uow.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ComponentId"] = new SelectList(_context.Components, "Id", "Name", price.ComponentId);
-            ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Name", price.ItemId);
+            ViewData["ComponentId"] = new SelectList(await _uow.Components.GetAllAsync(), "Id", "Name", price.ComponentId);
+            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(), "Id", "Name", price.ItemId);
             return View(price);
         }
 
         // GET: Prices/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var price = await _context.Prices.FindAsync(id);
-            if (price == null)
-            {
-                return NotFound();
-            }
-            ViewData["ComponentId"] = new SelectList(_context.Components, "Id", "Name", price.ComponentId);
-            ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Name", price.ItemId);
+            var price = await _uow.Prices.FirstOrDefaultAsync(id.Value, false);
+
+            if (price == null) return NotFound();
+
+            ViewData["ComponentId"] =
+                new SelectList(await _uow.Components.GetAllAsync(), "Id", "Name", price.ComponentId);
+            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(), "Id", "Name", price.ItemId);
             return View(price);
         }
 
@@ -93,45 +83,30 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Amount,ComponentId,ItemId,StartDate,EndDate,Id")] Price price)
         {
-            if (id != price.Id)
-            {
-                return NotFound();
-            }
+            if (id != price.Id) return NotFound();
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _repo.Update(price);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_repo.ExistsAsync(id).Result)
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["ComponentId"] = new SelectList(_context.Components, "Id", "Name", price.ComponentId);
-            ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Name", price.ItemId);
-            return View(price);
+            if (!ModelState.IsValid || !await _uow.Prices.ExistsAsync(price.Id))
+                return View(price);
+
+            ViewData["ComponentId"] =
+                new SelectList(await _uow.Components.GetAllAsync(), "Id", "Name", price.ComponentId);
+            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(), "Id", "Name", price.ItemId);
+
+            _uow.Prices.Update(price);
+            await _uow.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Prices/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            return View(await _repo.FirstOrDefaultAsync((Guid) id));
+            var price = await _uow.Prices.FirstOrDefaultAsync(id.Value, false);
+
+            if (price == null) return NotFound();
+
+            return View(price);
         }
 
         // POST: Prices/Delete/5
@@ -139,9 +114,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var price = await _repo.FirstOrDefaultAsync(id);
-            _repo.Remove(price);
-            await _context.SaveChangesAsync();
+            var price = await _uow.Prices.FirstOrDefaultAsync(id);
+            if (price == null) return NotFound();
+            _uow.Prices.Remove(price);
+            await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
     }

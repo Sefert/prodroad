@@ -1,45 +1,45 @@
 using System;
 using System.Threading.Tasks;
-using Contracts.DAL.App.Repositories;
+using Contracts.DAL.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using DAL.App.EF;
-using DAL.App.EF.Repositories;
 using Domain.App;
 
 namespace WebApp.Controllers
 {
     public class ActiveNotificationsController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly IActiveNotificationRepo _repo;
+        private readonly IAppUnitOfWork _uow;
 
-        public ActiveNotificationsController(AppDbContext context)
+        public ActiveNotificationsController(IAppUnitOfWork uow)
         {
-            _context = context;
-            _repo= new ActiveNotificationRepo(context);
+            _uow = uow;
         }
 
         // GET: ActiveNotifications
         public async Task<IActionResult> Index()
         {
-            return View(await _repo.GetAllAsync());
+            return View(await _uow.ActiveNotifications.GetAllAsync());
         }
 
         // GET: ActiveNotifications/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null) return NotFound();
-            return View(await _repo.FirstOrDefaultAsync((Guid) id, false));
+
+            var activeNotification = await _uow.ActiveNotifications.FirstOrDefaultAsync(id.Value, false);
+            
+            if (activeNotification == null) return NotFound();
+
+            return View(activeNotification);
         }
 
         // GET: ActiveNotifications/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["MasterNotificationId"] = new SelectList(_repo.GetAllAsync().Result, "Id", "Head");
-            ViewData["OrderId"] = new SelectList(_context.Orders, "Id", "DeliveryAddress");
-            ViewData["SupplyId"] = new SelectList(_context.Supplys, "Id", "Id");
+            ViewData["MasterNotificationId"] = new SelectList(await _uow.ActiveNotifications.GetAllAsync(), "Id", "Head");
+            ViewData["OrderId"] = new SelectList(await _uow.Orders.GetAllAsync(), "Id", "DeliveryAddress");
+            ViewData["SupplyId"] = new SelectList(await _uow.Orders.GetAllAsync(), "Id", "Id");
             return View();
         }
 
@@ -52,29 +52,32 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                _repo.Add(activeNotification);
-                await _context.SaveChangesAsync();
+                _uow.ActiveNotifications.Add(activeNotification);
+                await _uow.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["MasterNotificationId"] = new SelectList(_context.ActiveNotifications, "Id", "Head", activeNotification.MasterNotificationId);
-            ViewData["OrderId"] = new SelectList(_context.Orders, "Id", "DeliveryAddress", activeNotification.OrderId);
-            ViewData["SupplyId"] = new SelectList(_context.Supplys, "Id", "Id", activeNotification.SupplyId);
+            ViewData["MasterNotificationId"] = new SelectList(await _uow.ActiveNotifications.GetAllAsync(), "Id", "Head", activeNotification.MasterNotificationId);
+            ViewData["OrderId"] = new SelectList(await _uow.Orders.GetAllAsync(), "Id", "DeliveryAddress", activeNotification.OrderId);
+            ViewData["SupplyId"] = new SelectList(await _uow.Supplys.GetAllAsync(), "Id", "Id", activeNotification.SupplyId);
             return View(activeNotification);
         }
 
         // GET: ActiveNotifications/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var activeNotification = await _repo.FirstOrDefaultAsync((Guid) id);
+            var activeNotification = await _uow.ActiveNotifications.FirstOrDefaultAsync(id.Value);
 
-            ViewData["MasterNotificationId"] = new SelectList(_context.ActiveNotifications, "Id", "Head", activeNotification.MasterNotificationId);
-            ViewData["OrderId"] = new SelectList(_context.Orders, "Id", "DeliveryAddress", activeNotification.OrderId);
-            ViewData["SupplyId"] = new SelectList(_context.Supplys, "Id", "Id", activeNotification.SupplyId);
+            if (activeNotification == null) return NotFound();
+
+
+            ViewData["MasterNotificationId"] = new SelectList(await _uow.ActiveNotifications.GetAllAsync(), "Id",
+                "Head", activeNotification.MasterNotificationId);
+            ViewData["OrderId"] = new SelectList(await _uow.Orders.GetAllAsync(), "Id", "DeliveryAddress",
+                activeNotification.OrderId);
+            ViewData["SupplyId"] =
+                new SelectList(await _uow.Supplys.GetAllAsync(), "Id", "Id", activeNotification.SupplyId);
             return View(activeNotification);
         }
 
@@ -85,47 +88,32 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Head,Info,OrderId,SupplyId,ApplicationUserId,MasterNotificationId,StartDate,EndDate,StartTime,EndTime,Id")] ActiveNotification activeNotification)
         {
-            if (id != activeNotification.Id)
-            {
-                return NotFound();
-            }
+            if (id != activeNotification.Id) return NotFound();
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _repo.Update(activeNotification);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (_repo.ExistsAsync(activeNotification.Id).Result)
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["MasterNotificationId"] = new SelectList(_context.ActiveNotifications, "Id", "Head", activeNotification.MasterNotificationId);
-            ViewData["OrderId"] = new SelectList(_context.Orders, "Id", "DeliveryAddress", activeNotification.OrderId);
-            ViewData["SupplyId"] = new SelectList(_context.Supplys, "Id", "Id", activeNotification.SupplyId);
-            return View(activeNotification);
+            if (!ModelState.IsValid || !await _uow.ActiveNotifications.ExistsAsync(activeNotification.Id))
+                return View(activeNotification);
+
+            ViewData["MasterNotificationId"] = new SelectList(await _uow.ActiveNotifications.GetAllAsync(), "Id",
+                "Head", activeNotification.MasterNotificationId);
+            ViewData["OrderId"] = new SelectList(await _uow.Orders.GetAllAsync(), "Id", "DeliveryAddress",
+                activeNotification.OrderId);
+            ViewData["SupplyId"] =
+                new SelectList(await _uow.Supplys.GetAllAsync(), "Id", "Id", activeNotification.SupplyId);
+
+            _uow.ActiveNotifications.Update(activeNotification);
+            await _uow.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: ActiveNotifications/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var activeNotification = await _repo.FirstOrDefaultAsync((Guid) id);
-
+                var activeNotification = await _uow.ActiveNotifications.FirstOrDefaultAsync(id.Value);
+            
+            if (activeNotification == null) return NotFound();
+            
             return View(activeNotification);
         }
 
@@ -134,9 +122,9 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var activeNotification = await _repo.Remove(id);
-            _context.ActiveNotifications.Remove(activeNotification);
-            await _context.SaveChangesAsync();
+            var activeNotification = await _uow.ActiveNotifications.Remove(id);
+            _uow.ActiveNotifications.Remove(activeNotification);
+            await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
     }
