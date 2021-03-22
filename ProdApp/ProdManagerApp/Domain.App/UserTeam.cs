@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Contracts.Domain.Base;
+using Domain.App.Identity;
 using Domain.Base;
 
 namespace Domain.App

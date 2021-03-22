@@ -4,9 +4,11 @@ using Contracts.DAL.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Domain.App;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApp.Controllers
 {
+    [Authorize]
     public class ProductionMetasController : Controller
     {
         private readonly IAppUnitOfWork _uow;

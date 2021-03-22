@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.App.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20210224211151_fixMonthAndDayDate")]
-    partial class fixMonthAndDayDate
+    [Migration("20210322185827_Identity")]
+    partial class Identity
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,7 +21,7 @@ namespace DAL.App.EF.Migrations
                 .HasAnnotation("ProductVersion", "5.0.3")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Domain.ActiveNotification", b =>
+            modelBuilder.Entity("Domain.App.ActiveNotification", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -29,9 +29,6 @@ namespace DAL.App.EF.Migrations
 
                     b.Property<Guid>("ApplicationUserId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ApplicationUserId1")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
@@ -69,7 +66,7 @@ namespace DAL.App.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId1");
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("MasterNotificationId");
 
@@ -82,10 +79,73 @@ namespace DAL.App.EF.Migrations
                     b.ToTable("ActiveNotifications");
                 });
 
-            modelBuilder.Entity("Domain.ApplicationUser", b =>
+            modelBuilder.Entity("Domain.App.Component", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Components");
+                });
+
+            modelBuilder.Entity("Domain.App.Customer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("RegNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Customers");
+                });
+
+            modelBuilder.Entity("Domain.App.Identity.ApplicationUser", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
@@ -155,69 +215,35 @@ namespace DAL.App.EF.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("Domain.Component", b =>
+            modelBuilder.Entity("Domain.App.Identity.UserRole", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Components");
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("AspNetRoles");
                 });
 
-            modelBuilder.Entity("Domain.Customer", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("RegNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Customers");
-                });
-
-            modelBuilder.Entity("Domain.Item", b =>
+            modelBuilder.Entity("Domain.App.Item", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -243,7 +269,7 @@ namespace DAL.App.EF.Migrations
                     b.ToTable("Items");
                 });
 
-            modelBuilder.Entity("Domain.ItemComponent", b =>
+            modelBuilder.Entity("Domain.App.ItemComponent", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -264,7 +290,7 @@ namespace DAL.App.EF.Migrations
                     b.ToTable("ItemComponents");
                 });
 
-            modelBuilder.Entity("Domain.NotificationType", b =>
+            modelBuilder.Entity("Domain.App.NotificationType", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -280,7 +306,7 @@ namespace DAL.App.EF.Migrations
                     b.ToTable("NotificationTypes");
                 });
 
-            modelBuilder.Entity("Domain.Order", b =>
+            modelBuilder.Entity("Domain.App.Order", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -288,9 +314,6 @@ namespace DAL.App.EF.Migrations
 
                     b.Property<Guid>("ApplicationUserId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ApplicationUserId1")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
@@ -319,14 +342,14 @@ namespace DAL.App.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId1");
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("CustomerId");
 
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("Domain.OrderData", b =>
+            modelBuilder.Entity("Domain.App.OrderData", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -363,7 +386,7 @@ namespace DAL.App.EF.Migrations
                     b.ToTable("OrderDatas");
                 });
 
-            modelBuilder.Entity("Domain.Price", b =>
+            modelBuilder.Entity("Domain.App.Price", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -393,7 +416,7 @@ namespace DAL.App.EF.Migrations
                     b.ToTable("Prices");
                 });
 
-            modelBuilder.Entity("Domain.Production", b =>
+            modelBuilder.Entity("Domain.App.Production", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -437,7 +460,7 @@ namespace DAL.App.EF.Migrations
                     b.ToTable("Productions");
                 });
 
-            modelBuilder.Entity("Domain.ProductionMeta", b =>
+            modelBuilder.Entity("Domain.App.ProductionMeta", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -445,9 +468,6 @@ namespace DAL.App.EF.Migrations
 
                     b.Property<Guid>("ApplicationUserId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ApplicationUserId1")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
@@ -479,7 +499,7 @@ namespace DAL.App.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId1");
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("SupplyId");
 
@@ -488,7 +508,7 @@ namespace DAL.App.EF.Migrations
                     b.ToTable("ProductionMetas");
                 });
 
-            modelBuilder.Entity("Domain.Supply", b =>
+            modelBuilder.Entity("Domain.App.Supply", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -517,7 +537,7 @@ namespace DAL.App.EF.Migrations
                     b.ToTable("Supplys");
                 });
 
-            modelBuilder.Entity("Domain.Team", b =>
+            modelBuilder.Entity("Domain.App.Team", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -544,7 +564,7 @@ namespace DAL.App.EF.Migrations
                     b.ToTable("Teams");
                 });
 
-            modelBuilder.Entity("Domain.UserNotification", b =>
+            modelBuilder.Entity("Domain.App.UserNotification", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -555,9 +575,6 @@ namespace DAL.App.EF.Migrations
 
                     b.Property<Guid>("ApplicationUserId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ApplicationUserId1")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Color")
                         .IsRequired()
@@ -574,14 +591,14 @@ namespace DAL.App.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId1");
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("NotificationTypeId");
 
                     b.ToTable("UserNotifications");
                 });
 
-            modelBuilder.Entity("Domain.UserTeam", b =>
+            modelBuilder.Entity("Domain.App.UserTeam", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -592,10 +609,6 @@ namespace DAL.App.EF.Migrations
 
                     b.Property<Guid>("ApplicationUserId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ApplicationUserId1")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
@@ -611,14 +624,14 @@ namespace DAL.App.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId1");
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("TeamId");
 
                     b.ToTable("UserTeams");
                 });
 
-            modelBuilder.Entity("Domain.Warehouse", b =>
+            modelBuilder.Entity("Domain.App.Warehouse", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -632,9 +645,6 @@ namespace DAL.App.EF.Migrations
                     b.Property<Guid>("ApplicationUserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ApplicationUserId1")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -642,39 +652,12 @@ namespace DAL.App.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId1");
+                    b.HasIndex("ApplicationUserId");
 
                     b.ToTable("Warehouses");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
-
-                    b.ToTable("AspNetRoles");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -687,9 +670,8 @@ namespace DAL.App.EF.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RoleId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -698,7 +680,7 @@ namespace DAL.App.EF.Migrations
                     b.ToTable("AspNetRoleClaims");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -711,9 +693,8 @@ namespace DAL.App.EF.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -722,7 +703,7 @@ namespace DAL.App.EF.Migrations
                     b.ToTable("AspNetUserClaims");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
                     b.Property<string>("LoginProvider")
                         .HasMaxLength(128)
@@ -735,9 +716,8 @@ namespace DAL.App.EF.Migrations
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -746,13 +726,13 @@ namespace DAL.App.EF.Migrations
                     b.ToTable("AspNetUserLogins");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -761,10 +741,10 @@ namespace DAL.App.EF.Migrations
                     b.ToTable("AspNetUserRoles");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("LoginProvider")
                         .HasMaxLength(128)
@@ -782,31 +762,32 @@ namespace DAL.App.EF.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Domain.ActiveNotification", b =>
+            modelBuilder.Entity("Domain.App.ActiveNotification", b =>
                 {
-                    b.HasOne("Domain.ApplicationUser", "ApplicationUser")
+                    b.HasOne("Domain.App.Identity.ApplicationUser", "ApplicationUser")
                         .WithMany("ActiveNotifications")
-                        .HasForeignKey("ApplicationUserId1")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("Domain.ActiveNotification", "MasterNotification")
+                    b.HasOne("Domain.App.ActiveNotification", "MasterNotification")
                         .WithMany("ActiveNotifications")
                         .HasForeignKey("MasterNotificationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Order", "Order")
+                    b.HasOne("Domain.App.Order", "Order")
                         .WithMany()
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.ProductionMeta", null)
+                    b.HasOne("Domain.App.ProductionMeta", null)
                         .WithMany("ActiveNotifications")
                         .HasForeignKey("ProductionMetaId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Domain.Supply", "Supply")
+                    b.HasOne("Domain.App.Supply", "Supply")
                         .WithMany()
                         .HasForeignKey("SupplyId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -821,15 +802,15 @@ namespace DAL.App.EF.Migrations
                     b.Navigation("Supply");
                 });
 
-            modelBuilder.Entity("Domain.ItemComponent", b =>
+            modelBuilder.Entity("Domain.App.ItemComponent", b =>
                 {
-                    b.HasOne("Domain.Component", "Component")
+                    b.HasOne("Domain.App.Component", "Component")
                         .WithMany("ItemComponents")
                         .HasForeignKey("ComponentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Item", "Item")
+                    b.HasOne("Domain.App.Item", "Item")
                         .WithMany("ItemComponents")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -840,14 +821,15 @@ namespace DAL.App.EF.Migrations
                     b.Navigation("Item");
                 });
 
-            modelBuilder.Entity("Domain.Order", b =>
+            modelBuilder.Entity("Domain.App.Order", b =>
                 {
-                    b.HasOne("Domain.ApplicationUser", "ApplicationUser")
+                    b.HasOne("Domain.App.Identity.ApplicationUser", "ApplicationUser")
                         .WithMany("Orders")
-                        .HasForeignKey("ApplicationUserId1")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("Domain.Customer", "Customer")
+                    b.HasOne("Domain.App.Customer", "Customer")
                         .WithMany("Orders")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -858,27 +840,27 @@ namespace DAL.App.EF.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("Domain.OrderData", b =>
+            modelBuilder.Entity("Domain.App.OrderData", b =>
                 {
-                    b.HasOne("Domain.Component", "Component")
+                    b.HasOne("Domain.App.Component", "Component")
                         .WithMany("OrderDatas")
                         .HasForeignKey("ComponentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Item", "Item")
+                    b.HasOne("Domain.App.Item", "Item")
                         .WithMany("OrderDatas")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Order", "Order")
+                    b.HasOne("Domain.App.Order", "Order")
                         .WithMany("Supplys")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Supply", "Supply")
+                    b.HasOne("Domain.App.Supply", "Supply")
                         .WithMany()
                         .HasForeignKey("SupplyId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -893,15 +875,15 @@ namespace DAL.App.EF.Migrations
                     b.Navigation("Supply");
                 });
 
-            modelBuilder.Entity("Domain.Price", b =>
+            modelBuilder.Entity("Domain.App.Price", b =>
                 {
-                    b.HasOne("Domain.Component", "Component")
+                    b.HasOne("Domain.App.Component", "Component")
                         .WithMany("Prices")
                         .HasForeignKey("ComponentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Item", "Item")
+                    b.HasOne("Domain.App.Item", "Item")
                         .WithMany("Prices")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -912,21 +894,21 @@ namespace DAL.App.EF.Migrations
                     b.Navigation("Item");
                 });
 
-            modelBuilder.Entity("Domain.Production", b =>
+            modelBuilder.Entity("Domain.App.Production", b =>
                 {
-                    b.HasOne("Domain.Component", "Component")
+                    b.HasOne("Domain.App.Component", "Component")
                         .WithMany("Productions")
                         .HasForeignKey("ComponentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Item", "Item")
+                    b.HasOne("Domain.App.Item", "Item")
                         .WithMany("Productions")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.ProductionMeta", "ProductionMeta")
+                    b.HasOne("Domain.App.ProductionMeta", "ProductionMeta")
                         .WithMany("Productions")
                         .HasForeignKey("ProductionMetaId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -939,20 +921,21 @@ namespace DAL.App.EF.Migrations
                     b.Navigation("ProductionMeta");
                 });
 
-            modelBuilder.Entity("Domain.ProductionMeta", b =>
+            modelBuilder.Entity("Domain.App.ProductionMeta", b =>
                 {
-                    b.HasOne("Domain.ApplicationUser", "ApplicationUser")
+                    b.HasOne("Domain.App.Identity.ApplicationUser", "ApplicationUser")
                         .WithMany()
-                        .HasForeignKey("ApplicationUserId1")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("Domain.Supply", "Supply")
+                    b.HasOne("Domain.App.Supply", "Supply")
                         .WithMany()
                         .HasForeignKey("SupplyId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.UserTeam", null)
+                    b.HasOne("Domain.App.UserTeam", null)
                         .WithMany("ProductionMetas")
                         .HasForeignKey("UserTeamId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -962,21 +945,21 @@ namespace DAL.App.EF.Migrations
                     b.Navigation("Supply");
                 });
 
-            modelBuilder.Entity("Domain.Supply", b =>
+            modelBuilder.Entity("Domain.App.Supply", b =>
                 {
-                    b.HasOne("Domain.Component", "Component")
+                    b.HasOne("Domain.App.Component", "Component")
                         .WithMany("Supplys")
                         .HasForeignKey("ComponentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Item", "Item")
+                    b.HasOne("Domain.App.Item", "Item")
                         .WithMany("Supplys")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Warehouse", "Warehouse")
+                    b.HasOne("Domain.App.Warehouse", "Warehouse")
                         .WithMany("Supplys")
                         .HasForeignKey("WarehouseId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -989,14 +972,15 @@ namespace DAL.App.EF.Migrations
                     b.Navigation("Warehouse");
                 });
 
-            modelBuilder.Entity("Domain.UserNotification", b =>
+            modelBuilder.Entity("Domain.App.UserNotification", b =>
                 {
-                    b.HasOne("Domain.ApplicationUser", "ApplicationUser")
+                    b.HasOne("Domain.App.Identity.ApplicationUser", "ApplicationUser")
                         .WithMany("UserNotifications")
-                        .HasForeignKey("ApplicationUserId1")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("Domain.NotificationType", "NotificationType")
+                    b.HasOne("Domain.App.NotificationType", "NotificationType")
                         .WithMany("UserNotifications")
                         .HasForeignKey("NotificationTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -1007,15 +991,15 @@ namespace DAL.App.EF.Migrations
                     b.Navigation("NotificationType");
                 });
 
-            modelBuilder.Entity("Domain.UserTeam", b =>
+            modelBuilder.Entity("Domain.App.UserTeam", b =>
                 {
-                    b.HasOne("Domain.ApplicationUser", "ApplicationUser")
+                    b.HasOne("Domain.App.Identity.ApplicationUser", "ApplicationUser")
                         .WithMany("UserTeams")
-                        .HasForeignKey("ApplicationUserId1")
+                        .HasForeignKey("ApplicationUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Team", "Team")
+                    b.HasOne("Domain.App.Team", "Team")
                         .WithMany("UserTeams")
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -1026,73 +1010,92 @@ namespace DAL.App.EF.Migrations
                     b.Navigation("Team");
                 });
 
-            modelBuilder.Entity("Domain.Warehouse", b =>
+            modelBuilder.Entity("Domain.App.Warehouse", b =>
                 {
-                    b.HasOne("Domain.ApplicationUser", "ApplicationUser")
+                    b.HasOne("Domain.App.Identity.ApplicationUser", "ApplicationUser")
                         .WithMany("Warehouses")
-                        .HasForeignKey("ApplicationUserId1")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("ApplicationUser");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    b.HasOne("Domain.App.Identity.UserRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("Domain.ApplicationUser", null)
+                    b.HasOne("Domain.App.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("Domain.ApplicationUser", null)
+                    b.HasOne("Domain.App.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    b.HasOne("Domain.App.Identity.UserRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.ApplicationUser", null)
+                    b.HasOne("Domain.App.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("Domain.ApplicationUser", null)
+                    b.HasOne("Domain.App.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.ActiveNotification", b =>
+            modelBuilder.Entity("Domain.App.ActiveNotification", b =>
                 {
                     b.Navigation("ActiveNotifications");
                 });
 
-            modelBuilder.Entity("Domain.ApplicationUser", b =>
+            modelBuilder.Entity("Domain.App.Component", b =>
+                {
+                    b.Navigation("ItemComponents");
+
+                    b.Navigation("OrderDatas");
+
+                    b.Navigation("Prices");
+
+                    b.Navigation("Productions");
+
+                    b.Navigation("Supplys");
+                });
+
+            modelBuilder.Entity("Domain.App.Customer", b =>
+                {
+                    b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("Domain.App.Identity.ApplicationUser", b =>
                 {
                     b.Navigation("ActiveNotifications");
 
@@ -1105,7 +1108,7 @@ namespace DAL.App.EF.Migrations
                     b.Navigation("Warehouses");
                 });
 
-            modelBuilder.Entity("Domain.Component", b =>
+            modelBuilder.Entity("Domain.App.Item", b =>
                 {
                     b.Navigation("ItemComponents");
 
@@ -1118,52 +1121,34 @@ namespace DAL.App.EF.Migrations
                     b.Navigation("Supplys");
                 });
 
-            modelBuilder.Entity("Domain.Customer", b =>
-                {
-                    b.Navigation("Orders");
-                });
-
-            modelBuilder.Entity("Domain.Item", b =>
-                {
-                    b.Navigation("ItemComponents");
-
-                    b.Navigation("OrderDatas");
-
-                    b.Navigation("Prices");
-
-                    b.Navigation("Productions");
-
-                    b.Navigation("Supplys");
-                });
-
-            modelBuilder.Entity("Domain.NotificationType", b =>
+            modelBuilder.Entity("Domain.App.NotificationType", b =>
                 {
                     b.Navigation("UserNotifications");
                 });
 
-            modelBuilder.Entity("Domain.Order", b =>
+            modelBuilder.Entity("Domain.App.Order", b =>
                 {
                     b.Navigation("Supplys");
                 });
 
-            modelBuilder.Entity("Domain.ProductionMeta", b =>
+            modelBuilder.Entity("Domain.App.ProductionMeta", b =>
                 {
                     b.Navigation("ActiveNotifications");
 
                     b.Navigation("Productions");
                 });
 
-            modelBuilder.Entity("Domain.Team", b =>
+            modelBuilder.Entity("Domain.App.Team", b =>
                 {
                     b.Navigation("UserTeams");
                 });
 
-            modelBuilder.Entity("Domain.UserTeam", b =>
+            modelBuilder.Entity("Domain.App.UserTeam", b =>
                 {
                     b.Navigation("ProductionMetas");
                 });
 
-            modelBuilder.Entity("Domain.Warehouse", b =>
+            modelBuilder.Entity("Domain.App.Warehouse", b =>
                 {
                     b.Navigation("Supplys");
                 });

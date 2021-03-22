@@ -3,9 +3,11 @@ using System.Threading.Tasks;
 using Contracts.DAL.App;
 using Microsoft.AspNetCore.Mvc;
 using Domain.App;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApp.Controllers
 {
+    [Authorize]
     public class ItemsController : Controller
     {
         private readonly IAppUnitOfWork _uow;

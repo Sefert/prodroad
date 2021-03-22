@@ -1,5 +1,5 @@
 using Contracts.DAL.BAse.Repositories;
-using Domain.App;
+using Domain.App.Identity;
 
 namespace Contracts.DAL.App.Repositories
 {

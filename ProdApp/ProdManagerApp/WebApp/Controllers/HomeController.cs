@@ -1,12 +1,14 @@
 ﻿using System.Diagnostics;
 using Contracts.DAL.App;
 using DAL.App.EF;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebApp.Models;
 
 namespace WebApp.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly IAppUnitOfWork _uow;

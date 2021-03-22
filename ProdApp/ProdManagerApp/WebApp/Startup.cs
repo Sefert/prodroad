@@ -1,6 +1,6 @@
 using Contracts.DAL.App;
 using DAL.App.EF;
-using Domain.App;
+using Domain.App.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;

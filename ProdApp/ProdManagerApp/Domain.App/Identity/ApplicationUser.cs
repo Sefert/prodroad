@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using Contracts.Domain.Base;
 using Microsoft.AspNetCore.Identity;
 
-namespace Domain.App
+namespace Domain.App.Identity
 {
     /*TODO: Change to non nullable, too much hassle to do for mvc razor*/
     public class ApplicationUser /*: BaseIdentity*/ : IdentityUser<Guid>, IDomainEntityId
