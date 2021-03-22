@@ -9,38 +9,23 @@ namespace DAL.App.EF
     {
         public AppUnitOfWork(AppDbContext uowDbContext) : base(uowDbContext)
         {
-            ActiveNotifications = new ActiveNotificationRepo(uowDbContext);
-            Components = new ComponentRepo(uowDbContext);
-            Customers = new CustomerRepo(uowDbContext);
-            ItemComponents = new ItemComponentRepo(uowDbContext);
-            Items = new ItemRepo(uowDbContext);
-            NotificationTypes = new NotificationTypeRepo(uowDbContext);
-            Orders = new OrderRepo(uowDbContext);
-            OrderDatas = new OrderDataRepo(uowDbContext);
-            Prices = new PriceRepo(uowDbContext);
-            ProductionMetas = new ProductionMetaRepo(uowDbContext);
-            Productions = new ProductionRepo(uowDbContext);
-            Supplys = new SupplyRepo(uowDbContext);
-            Teams = new TeamRepo(uowDbContext);
-            UserNotifications = new UserNotificationRepo(uowDbContext);
-            UserTeams = new UserTeamRepo(uowDbContext);
-            Warehouses = new WarehouseRepo(uowDbContext);
         }
-        public IActiveNotificationRepo ActiveNotifications { get; }
-        public IComponentRepo Components { get; }
-        public ICustomerRepo Customers { get; }
-        public IItemComponentRepo ItemComponents { get;}
-        public IItemRepo Items { get;}
-        public INotificationTypeRepo NotificationTypes { get; }
-        public IOrderDataRepo OrderDatas { get; }
-        public IOrderRepo Orders { get; }
-        public IPriceRepo Prices { get; }
-        public IProductionMetaRepo ProductionMetas { get; }
-        public IProductionRepo Productions { get; }
-        public ISupplyRepo Supplys { get; }
-        public ITeamRepo Teams { get; }
-        public IUserNotificationRepo UserNotifications { get; }
-        public IUserTeamRepo UserTeams { get; }
-        public IWarehouseRepo Warehouses { get; }
+        public IActiveNotificationRepo ActiveNotifications => GetRepository(() => new ActiveNotificationRepo(UowDbContext));
+        public IComponentRepo Components => GetRepository(() => new ComponentRepo(UowDbContext));
+        public ICustomerRepo Customers => GetRepository(() => new CustomerRepo(UowDbContext));
+        public IItemComponentRepo ItemComponents => GetRepository(() => new ItemComponentRepo(UowDbContext));
+        public IItemRepo Items => GetRepository(() => new ItemRepo(UowDbContext));
+        public INotificationTypeRepo NotificationTypes => GetRepository(() => new NotificationTypeRepo(UowDbContext));
+        public IOrderDataRepo OrderDatas => GetRepository(() => new OrderDataRepo(UowDbContext));
+        public IOrderRepo Orders => GetRepository(() => new OrderRepo(UowDbContext));
+        public IPriceRepo Prices => GetRepository(() => new PriceRepo(UowDbContext));
+        public IProductionMetaRepo ProductionMetas => GetRepository(() => new ProductionMetaRepo(UowDbContext));
+        public IProductionRepo Productions => GetRepository(() => new ProductionRepo(UowDbContext));
+        public ISupplyRepo Supplys => GetRepository(() => new SupplyRepo(UowDbContext));
+        public ITeamRepo Teams => GetRepository(() => new TeamRepo(UowDbContext));
+        public IUserNotificationRepo UserNotifications => GetRepository(() => new UserNotificationRepo(UowDbContext));
+        public IUserTeamRepo UserTeams => GetRepository(() => new UserTeamRepo(UowDbContext));
+        public IWarehouseRepo Warehouses => GetRepository(() => new WarehouseRepo(UowDbContext));
+
     }
 }

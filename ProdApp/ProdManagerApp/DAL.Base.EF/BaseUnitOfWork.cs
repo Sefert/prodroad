@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DAL.Base.EF
 {
     public class BaseUnitOfWork<TDbContext> : DAL.Base.BaseUnitOfWork
-    where TDbContext : DbContext
+        where TDbContext : DbContext
     {
         protected readonly TDbContext UowDbContext;
         public BaseUnitOfWork(TDbContext uowDbContext)
