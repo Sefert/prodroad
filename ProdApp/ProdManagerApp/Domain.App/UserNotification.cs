@@ -1,11 +1,12 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Contracts.Domain.Base;
 using Domain.App.Identity;
 using Domain.Base;
 
 namespace Domain.App
 {
-    public class UserNotification : DomainEntityId
+    public class UserNotification : DomainEntityId, IDomainAppUser<ApplicationUser>
     {
         [MaxLength(20)]
         public string Name { get; set; } = default!;
@@ -16,7 +17,7 @@ namespace Domain.App
         public Guid NotificationTypeId { get; set; }
         public NotificationType NotificationType { get; set; } = default!;
         
-        public Guid ApplicationUserId { get; set; }
-        public ApplicationUser? ApplicationUser { get; set; }
+        public Guid AppUserId { get; set; }
+        public ApplicationUser? AppUser { get; set; }
     }
 }

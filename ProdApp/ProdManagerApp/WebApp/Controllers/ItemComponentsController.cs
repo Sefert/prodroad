@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Domain.App;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.Helpers;
 
 namespace WebApp.Controllers
 {
@@ -21,7 +22,7 @@ namespace WebApp.Controllers
         // GET: ItemComponents
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.ItemComponents.GetAllAsync());
+            return View(await _uow.ItemComponents.GetAllAsync(User.GetUserId()!.Value));
         }
 
         // GET: ItemComponents/Details/5
@@ -29,7 +30,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var itemComponent = await _uow.ItemComponents.FirstOrDefaultAsync(id.Value, false);
+            var itemComponent = await _uow.ItemComponents.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value, false);
 
             if (itemComponent == null) return NotFound();
             return View(itemComponent);
@@ -38,8 +39,9 @@ namespace WebApp.Controllers
         // GET: ItemComponents/Create
         public async Task<IActionResult> Create()
         {
-            ViewData["ComponentId"] = new SelectList(await _uow.Components.GetAllAsync(), "Id", "Name");
-            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(), "Id", "Name");
+            var uId = User.GetUserId()!.Value;
+            ViewData["ComponentId"] = new SelectList(await _uow.Components.GetAllAsync(uId), "Id", "Name");
+            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(uId), "Id", "Name");
             return View();
         }
 
@@ -57,8 +59,9 @@ namespace WebApp.Controllers
                 await _uow.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ComponentId"] = new SelectList(await _uow.Components.GetAllAsync(), "Id", "Name", itemComponent.ComponentId);
-            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(), "Id", "Name", itemComponent.ItemId);
+            var uId = User.GetUserId()!.Value;
+            ViewData["ComponentId"] = new SelectList(await _uow.Components.GetAllAsync(uId), "Id", "Name", itemComponent.ComponentId);
+            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(uId), "Id", "Name", itemComponent.ItemId);
             return View(itemComponent);
         }
 
@@ -66,15 +69,16 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null) return NotFound();
-
-            var itemComponent = await _uow.ItemComponents.FirstOrDefaultAsync(id.Value, false);
+            var uId = User.GetUserId()!.Value;
+            
+            var itemComponent = await _uow.ItemComponents.FirstOrDefaultAsync(id.Value,uId, false);
 
             if (itemComponent == null) return NotFound();
 
-            ViewData["ComponentId"] = new SelectList(await _uow.Components.GetAllAsync(), "Id", "Name",
+            ViewData["ComponentId"] = new SelectList(await _uow.Components.GetAllAsync(uId), "Id", "Name",
                 itemComponent.ComponentId);
             ViewData["ItemId"] =
-                new SelectList(await _uow.Components.GetAllAsync(), "Id", "Name", itemComponent.ItemId);
+                new SelectList(await _uow.Components.GetAllAsync(uId), "Id", "Name", itemComponent.ItemId);
             return View(itemComponent);
         }
 
@@ -86,13 +90,14 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Edit(Guid id, [Bind("ComponentId,ItemId,Id")] ItemComponent itemComponent)
         {
             if (id != itemComponent.Id) return NotFound();
+            var uId = User.GetUserId()!.Value;
 
-            if (!ModelState.IsValid || !await _uow.ItemComponents.ExistsAsync(itemComponent.Id))
+            if (!ModelState.IsValid || !await _uow.ItemComponents.ExistsAsync(itemComponent.Id,uId))
                 return View(itemComponent);
 
-            ViewData["ComponentId"] = new SelectList(await _uow.Components.GetAllAsync(), "Id", "Name",
+            ViewData["ComponentId"] = new SelectList(await _uow.Components.GetAllAsync(uId), "Id", "Name",
                 itemComponent.ComponentId);
-            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(), "Id", "Name", itemComponent.ItemId);
+            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(uId), "Id", "Name", itemComponent.ItemId);
             return View(itemComponent);
         }
 
@@ -101,7 +106,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var itemComponent = await _uow.ItemComponents.FirstOrDefaultAsync(id.Value, false);
+            var itemComponent = await _uow.ItemComponents.FirstOrDefaultAsync(id.Value,User.GetUserId()!.Value, false);
 
             if (itemComponent == null) return NotFound();
             return View(itemComponent);
@@ -112,9 +117,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var itemComponent = await _uow.ItemComponents.FirstOrDefaultAsync(id);
+            var uId = User.GetUserId()!.Value;
+            var itemComponent = await _uow.ItemComponents.FirstOrDefaultAsync(id,uId);
             if (itemComponent == null) return NotFound();
-            _uow.ItemComponents.Remove(itemComponent);
+            _uow.ItemComponents.Remove(itemComponent, uId);
             await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

@@ -14,16 +14,17 @@ namespace DAL.App.EF.Repositories
         {
         }
         
-        public override async Task<IEnumerable<UserNotification>> GetAllAsync(bool noTracking = true)
+        public override async Task<IEnumerable<UserNotification>> GetAllAsync(Guid userId, bool noTracking = true)
         {
             var query = RepoDbSet.AsQueryable();
 
             if (noTracking) {query = query.AsNoTracking();}
 
-            return await query.Include(u => u.NotificationType).ToListAsync();
+            return await query.Include(u => u.NotificationType)
+                .ToListAsync();
         }
         
-        public override async Task<UserNotification?> FirstOrDefaultAsync(Guid id, bool noTracking = true)
+        public override async Task<UserNotification?> FirstOrDefaultAsync(Guid id, Guid userId, bool noTracking = true)
         {
             var query = RepoDbSet.AsQueryable();
 

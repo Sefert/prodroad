@@ -1,5 +1,4 @@
 using Contracts.DAL.App.Repositories;
-using Contracts.Domain.Base;
 using DAL.Base.EF.Repositories;
 using Domain.App;
 using Microsoft.EntityFrameworkCore;

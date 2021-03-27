@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain.App;
+using WebApp.Helpers;
 
 namespace WebApp.ApiControllers
 {
@@ -18,30 +19,32 @@ namespace WebApp.ApiControllers
     {
         private readonly AppDbContext _context;
         private readonly IPriceRepo _repo;
+        private readonly Guid _uId;
 
         public PricesController(AppDbContext context)
         {
             _context = context;
             _repo = new PriceRepo(context);
+            _uId = User.GetUserId()!.Value;
         }
 
         // GET: api/Prices
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Price>>> GetPrices()
         {
-            return Ok(await _repo.GetAllAsync(false));
+            return Ok(await _repo.GetAllAsync(_uId,false));
         }
 
         // GET: api/Prices/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Price>> GetPrice(Guid id)
         {
-            if (!await _repo.ExistsAsync(id))
+            if (!await _repo.ExistsAsync(id,_uId))
             {
                 return NotFound();
             }
 
-            return Ok(await _repo.FirstOrDefaultAsync(id));
+            return Ok(await _repo.FirstOrDefaultAsync(id,_uId));
         }
 
         // PUT: api/Prices/5
@@ -62,7 +65,7 @@ namespace WebApp.ApiControllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await _repo.ExistsAsync(id))
+                if (!await _repo.ExistsAsync(id,_uId))
                 {
                     return NotFound();
                 }
@@ -90,14 +93,14 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePrice(Guid id)
         {
-            if (!await _repo.ExistsAsync(id))
+            if (!await _repo.ExistsAsync(id,_uId))
             {
                 return NotFound();
             }
             
-            var component = await _repo.FirstOrDefaultAsync(id);
+            var component = await _repo.FirstOrDefaultAsync(id,_uId);
             if (component == null) return NotFound();
-            _repo.Remove(component);
+            _repo.Remove(component,_uId);
             await _context.SaveChangesAsync();
 
             return NoContent();

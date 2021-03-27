@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Domain.App;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.Helpers;
 
 namespace WebApp.Controllers
 {
@@ -21,15 +22,16 @@ namespace WebApp.Controllers
         // GET: Orders
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.Orders.GetAllAsync());
+            return View(await _uow.Orders.GetAllAsync(User.GetUserId()!.Value));
         }
 
         // GET: Orders/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null) return NotFound();
+            var uId = User.GetUserId()!.Value;
 
-            var order = await _uow.Orders.FirstOrDefaultAsync(id.Value, false);
+            var order = await _uow.Orders.FirstOrDefaultAsync(id.Value, uId, false);
 
             if (order == null) return NotFound();
             return View(order);
@@ -38,7 +40,7 @@ namespace WebApp.Controllers
         // GET: Orders/Create
         public async Task<IActionResult> Create()
         {
-            ViewData["CustomerId"] = new SelectList(await _uow.Customers.GetAllAsync(), "Id", "Address");
+            ViewData["CustomerId"] = new SelectList(await _uow.Customers.GetAllAsync(User.GetUserId()!.Value), "Id", "Address");
             return View();
         }
 
@@ -49,14 +51,16 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Number,Name,DeliveryAddress,DueDate,Info,CustomerId,ApplicationUserId,Id")] Order order)
         {
+            var uId = User.GetUserId()!.Value;
             if (ModelState.IsValid)
             {
+                order.AppUserId = uId;
                 order.Id = Guid.NewGuid();
                 _uow.Orders.Add(order);
                 await _uow.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CustomerId"] = new SelectList(await _uow.Customers.GetAllAsync(), "Id", "Address", order.CustomerId);
+            ViewData["CustomerId"] = new SelectList(await _uow.Customers.GetAllAsync(uId), "Id", "Address", order.CustomerId);
             return View(order);
         }
 
@@ -64,13 +68,14 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null) return NotFound();
-
-            var order = await _uow.Orders.FirstOrDefaultAsync(id.Value, false);
+            var uId = User.GetUserId()!.Value;
+            
+            var order = await _uow.Orders.FirstOrDefaultAsync(id.Value, uId, false);
 
             if (order == null) return NotFound();
 
             ViewData["CustomerId"] =
-                new SelectList(await _uow.Customers.GetAllAsync(), "Id", "Address", order.CustomerId);
+                new SelectList(await _uow.Customers.GetAllAsync(uId), "Id", "Address", order.CustomerId);
             return View(order);
         }
 
@@ -82,12 +87,13 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Edit(Guid id, [Bind("Number,Name,DeliveryAddress,DueDate,Info,CustomerId,ApplicationUserId,Id")] Order order)
         {
             if (id != order.Id) return NotFound();
-
-            if (!ModelState.IsValid || !await _uow.Orders.ExistsAsync(order.Id))
+            var uId = User.GetUserId()!.Value;
+            
+            if (!ModelState.IsValid || !await _uow.Orders.ExistsAsync(order.Id, uId))
                 return View(order);
 
             ViewData["CustomerId"] =
-                new SelectList(await _uow.Customers.GetAllAsync(), "Id", "Address", order.CustomerId);
+                new SelectList(await _uow.Customers.GetAllAsync(uId), "Id", "Address", order.CustomerId);
             _uow.Orders.Update(order);
             await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -98,7 +104,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
             
-            var order = await _uow.Orders.FirstOrDefaultAsync(id.Value, false);
+            var order = await _uow.Orders.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value, false);
 
             if (order == null) return NotFound();
             return View(order);
@@ -109,9 +115,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var order = await _uow.Orders.FirstOrDefaultAsync(id);
+            var uId = User.GetUserId()!.Value;
+            var order = await _uow.Orders.FirstOrDefaultAsync(id, uId);
             if (order == null) return NotFound();
-            _uow.Orders.Remove(order);
+            _uow.Orders.Remove(order, uId);
             await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain.App;
+using WebApp.Helpers;
 
 namespace WebApp.ApiControllers
 {
@@ -18,30 +19,32 @@ namespace WebApp.ApiControllers
     {
         private readonly AppDbContext _context;
         private readonly IUserNotificationRepo _repo;
+        private readonly Guid _uId;
 
         public UserNotificationsController(AppDbContext context)
         {
             _context = context;
             _repo = new UserNotificationRepo(context);
+            _uId = User.GetUserId()!.Value;
         }
 
         // GET: api/UserNotifications
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserNotification>>> GetUserNotifications()
         {
-            return Ok(await _repo.GetAllAsync(false));
+            return Ok(await _repo.GetAllAsync(_uId,false));
         }
 
         // GET: api/UserNotifications/5
         [HttpGet("{id}")]
         public async Task<ActionResult<UserNotification>> GetUserNotification(Guid id)
         {
-            if (!await _repo.ExistsAsync(id))
+            if (!await _repo.ExistsAsync(id,_uId))
             {
                 return NotFound();
             }
 
-            return Ok(await _repo.FirstOrDefaultAsync(id));
+            return Ok(await _repo.FirstOrDefaultAsync(id,_uId));
         }
 
         // PUT: api/UserNotifications/5
@@ -62,7 +65,7 @@ namespace WebApp.ApiControllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await _repo.ExistsAsync(id))
+                if (!await _repo.ExistsAsync(id,_uId))
                 {
                     return NotFound();
                 }
@@ -90,14 +93,14 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUserNotification(Guid id)
         {
-            if (!await _repo.ExistsAsync(id))
+            if (!await _repo.ExistsAsync(id,_uId))
             {
                 return NotFound();
             }
             
-            var component = await _repo.FirstOrDefaultAsync(id);
+            var component = await _repo.FirstOrDefaultAsync(id,_uId);
             if (component == null) return NotFound();
-            _repo.Remove(component);
+            _repo.Remove(component,_uId);
             await _context.SaveChangesAsync();
 
             return NoContent();

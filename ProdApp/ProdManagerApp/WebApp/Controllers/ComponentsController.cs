@@ -4,6 +4,7 @@ using Contracts.DAL.App;
 using Microsoft.AspNetCore.Mvc;
 using Domain.App;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.Helpers;
 
 namespace WebApp.Controllers
 {
@@ -20,7 +21,7 @@ namespace WebApp.Controllers
         // GET: Components
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.Components.GetAllAsync());
+            return View(await _uow.Components.GetAllAsync(User.GetUserId()!.Value));
         }
 
         // GET: Components/Details/5
@@ -28,7 +29,8 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var component = await _uow.Components.FirstOrDefaultAsync(id.Value, false);
+            var component = await _uow.Components.
+                FirstOrDefaultAsync(id.Value,User.GetUserId()!.Value, false);
             
             if (component == null) return NotFound();
 
@@ -63,7 +65,8 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var component = await _uow.Components.FirstOrDefaultAsync(id.Value, false);
+            var component = await _uow.Components
+                .FirstOrDefaultAsync(id.Value,User.GetUserId()!.Value, false);
 
             if (component == null) return NotFound();
 
@@ -79,7 +82,7 @@ namespace WebApp.Controllers
         {
             if (id != component.Id) return NotFound();
 
-            if (!ModelState.IsValid || !await _uow.Components.ExistsAsync(component.Id))
+            if (!ModelState.IsValid || !await _uow.Components.ExistsAsync(component.Id,User.GetUserId()!.Value))
                 return View(component);
             
             _uow.Components.Update(component);
@@ -92,7 +95,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var component = await _uow.Components.FirstOrDefaultAsync(id.Value, false);
+            var component = await _uow.Components.FirstOrDefaultAsync(id.Value,User.GetUserId()!.Value, false);
 
             if (component == null) return NotFound();
             
@@ -104,9 +107,9 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var component = await _uow.Components.FirstOrDefaultAsync(id);
+            var component = await _uow.Components.FirstOrDefaultAsync(id,User.GetUserId()!.Value);
             if (component == null) return NotFound();
-            _uow.Components.Remove(component);
+            _uow.Components.Remove(component, User.GetUserId()!.Value);
             await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

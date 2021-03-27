@@ -4,6 +4,7 @@ using Contracts.DAL.App;
 using Microsoft.AspNetCore.Mvc;
 using Domain.App;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.Helpers;
 
 namespace WebApp.Controllers
 {
@@ -20,7 +21,7 @@ namespace WebApp.Controllers
         // GET: Customers
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.Customers.GetAllAsync());
+            return View(await _uow.Customers.GetAllAsync(User.GetUserId()!.Value));
         }
 
         // GET: Customers/Details/5
@@ -28,7 +29,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var customer = await _uow.Customers.FirstOrDefaultAsync(id.Value, false);
+            var customer = await _uow.Customers.FirstOrDefaultAsync(id.Value,User.GetUserId()!.Value, false);
 
             if (customer == null) return NotFound();
 
@@ -63,7 +64,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var customer = await _uow.Customers.FirstOrDefaultAsync(id.Value, false);
+            var customer = await _uow.Customers.FirstOrDefaultAsync(id.Value,User.GetUserId()!.Value, false);
 
             if (customer == null) return NotFound();
 
@@ -79,7 +80,7 @@ namespace WebApp.Controllers
         {
             if (id != customer.Id) return NotFound();
 
-            if (!ModelState.IsValid || !await _uow.Customers.ExistsAsync(customer.Id))
+            if (!ModelState.IsValid || !await _uow.Customers.ExistsAsync(customer.Id, User.GetUserId()!.Value))
                 return View(customer);
 
             _uow.Customers.Update(customer);
@@ -92,7 +93,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var customer = await _uow.Customers.FirstOrDefaultAsync(id.Value, false);
+            var customer = await _uow.Customers.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value, false);
 
             if (customer == null) return NotFound();
             
@@ -104,10 +105,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var customer = await _uow.Customers.FirstOrDefaultAsync(id);
+            var customer = await _uow.Customers.FirstOrDefaultAsync(id,User.GetUserId()!.Value);
             
             if (customer == null) return NotFound();
-            _uow.Customers.Remove(customer);
+            _uow.Customers.Remove(customer, User.GetUserId()!.Value);
             
             await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

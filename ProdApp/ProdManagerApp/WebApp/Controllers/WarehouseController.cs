@@ -4,6 +4,7 @@ using Contracts.DAL.App;
 using Microsoft.AspNetCore.Mvc;
 using Domain.App;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.Helpers;
 
 namespace WebApp.Controllers
 {
@@ -20,7 +21,7 @@ namespace WebApp.Controllers
         // GET: Warehouse
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.Warehouses.GetAllAsync());
+            return View(await _uow.Warehouses.GetAllAsync(User.GetUserId()!.Value));
         }
 
         // GET: Warehouse/Details/5
@@ -28,7 +29,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var warehouse = await _uow.Warehouses.FirstOrDefaultAsync(id.Value, false);
+            var warehouse = await _uow.Warehouses.FirstOrDefaultAsync(id.Value,User.GetUserId()!.Value, false);
 
             if (warehouse == null) return NotFound();
 
@@ -48,8 +49,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,Address,ApplicationUserId,Id")] Warehouse warehouse)
         {
+            var uId = User.GetUserId()!.Value;
             if (ModelState.IsValid)
             {
+                warehouse.AppUserId = uId;
                 warehouse.Id = Guid.NewGuid();
                 _uow.Warehouses.Add(warehouse);
                 await _uow.SaveChangesAsync();
@@ -63,7 +66,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var warehouse = await _uow.Warehouses.FirstOrDefaultAsync(id.Value, false);
+            var warehouse = await _uow.Warehouses.FirstOrDefaultAsync(id.Value,User.GetUserId()!.Value, false);
 
             if (warehouse == null) return NotFound();
             return View(warehouse);
@@ -78,7 +81,7 @@ namespace WebApp.Controllers
         {
             if (id != warehouse.Id) return NotFound();
 
-            if (!ModelState.IsValid || !await _uow.Warehouses.ExistsAsync(warehouse.Id))
+            if (!ModelState.IsValid || !await _uow.Warehouses.ExistsAsync(warehouse.Id ,User.GetUserId()!.Value))
                 return View(warehouse);
 
             _uow.Warehouses.Update(warehouse);
@@ -91,7 +94,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var warehouse = await _uow.Warehouses.FirstOrDefaultAsync(id.Value, false);
+            var warehouse = await _uow.Warehouses.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value, false);
 
             if (warehouse == null) return NotFound();
             return View(warehouse);
@@ -102,9 +105,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var warehouse = await _uow.Warehouses.FirstOrDefaultAsync(id);
+            var uId = User.GetUserId()!.Value;
+            var warehouse = await _uow.Warehouses.FirstOrDefaultAsync(id, uId);
             if (warehouse == null) return NotFound();
-            _uow.Warehouses.Remove(warehouse);
+            _uow.Warehouses.Remove(warehouse, uId);
             await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

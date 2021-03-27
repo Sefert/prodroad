@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Contracts.Domain.Base;
 using Domain.App.Identity;
 using Domain.Base;
 
 namespace Domain.App
 {
-    public class Warehouse : DomainEntityId
+    public class Warehouse : DomainEntityId, IDomainAppUserId, IDomainAppUser<ApplicationUser>
     {
         [MaxLength(50)]
         public string Name { get; set; } = default!;
@@ -15,7 +16,7 @@ namespace Domain.App
 
         public ICollection<Supply>? Supplys { get; set; }
         
-        public Guid ApplicationUserId { get; set; }
-        public ApplicationUser? ApplicationUser { get; set; }
+        public Guid AppUserId { get; set; }
+        public ApplicationUser? AppUser { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Contracts.DAL.App.Repositories;
 using DAL.Base.EF.Repositories;
@@ -14,23 +15,26 @@ namespace DAL.App.EF.Repositories
         {
         }
         
-        public override async Task<IEnumerable<UserTeam>> GetAllAsync(bool noTracking = true)
+        public override async Task<IEnumerable<UserTeam>> GetAllAsync(Guid userId, bool noTracking = true)
         {
             var query = RepoDbSet.AsQueryable();
 
             if (noTracking) {query = query.AsNoTracking();}
 
-            return await query.Include(u => u.Team).ToListAsync();
+            return await query
+                .Include(u => u.Team)
+                .Where(c => c.AppUserId.Equals(userId))
+                .ToListAsync();
         }
         
-        public override async Task<UserTeam?> FirstOrDefaultAsync(Guid id, bool noTracking = true)
+        public override async Task<UserTeam?> FirstOrDefaultAsync(Guid id, Guid userId, bool noTracking = true)
         {
             var query = RepoDbSet.AsQueryable();
 
             if (noTracking) {query = query.AsNoTracking();}
             
             return await query.Include(u => u.Team)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == id && m.AppUserId.Equals(userId));
         }
     }
 }

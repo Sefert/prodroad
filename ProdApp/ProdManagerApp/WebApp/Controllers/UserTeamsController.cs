@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Domain.App;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.Helpers;
 
 namespace WebApp.Controllers
 {
@@ -21,7 +22,7 @@ namespace WebApp.Controllers
         // GET: UserTeams
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.UserTeams.GetAllAsync());
+            return View(await _uow.UserTeams.GetAllAsync(User.GetUserId()!.Value));
         }
 
         // GET: UserTeams/Details/5
@@ -29,7 +30,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var userTeam = await _uow.UserTeams.FirstOrDefaultAsync(id.Value, false);
+            var userTeam = await _uow.UserTeams.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value, false);
 
             if (userTeam == null) return NotFound();
             return View(userTeam);
@@ -38,7 +39,7 @@ namespace WebApp.Controllers
         // GET: UserTeams/Create
         public async Task<IActionResult> Create()
         {
-            ViewData["TeamId"] = new SelectList(await _uow.Teams.GetAllAsync(), "Id", "Code");
+            ViewData["TeamId"] = new SelectList(await _uow.Teams.GetAllAsync(User.GetUserId()!.Value), "Id", "Code");
             return View();
         }
 
@@ -47,16 +48,18 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("MasterTeam,Accepted,ApplicationUserId,TeamId,StartDate,EndDate,Id")] UserTeam userTeam)
+        public async Task<IActionResult> Create(UserTeam userTeam)
         {
+            var uId = User.GetUserId()!.Value;
             if (ModelState.IsValid)
             {
+                userTeam.AppUserId = User.GetUserId()!.Value;
                 userTeam.Id = Guid.NewGuid();
                 _uow.UserTeams.Add(userTeam);
                 await _uow.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TeamId"] = new SelectList(await _uow.Teams.GetAllAsync(), "Id", "Code", userTeam.TeamId);
+            ViewData["TeamId"] = new SelectList(await _uow.Teams.GetAllAsync(User.GetUserId()!.Value), "Id", "Code", userTeam.TeamId);
             return View(userTeam);
         }
 
@@ -64,12 +67,13 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null) return NotFound();
+            var uId = User.GetUserId()!.Value;
 
-            var userTeam = await _uow.UserTeams.FirstOrDefaultAsync(id.Value, false);
+            var userTeam = await _uow.UserTeams.FirstOrDefaultAsync(id.Value, uId, false);
 
             if (userTeam == null) return NotFound();
 
-            ViewData["TeamId"] = new SelectList(await _uow.Teams.GetAllAsync(), "Id", "Code", userTeam.TeamId);
+            ViewData["TeamId"] = new SelectList(await _uow.Teams.GetAllAsync(uId), "Id", "Code", userTeam.TeamId);
             return View(userTeam);
         }
 
@@ -81,11 +85,12 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Edit(Guid id, [Bind("MasterTeam,Accepted,ApplicationUserId,TeamId,StartDate,EndDate,Id")] UserTeam userTeam)
         {
             if (id != userTeam.Id) return NotFound();
+            var uId = User.GetUserId()!.Value;
 
-            if (!ModelState.IsValid || !await _uow.UserTeams.ExistsAsync(userTeam.Id))
+            if (!ModelState.IsValid || !await _uow.UserTeams.ExistsAsync(userTeam.Id, uId))
                 return View(userTeam);
 
-            ViewData["TeamId"] = new SelectList(await _uow.Teams.GetAllAsync(), "Id", "Code", userTeam.TeamId);
+            ViewData["TeamId"] = new SelectList(await _uow.Teams.GetAllAsync(uId), "Id", "Code", userTeam.TeamId);
 
             _uow.UserTeams.Update(userTeam);
             await _uow.SaveChangesAsync();
@@ -98,7 +103,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var userTeam = await _uow.UserTeams.FirstOrDefaultAsync(id.Value, false);
+            var userTeam = await _uow.UserTeams.FirstOrDefaultAsync(id.Value,User.GetUserId()!.Value, false);
 
             if (userTeam == null) return NotFound();
             return View(userTeam);
@@ -109,9 +114,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var userTeam = await _uow.UserTeams.FirstOrDefaultAsync(id);
+            var uId = User.GetUserId()!.Value;
+            var userTeam = await _uow.UserTeams.FirstOrDefaultAsync(id, uId);
             if (userTeam == null) return NotFound();
-            _uow.UserTeams.Remove(userTeam);
+            _uow.UserTeams.Remove(userTeam, uId);
             await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

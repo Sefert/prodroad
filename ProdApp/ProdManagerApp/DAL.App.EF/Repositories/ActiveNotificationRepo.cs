@@ -15,7 +15,7 @@ namespace DAL.App.EF.Repositories
         {
         }
         
-        public override async Task<IEnumerable<ActiveNotification>> GetAllAsync(bool noTracking = true)
+        public override async Task<IEnumerable<ActiveNotification>> GetAllAsync(Guid userId, bool noTracking = true)
         {
             var query = RepoDbSet.AsQueryable();
 
@@ -23,13 +23,14 @@ namespace DAL.App.EF.Repositories
 
             query = query.Include(e => e.MasterNotification)
                 .Include(e => e.Order)
-                .Include(a => a.Supply);
+                .Include(a => a.Supply)
+                .Where(c => c.AppUserId.Equals(userId));
             var res = await query.ToListAsync();
             
             return res;
         }
         
-        public override async Task<ActiveNotification?> FirstOrDefaultAsync(Guid id, bool noTracking = true)
+        public override async Task<ActiveNotification?> FirstOrDefaultAsync(Guid id, Guid userId, bool noTracking = true)
         {
             var query = RepoDbSet.AsQueryable();
 
@@ -38,7 +39,7 @@ namespace DAL.App.EF.Repositories
             return await query.Include(a => a.MasterNotification)
                 .Include(a => a.Order)
                 .Include(a => a.Supply)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == id && m.AppUserId.Equals(userId));
         }
         
     }

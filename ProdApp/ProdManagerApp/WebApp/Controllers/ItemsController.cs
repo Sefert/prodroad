@@ -4,6 +4,7 @@ using Contracts.DAL.App;
 using Microsoft.AspNetCore.Mvc;
 using Domain.App;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.Helpers;
 
 namespace WebApp.Controllers
 {
@@ -20,7 +21,7 @@ namespace WebApp.Controllers
         // GET: Items
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.Items.GetAllAsync());
+            return View(await _uow.Items.GetAllAsync(User.GetUserId()!.Value));
         }
 
         // GET: Items/Details/5
@@ -28,7 +29,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var item = await _uow.Items.FirstOrDefaultAsync(id.Value, false);
+            var item = await _uow.Items.FirstOrDefaultAsync(id.Value,User.GetUserId()!.Value, false);
 
             if (item == null) return NotFound();
             return View(item);
@@ -62,7 +63,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var item = await _uow.Items.FirstOrDefaultAsync(id.Value, false);
+            var item = await _uow.Items.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value, false);
 
             if (item == null) return NotFound();
             return View(item);
@@ -77,7 +78,7 @@ namespace WebApp.Controllers
         {
             if (id != item.Id) return NotFound();
 
-            if (!ModelState.IsValid || !await _uow.Items.ExistsAsync(item.Id))
+            if (!ModelState.IsValid || !await _uow.Items.ExistsAsync(item.Id, User.GetUserId()!.Value))
                 return View(item);
 
             _uow.Items.Update(item);
@@ -90,7 +91,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
             
-            var item = await _uow.Items.FirstOrDefaultAsync(id.Value, false);
+            var item = await _uow.Items.FirstOrDefaultAsync(id.Value,User.GetUserId()!.Value, false);
             
             if (item == null) return NotFound();
             return View(item);
@@ -101,9 +102,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var item = await _uow.Items.FirstOrDefaultAsync(id);
+            var uId = User.GetUserId()!.Value;
+            var item = await _uow.Items.FirstOrDefaultAsync(id, uId);
             if (item == null) return NotFound();
-            _uow.Items.Remove(item);
+            _uow.Items.Remove(item, uId);
             await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

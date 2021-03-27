@@ -14,7 +14,7 @@ namespace DAL.App.EF.Repositories
         {
         }
         
-        public override async Task<IEnumerable<Price>> GetAllAsync(bool noTracking = true)
+        public override async Task<IEnumerable<Price>> GetAllAsync(Guid userId, bool noTracking = true)
         {
             var query = RepoDbSet.AsQueryable();
 
@@ -24,7 +24,7 @@ namespace DAL.App.EF.Repositories
                 Include(p => p.Item).ToListAsync();
         }
 
-        public override async Task<Price?> FirstOrDefaultAsync(Guid id, bool noTracking = true)
+        public override async Task<Price?> FirstOrDefaultAsync(Guid id, Guid userId, bool noTracking = true)
         {
             var query = RepoDbSet.AsQueryable();
 

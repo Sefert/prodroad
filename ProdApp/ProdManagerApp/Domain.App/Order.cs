@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Contracts.Domain.Base;
 using Domain.App.Identity;
 using Domain.Base;
 
 namespace Domain.App
 {
-    public class Order : DomainEntityId
+    public class Order : DomainEntityId, IDomainAppUser<ApplicationUser>
     {
         [MaxLength(50)]
         public string Number { get; set; } = default!;
@@ -25,7 +26,7 @@ namespace Domain.App
         public Guid CustomerId { get; set; }
         public Customer? Customer { get; set; }
         
-        public Guid ApplicationUserId { get; set; }
-        public ApplicationUser? ApplicationUser { get; set; }
+        public Guid AppUserId { get; set; }
+        public ApplicationUser? AppUser { get; set; }
     }
 }

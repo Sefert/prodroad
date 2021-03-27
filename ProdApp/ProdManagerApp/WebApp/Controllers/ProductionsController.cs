@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Domain.App;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.Helpers;
 
 namespace WebApp.Controllers
 {
@@ -22,7 +23,7 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Index()
         {
             
-            return View(await _uow.Productions.GetAllAsync());
+            return View(await _uow.Productions.GetAllAsync(User.GetUserId()!.Value));
         }
 
         // GET: Productions/Details/5
@@ -30,7 +31,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var production = await _uow.Productions.FirstOrDefaultAsync(id.Value, false);
+            var production = await _uow.Productions.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value, false);
 
             if (production == null) return NotFound();
             return View(production);
@@ -39,9 +40,9 @@ namespace WebApp.Controllers
         // GET: Productions/Create
         public async Task<IActionResult> Create()
         {
-            ViewData["ComponentId"] = new SelectList(await _uow.Components.GetAllAsync(), "Id", "Name");
-            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(), "Id", "Name");
-            ViewData["ProductionMetaId"] = new SelectList(await _uow.ProductionMetas.GetAllAsync(), "Id", "Line");
+            ViewData["ComponentId"] = new SelectList(await _uow.Components.GetAllAsync(User.GetUserId()!.Value), "Id", "Name");
+            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(User.GetUserId()!.Value), "Id", "Name");
+            ViewData["ProductionMetaId"] = new SelectList(await _uow.ProductionMetas.GetAllAsync(User.GetUserId()!.Value), "Id", "Line");
             return View();
         }
 
@@ -52,6 +53,7 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Quantity,UsedProduced,ProductionMetaId,ComponentId,ItemId,StartDate,EndDate,StartTime,EndTime,Id")] Production production)
         {
+            var uId = User.GetUserId()!.Value;
             if (ModelState.IsValid)
             {
                 production.Id = Guid.NewGuid();
@@ -59,9 +61,9 @@ namespace WebApp.Controllers
                 await _uow.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ComponentId"] = new SelectList(await _uow.Components.GetAllAsync(), "Id", "Name", production.ComponentId);
-            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(), "Id", "Name", production.ItemId);
-            ViewData["ProductionMetaId"] = new SelectList(await _uow.ProductionMetas.GetAllAsync(), "Id", "Line", production.ProductionMetaId);
+            ViewData["ComponentId"] = new SelectList(await _uow.Components.GetAllAsync(uId), "Id", "Name", production.ComponentId);
+            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(uId), "Id", "Name", production.ItemId);
+            ViewData["ProductionMetaId"] = new SelectList(await _uow.ProductionMetas.GetAllAsync(uId), "Id", "Line", production.ProductionMetaId);
             return View(production);
         }
 
@@ -69,15 +71,16 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null) return NotFound();
+            var uId = User.GetUserId()!.Value;
 
-            var production = await _uow.Productions.FirstOrDefaultAsync(id.Value, false);
+            var production = await _uow.Productions.FirstOrDefaultAsync(id.Value, uId, false);
 
             if (production == null) return NotFound();
 
             ViewData["ComponentId"] =
-                new SelectList(await _uow.Components.GetAllAsync(), "Id", "Name", production.ComponentId);
-            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(), "Id", "Name", production.ItemId);
-            ViewData["ProductionMetaId"] = new SelectList(await _uow.ProductionMetas.GetAllAsync(), "Id", "Line",
+                new SelectList(await _uow.Components.GetAllAsync(uId), "Id", "Name", production.ComponentId);
+            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(uId), "Id", "Name", production.ItemId);
+            ViewData["ProductionMetaId"] = new SelectList(await _uow.ProductionMetas.GetAllAsync(uId), "Id", "Line",
                 production.ProductionMetaId);
             return View(production);
         }
@@ -90,14 +93,15 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Edit(Guid id, [Bind("Quantity,UsedProduced,ProductionMetaId,ComponentId,ItemId,StartDate,EndDate,StartTime,EndTime,Id")] Production production)
         {
             if (id != production.Id) return NotFound();
+            var uId = User.GetUserId()!.Value;
 
-            if (!ModelState.IsValid || !await _uow.Productions.ExistsAsync(production.Id))
+            if (!ModelState.IsValid || !await _uow.Productions.ExistsAsync(production.Id, uId))
                 return View(production);
 
             ViewData["ComponentId"] =
-                new SelectList(await _uow.Components.GetAllAsync(), "Id", "Name", production.ComponentId);
-            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(), "Id", "Name", production.ItemId);
-            ViewData["ProductionMetaId"] = new SelectList(await _uow.ProductionMetas.GetAllAsync(), "Id", "Line",
+                new SelectList(await _uow.Components.GetAllAsync(uId), "Id", "Name", production.ComponentId);
+            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(uId), "Id", "Name", production.ItemId);
+            ViewData["ProductionMetaId"] = new SelectList(await _uow.ProductionMetas.GetAllAsync(uId), "Id", "Line",
                 production.ProductionMetaId);
 
             _uow.Productions.Update(production);
@@ -110,7 +114,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var production = await _uow.Productions.FirstOrDefaultAsync(id.Value, false);
+            var production = await _uow.Productions.FirstOrDefaultAsync(id.Value,User.GetUserId()!.Value, false);
 
             if (production == null) return NotFound();
             return View(production);
@@ -121,9 +125,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var production = await _uow.Productions.FirstOrDefaultAsync(id);
+            var uId = User.GetUserId()!.Value;
+            var production = await _uow.Productions.FirstOrDefaultAsync(id, uId);
             if (production == null) return NotFound();
-            _uow.Productions.Remove(production);
+            _uow.Productions.Remove(production, uId);
             await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

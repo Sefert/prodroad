@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 using Contracts.DAL.BAse.Repositories;
 using Contracts.Domain.Base;
@@ -26,23 +28,27 @@ namespace DAL.Base.EF.Repositories
             RepoDbContext = dbContext;
             RepoDbSet = dbContext.Set<TEntity>();
         }
-        public virtual async Task<IEnumerable<TEntity>> GetAllAsync(bool noTracking = true)
+
+        private IQueryable<TEntity> CreateQuery(TKey? userId, bool noTracking = true)
         {
-            //var query = RepoDbSet.AsQueryable(); // add here id options, for data access
-            if (noTracking)
+            var query = RepoDbSet.AsQueryable(); // add here id options, for data access
+
+            if (userId != null && typeof(TEntity).IsAssignableFrom(typeof(IDomainAppUserId<TKey>)))
             {
-                return await RepoDbSet.AsNoTracking().ToListAsync();
+                // ReSharper disable once SuspiciousTypeConversion.Global
+                query = query.Where(e => ((IDomainAppUserId<Guid>) e).AppUserId.Equals(userId));
             }
-            return await RepoDbSet.ToListAsync();
+
+            return noTracking ? query.AsNoTracking() : query;
+        }
+        public virtual async Task<IEnumerable<TEntity>> GetAllAsync(TKey? userId, bool noTracking = true)
+        {
+            return await CreateQuery(userId, noTracking).ToListAsync();
         }
 
-        public virtual async Task<TEntity?> FirstOrDefaultAsync(TKey id, bool noTracking = true)
+        public virtual async Task<TEntity?> FirstOrDefaultAsync(TKey id, TKey? userId, bool noTracking = true)
         {
-            if (noTracking)
-            {
-                return await RepoDbSet.AsNoTracking().FirstOrDefaultAsync(e => e.Id.Equals(id));
-            }
-            return await RepoDbSet.FirstOrDefaultAsync(a => a.Id.Equals(id));
+            return await CreateQuery(userId, noTracking).FirstOrDefaultAsync(e => e.Id.Equals(id));
         }
 
         public virtual TEntity Add(TEntity entity)
@@ -55,21 +61,27 @@ namespace DAL.Base.EF.Repositories
             return RepoDbSet.Update(entity).Entity;
         }
 
-        public virtual TEntity Remove(TEntity entity)
+        public virtual TEntity Remove(TEntity entity, TKey? userId)
         {
+            if (userId != null && !((IDomainAppUserId<TKey>) entity).AppUserId.Equals(userId))
+            {
+                throw new AuthenticationException("Bad entity id to be deleted!");
+                //TODO: load entity from db and check the id in entity is correct
+            }
             return RepoDbSet.Remove(entity).Entity;
         }
 
-        public virtual async Task<TEntity> Remove(TKey id)
+        public virtual async Task<TEntity> RemoveAsync(TKey id, TKey? userId)
         {
-            var entity = await FirstOrDefaultAsync(id);
+            var entity = await FirstOrDefaultAsync(id, userId);
             if (entity == null) throw new NullReferenceException($"Entity with id {id} not found.");
-            return Remove(entity);
+            return Remove(entity!, userId);
         }
 
-        public virtual async Task<bool> ExistsAsync(TKey id)
+        public virtual async Task<bool> ExistsAsync(TKey id, TKey? userId)
         {
-            return await RepoDbSet.AnyAsync(e => e.Id.Equals(id));
+            return await RepoDbSet.AnyAsync(e => 
+                e.Id.Equals(id) && ((IDomainAppUserId<TKey>) e).AppUserId.Equals(userId));
         }
     }
 }

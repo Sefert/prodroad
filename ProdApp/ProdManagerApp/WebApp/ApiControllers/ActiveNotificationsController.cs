@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain.App;
+using WebApp.Helpers;
 
 namespace WebApp.ApiControllers
 {
@@ -16,29 +17,31 @@ namespace WebApp.ApiControllers
     {
         private readonly AppDbContext _context;
         private readonly IActiveNotificationRepo _repo;
+        private readonly Guid _uId;
 
         public ActiveNotificationsController(AppDbContext context)
         {
             _context = context;
             _repo = new ActiveNotificationRepo(context);
+            _uId = User.GetUserId()!.Value;
         }
 
         // GET: api/ActiveNotifications
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ActiveNotification>>> GetActiveNotifications()
         {
-            return Ok(await _repo.GetAllAsync(false));
+            return Ok(await _repo.GetAllAsync(_uId,false));
         }
 
         // GET: api/ActiveNotifications/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ActiveNotification>> GetActiveNotification(Guid id)
         {
-            if (!await _repo.ExistsAsync(id))
+            if (!await _repo.ExistsAsync(id,_uId))
             {
                 return NotFound();
             }
-            return Ok(await _repo.FirstOrDefaultAsync(id));
+            return Ok(await _repo.FirstOrDefaultAsync(id, _uId));
         }
 
         // PUT: api/ActiveNotifications/5
@@ -56,7 +59,7 @@ namespace WebApp.ApiControllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await _repo.ExistsAsync(id))
+                if (!await _repo.ExistsAsync(id, _uId))
                 {
                     return NotFound();
                 }
@@ -85,14 +88,14 @@ namespace WebApp.ApiControllers
         public async Task<IActionResult> DeleteActiveNotification(Guid id)
         {
             
-            if (!await _repo.ExistsAsync(id))
+            if (!await _repo.ExistsAsync(id, _uId))
             {
                 return NotFound();
             }
             
-            var activeNotification = await _repo.FirstOrDefaultAsync(id);
+            var activeNotification = await _repo.FirstOrDefaultAsync(id, _uId);
             if (activeNotification == null) return NotFound();
-            _repo.Remove(activeNotification);
+            _repo.Remove(activeNotification, _uId);
             await _context.SaveChangesAsync();
 
             return NoContent();

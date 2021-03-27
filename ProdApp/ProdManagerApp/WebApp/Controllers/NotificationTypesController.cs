@@ -4,6 +4,7 @@ using Contracts.DAL.App;
 using Microsoft.AspNetCore.Mvc;
 using Domain.App;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.Helpers;
 
 namespace WebApp.Controllers
 {
@@ -20,7 +21,7 @@ namespace WebApp.Controllers
         // GET: NotificationTypes
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.NotificationTypes.GetAllAsync());
+            return View(await _uow.NotificationTypes.GetAllAsync(User.GetUserId()!.Value));
         }
 
         // GET: NotificationTypes/Details/5
@@ -28,7 +29,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var notificationType = await _uow.NotificationTypes.FirstOrDefaultAsync((Guid) id, false);
+            var notificationType = await _uow.NotificationTypes.FirstOrDefaultAsync((Guid) id, User.GetUserId()!.Value, false);
 
             if (notificationType == null) return NotFound();
             return View(notificationType);
@@ -62,7 +63,8 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var notificationType = await _uow.NotificationTypes.FirstOrDefaultAsync((Guid) id, false);
+            var notificationType = await _uow.NotificationTypes
+                .FirstOrDefaultAsync((Guid) id, User.GetUserId()!.Value, false);
 
             if (notificationType == null) return NotFound();
             return View(notificationType);
@@ -77,7 +79,7 @@ namespace WebApp.Controllers
         {
             if (id != notificationType.Id) return NotFound();
 
-            if (!ModelState.IsValid || !await _uow.NotificationTypes.ExistsAsync(notificationType.Id))
+            if (!ModelState.IsValid || !await _uow.NotificationTypes.ExistsAsync(notificationType.Id, User.GetUserId()!.Value))
                 return View(notificationType);
 
             _uow.NotificationTypes.Update(notificationType);
@@ -90,7 +92,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var notificationType = await _uow.NotificationTypes.FirstOrDefaultAsync((Guid) id, false);
+            var notificationType = await _uow.NotificationTypes.FirstOrDefaultAsync((Guid) id, User.GetUserId()!.Value, false);
 
             if (notificationType == null) return NotFound();
             return View(notificationType);
@@ -101,9 +103,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var notificationType = await _uow.NotificationTypes.FirstOrDefaultAsync(id);
+            var uId = User.GetUserId()!.Value;
+            var notificationType = await _uow.NotificationTypes.FirstOrDefaultAsync(id, uId);
             if (notificationType == null) return NotFound();
-            _uow.NotificationTypes.Remove(notificationType);
+            _uow.NotificationTypes.Remove(notificationType, uId);
             await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

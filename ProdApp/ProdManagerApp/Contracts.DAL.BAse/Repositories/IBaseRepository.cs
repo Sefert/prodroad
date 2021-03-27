@@ -10,15 +10,14 @@ namespace Contracts.DAL.BAse.Repositories
     {
     }
     public interface IBaseRepository<TEntity, TKey>
-        where TEntity : class, IDomainEntityId<TKey>/*, IDomainEntityDate<TKey>, IDomainEntityDateTime<TKey>, IDomainEntityTime<TKey>*/
         where TKey : IEquatable<TKey> //id.equals(someotherId), like id == someotherId
     {
-        Task<IEnumerable<TEntity>> GetAllAsync(bool noTracking = true);
-        Task<TEntity?> FirstOrDefaultAsync(TKey id, bool noTracking = true);
+        Task<IEnumerable<TEntity>> GetAllAsync(TKey? userId, bool noTracking = true);
+        Task<TEntity?> FirstOrDefaultAsync(TKey id, TKey? userId, bool noTracking = true);
         TEntity Add(TEntity entity);
         TEntity Update(TEntity entity);
-        TEntity Remove(TEntity entity);
-        Task<TEntity> Remove(TKey id);
-        Task<bool> ExistsAsync(TKey id);
+        TEntity Remove(TEntity entity, TKey? userId);
+        Task<TEntity> RemoveAsync(TKey id, TKey? userId);
+        Task<bool> ExistsAsync(TKey id, TKey? userId);
     }
 }

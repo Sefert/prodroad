@@ -4,6 +4,7 @@ using Contracts.DAL.App;
 using Microsoft.AspNetCore.Mvc;
 using Domain.App;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.Helpers;
 
 namespace WebApp.Controllers
 {
@@ -20,7 +21,7 @@ namespace WebApp.Controllers
         // GET: Teams
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.Teams.GetAllAsync());
+            return View(await _uow.Teams.GetAllAsync(User.GetUserId()!.Value));
         }
 
         // GET: Teams/Details/5
@@ -28,7 +29,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var team = await _uow.Teams.FirstOrDefaultAsync(id.Value);
+            var team = await _uow.Teams.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
 
             if (team == null) return NotFound();
             return View(team);
@@ -62,7 +63,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var team = await _uow.Teams.FirstOrDefaultAsync(id.Value);
+            var team = await _uow.Teams.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
 
             if (team == null) return NotFound();
             return View(team);
@@ -77,7 +78,7 @@ namespace WebApp.Controllers
         {
             if (id != team.Id) return NotFound();
 
-            if (!ModelState.IsValid || !await _uow.Teams.ExistsAsync(team.Id))
+            if (!ModelState.IsValid || !await _uow.Teams.ExistsAsync(team.Id, User.GetUserId()!.Value))
                 return View(team);
 
             _uow.Teams.Update(team);
@@ -90,7 +91,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var team = await _uow.Teams.FirstOrDefaultAsync(id.Value);
+            var team = await _uow.Teams.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
 
             if (team == null) return NotFound();
 
@@ -102,9 +103,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var team = await _uow.Teams.FirstOrDefaultAsync(id);
+            var uId = User.GetUserId()!.Value;
+            var team = await _uow.Teams.FirstOrDefaultAsync(id, uId);
             if (team == null) return NotFound();
-            _uow.Teams.Remove(team);
+            _uow.Teams.Remove(team, uId);
             await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
