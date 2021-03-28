@@ -117,7 +117,7 @@ namespace WebApp.Controllers
             var uId = User.GetUserId()!.Value;
             var userTeam = await _uow.UserTeams.FirstOrDefaultAsync(id, uId);
             if (userTeam == null) return NotFound();
-            _uow.UserTeams.Remove(userTeam, uId);
+            await _uow.UserTeams.RemoveAsync(id, uId);
             await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

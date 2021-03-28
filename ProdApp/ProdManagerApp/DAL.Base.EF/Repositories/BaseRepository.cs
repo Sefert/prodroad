@@ -33,15 +33,15 @@ namespace DAL.Base.EF.Repositories
         {
             var query = RepoDbSet.AsQueryable(); // add here id options, for data access
 
-            if (userId != null && typeof(TEntity).IsAssignableFrom(typeof(IDomainAppUserId<TKey>)))
+            if (userId != null && typeof(IDomainAppUserId<TKey>).IsAssignableFrom(typeof(TEntity)))
             {
                 // ReSharper disable once SuspiciousTypeConversion.Global
-                query = query.Where(e => ((IDomainAppUserId<Guid>) e).AppUserId.Equals(userId));
+                query = query.Where(e => ((IDomainAppUserId<TKey>) e).AppUserId.Equals(userId));
             }
 
             return noTracking ? query.AsNoTracking() : query;
         }
-        public virtual async Task<IEnumerable<TEntity>> GetAllAsync(TKey? userId, bool noTracking = true)
+        public virtual async Task<IEnumerable<TEntity>> GetAllAsync(TKey? userId, bool noTracking)
         {
             return await CreateQuery(userId, noTracking).ToListAsync();
         }
@@ -63,7 +63,8 @@ namespace DAL.Base.EF.Repositories
 
         public virtual TEntity Remove(TEntity entity, TKey? userId)
         {
-            if (userId != null && !((IDomainAppUserId<TKey>) entity).AppUserId.Equals(userId))
+            if (userId != null && typeof(IDomainAppUserId<TKey>).IsAssignableFrom(typeof(TEntity)) && 
+                !((IDomainAppUserId<TKey>) entity).AppUserId.Equals(userId))
             {
                 throw new AuthenticationException("Bad entity id to be deleted!");
                 //TODO: load entity from db and check the id in entity is correct
@@ -80,7 +81,12 @@ namespace DAL.Base.EF.Repositories
 
         public virtual async Task<bool> ExistsAsync(TKey id, TKey? userId)
         {
-            return await RepoDbSet.AnyAsync(e => 
+            //TODO:hide id
+            if (userId != null && !typeof(IDomainAppUserId<TKey>).IsAssignableFrom(typeof(TEntity)))
+            {
+                throw new AuthenticationException($"Bad user id inside entity.! user with id:{userId} and ref id:{id} ");
+            }
+            return await RepoDbSet.AnyAsync(e =>
                 e.Id.Equals(id) && ((IDomainAppUserId<TKey>) e).AppUserId.Equals(userId));
         }
     }

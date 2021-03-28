@@ -21,7 +21,7 @@ namespace WebApp.Controllers
         // GET: Teams
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.Teams.GetAllAsync(User.GetUserId()!.Value));
+            return View(await _uow.Teams.GetAllAsync(User.GetUserId()!.Value,false));
         }
 
         // GET: Teams/Details/5
@@ -29,7 +29,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var team = await _uow.Teams.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
+            var team = await _uow.Teams.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value,false);
 
             if (team == null) return NotFound();
             return View(team);
@@ -63,7 +63,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var team = await _uow.Teams.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
+            var team = await _uow.Teams.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value,false);
 
             if (team == null) return NotFound();
             return View(team);
@@ -74,7 +74,7 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Code,StartDate,EndDate,Id")] Team team)
+        public async Task<IActionResult> Edit(Guid id, Team team)
         {
             if (id != team.Id) return NotFound();
 
