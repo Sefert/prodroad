@@ -8,7 +8,7 @@ using Domain.Base;
 
 namespace Domain.App
 {
-    public class ActiveNotification : DomainEntityDateTime, IDomainEntityId, IDomainAppUser<ApplicationUser>
+    public class ActiveNotification : DomainEntityDateTime, IDomainEntityId, IDomainAppUser<AppUser>
     {
         [MaxLength(50)]
         public string Head { get; set; } = default!;
@@ -22,7 +22,7 @@ namespace Domain.App
         public Supply? Supply { get; set; }
         
         public Guid AppUserId { get; set; }
-        public ApplicationUser? AppUser { get; set; }
+        public AppUser? AppUser { get; set; }
 
         public ICollection<ActiveNotification>? ActiveNotifications { get; set; }
         

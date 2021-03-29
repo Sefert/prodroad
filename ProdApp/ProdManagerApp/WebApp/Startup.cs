@@ -35,7 +35,7 @@ namespace WebApp
             
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddIdentity<ApplicationUser, UserRole>(options => options.SignIn.RequireConfirmedAccount = false)
+            services.AddIdentity<AppUser, UserRole>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddDefaultUI()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();

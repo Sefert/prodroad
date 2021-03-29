@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF.Repositories
 {
-    public class ItemRepo : BaseRepository<Item> , IItemRepo
+    public class ItemRepo : BaseRepository<Item, AppDbContext> , IItemRepo
     {
-        public ItemRepo(DbContext dbContext) : base(dbContext)
+        public ItemRepo(AppDbContext dbContext) : base(dbContext)
         {
         }
     }

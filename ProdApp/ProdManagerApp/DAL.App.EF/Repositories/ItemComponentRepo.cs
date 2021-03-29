@@ -8,9 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF.Repositories
 {
-    public class ItemComponentRepo : BaseRepository<ItemComponent>, IItemComponentRepo
+    public class ItemComponentRepo : BaseRepository<ItemComponent, AppDbContext>, IItemComponentRepo
     {
-        public ItemComponentRepo(DbContext dbContext) : base(dbContext)
+        public ItemComponentRepo(AppDbContext dbContext) : base(dbContext)
         {
         }
 

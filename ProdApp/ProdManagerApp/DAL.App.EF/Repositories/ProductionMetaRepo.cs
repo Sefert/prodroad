@@ -9,9 +9,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF.Repositories
 {
-    public class ProductionMetaRepo : BaseRepository<ProductionMeta> , IProductionMetaRepo
+    public class ProductionMetaRepo : BaseRepository<ProductionMeta, AppDbContext> , IProductionMetaRepo
     {
-        public ProductionMetaRepo(DbContext dbContext) : base(dbContext)
+        public ProductionMetaRepo(AppDbContext dbContext) : base(dbContext)
         {
         }
         

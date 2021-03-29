@@ -9,46 +9,61 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Base.EF.Repositories
 {
-    public class BaseRepository<TEntity> : BaseRepository<TEntity, Guid>, IBaseRepository<TEntity>
+    public class BaseRepository<TEntity, TDbContext> : BaseRepository<TEntity, Guid, TDbContext>,
+        IBaseRepository<TEntity>
         where TEntity : class, IDomainEntityId
+        where TDbContext : DbContext
     {
-        public BaseRepository(DbContext dbContext) : base(dbContext)
+        public BaseRepository(TDbContext dbContext) : base(dbContext)
         {
         }
     }
-    
-    public class BaseRepository<TEntity, TKey> : IBaseRepository<TEntity, TKey>
+
+    public class BaseRepository<TEntity, TKey, TDbContext> : IBaseRepository<TEntity, TKey>
         where TEntity : class, IDomainEntityId<TKey>
         where TKey : IEquatable<TKey>
+        where TDbContext : DbContext
     {
-        protected readonly DbContext RepoDbContext;
+        protected readonly TDbContext RepoDbContext;
         protected readonly DbSet<TEntity> RepoDbSet;
-        public BaseRepository(DbContext dbContext)
+
+        public BaseRepository(TDbContext dbContext)
         {
             RepoDbContext = dbContext;
             RepoDbSet = dbContext.Set<TEntity>();
         }
 
-        private IQueryable<TEntity> CreateQuery(TKey? userId, bool noTracking = true)
+        protected IQueryable<TEntity> CreateQuery(TKey? userId = default, bool noTracking = true)
         {
-            var query = RepoDbSet.AsQueryable(); // add here id options, for data access
+            var query = RepoDbSet.AsQueryable();
 
-            if (userId != null && typeof(IDomainAppUserId<TKey>).IsAssignableFrom(typeof(TEntity)))
+            if (userId != null && !userId.Equals(default) &&
+                typeof(IDomainAppUserId<TKey>).IsAssignableFrom(typeof(TEntity)))
             {
                 // ReSharper disable once SuspiciousTypeConversion.Global
                 query = query.Where(e => ((IDomainAppUserId<TKey>) e).AppUserId.Equals(userId));
             }
 
-            return noTracking ? query.AsNoTracking() : query;
-        }
-        public virtual async Task<IEnumerable<TEntity>> GetAllAsync(TKey? userId, bool noTracking)
-        {
-            return await CreateQuery(userId, noTracking).ToListAsync();
+            if (noTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            return query;
         }
 
-        public virtual async Task<TEntity?> FirstOrDefaultAsync(TKey id, TKey? userId, bool noTracking = true)
+        public virtual async Task<IEnumerable<TEntity>> GetAllAsync(TKey? userId = default, bool noTracking = true)
         {
-            return await CreateQuery(userId, noTracking).FirstOrDefaultAsync(e => e.Id.Equals(id));
+            var query = CreateQuery(userId, noTracking);
+
+            return await query.ToListAsync();
+        }
+
+        public virtual async Task<TEntity?> FirstOrDefaultAsync(TKey id, TKey? userId = default, bool noTracking = true)
+        {
+            var query = CreateQuery(userId, noTracking);
+
+            return await query.FirstOrDefaultAsync(e => e.Id.Equals(id));
         }
 
         public virtual TEntity Add(TEntity entity)
@@ -61,31 +76,37 @@ namespace DAL.Base.EF.Repositories
             return RepoDbSet.Update(entity).Entity;
         }
 
-        public virtual TEntity Remove(TEntity entity, TKey? userId)
+        public virtual TEntity Remove(TEntity entity, TKey? userId = default)
         {
-            if (userId != null && typeof(IDomainAppUserId<TKey>).IsAssignableFrom(typeof(TEntity)) && 
+            if (userId != null && !userId.Equals(default) &&
+                typeof(IDomainAppUserId<TKey>).IsAssignableFrom(typeof(TEntity)) &&
                 !((IDomainAppUserId<TKey>) entity).AppUserId.Equals(userId))
             {
-                throw new AuthenticationException("Bad entity id to be deleted!");
-                //TODO: load entity from db and check the id in entity is correct
+                throw new AuthenticationException($"Bad user id inside entity {typeof(TEntity).Name} to be deleted.");
+                // TODO: load entity from the db, check that userId inside entity is correct.
             }
+
             return RepoDbSet.Remove(entity).Entity;
         }
 
-        public virtual async Task<TEntity> RemoveAsync(TKey id, TKey? userId)
+        public virtual async Task<TEntity> RemoveAsync(TKey id, TKey? userId = default)
         {
             var entity = await FirstOrDefaultAsync(id, userId);
-            if (entity == null) throw new NullReferenceException($"Entity with id {id} not found.");
+            if (entity == null) throw new NullReferenceException($"Entity {typeof(TEntity).Name} with id {id} not found.");
             return Remove(entity!, userId);
         }
 
-        public virtual async Task<bool> ExistsAsync(TKey id, TKey? userId)
+        public virtual async Task<bool> ExistsAsync(TKey id, TKey? userId = default)
         {
-            //TODO:hide id
-            if (userId != null && !typeof(IDomainAppUserId<TKey>).IsAssignableFrom(typeof(TEntity)))
-            {
-                throw new AuthenticationException($"Bad user id inside entity.! user with id:{userId} and ref id:{id} ");
-            }
+            if (userId == null || userId.Equals(default)) 
+                // no ownership control, userId was null or default
+                return await RepoDbSet.AnyAsync(e => e.Id.Equals(id));
+            
+            // we have userid and it is not null or default (null or 0) - so we should check for appuserid also
+            // does the entity actually implement the correct interface
+            if (!typeof(IDomainAppUserId<TKey>).IsAssignableFrom(typeof(TEntity)))
+                throw new AuthenticationException(
+                    $"Entity {typeof(TEntity).Name} does not implement required interface: {typeof(IDomainAppUserId<TKey>).Name} for AppUserId check");
             return await RepoDbSet.AnyAsync(e =>
                 e.Id.Equals(id) && ((IDomainAppUserId<TKey>) e).AppUserId.Equals(userId));
         }

@@ -7,7 +7,7 @@ using Domain.Base;
 
 namespace Domain.App
 {
-    public class ProductionMeta : DomainEntityDateTime, IDomainEntityId, IDomainAppUser<ApplicationUser>
+    public class ProductionMeta : DomainEntityDateTime, IDomainEntityId, IDomainAppUser<AppUser>
     {
         public string Line { get; set; } = default!;
         [DataType(DataType.Date)]
@@ -21,7 +21,7 @@ namespace Domain.App
         public Supply Supply { get; set; } = default!;
         
         public Guid AppUserId { get; set; }
-        public ApplicationUser? AppUser { get; set; }
+        public AppUser? AppUser { get; set; }
 
         public ICollection<Production> Productions { get; set; } = default!;
         public ICollection<ActiveNotification>? ActiveNotifications { get; set; }

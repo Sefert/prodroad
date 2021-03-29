@@ -9,9 +9,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF.Repositories
 {
-    public class OrderRepo : BaseRepository<Order>, IOrderRepo
+    public class OrderRepo : BaseRepository<Order, AppDbContext>, IOrderRepo
     {
-        public OrderRepo(DbContext dbContext) : base(dbContext)
+        public OrderRepo(AppDbContext dbContext) : base(dbContext)
         {
         }
         public override async Task<IEnumerable<Order>> GetAllAsync(Guid userId, bool noTracking = true)

@@ -8,9 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF.Repositories
 {
-    public class SupplyRepo : BaseRepository<Supply>, ISupplyRepo
+    public class SupplyRepo : BaseRepository<Supply, AppDbContext>, ISupplyRepo
     {
-        public SupplyRepo(DbContext dbContext) : base(dbContext)
+        public SupplyRepo(AppDbContext dbContext) : base(dbContext)
         {
         }
         

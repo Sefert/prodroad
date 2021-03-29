@@ -9,9 +9,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF.Repositories
 {
-    public class ActiveNotificationRepo : BaseRepository<ActiveNotification>, IActiveNotificationRepo
+    public class ActiveNotificationRepo : BaseRepository<ActiveNotification,AppDbContext>, IActiveNotificationRepo
     {
-        public ActiveNotificationRepo(DbContext dbContext) : base(dbContext)
+        public ActiveNotificationRepo(AppDbContext dbContext) : base(dbContext)
         {
         }
         

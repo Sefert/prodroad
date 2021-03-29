@@ -6,7 +6,7 @@ using Domain.Base;
 
 namespace Domain.App
 {
-    public class UserTeam : DomainEntityDate, IDomainEntityId, IDomainAppUser<ApplicationUser>
+    public class UserTeam : DomainEntityDate, IDomainEntityId, IDomainAppUser<AppUser>
     {
         public bool MasterTeam { get; set; }
         public bool Accepted { get; set; }
@@ -14,7 +14,7 @@ namespace Domain.App
         public ICollection<ProductionMeta>? ProductionMetas { get; set; }
 
         public Guid AppUserId { get; set; }
-        public ApplicationUser AppUser { get; set; } = default!;
+        public AppUser? AppUser { get; set; }
         
         public Guid TeamId { get; set; }
         public Team Team { get; set; } = default!;

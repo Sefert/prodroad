@@ -21,7 +21,7 @@ namespace WebApp.Controllers
         // GET: Teams
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.Teams.GetAllAsync(User.GetUserId()!.Value,false));
+            return View(await _uow.Teams.GetAllAsync());
         }
 
         // GET: Teams/Details/5
@@ -29,7 +29,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var team = await _uow.Teams.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value,false);
+            var team = await _uow.Teams.FirstOrDefaultAsync(id.Value);
 
             if (team == null) return NotFound();
             return View(team);
@@ -46,16 +46,13 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Code,StartDate,EndDate,Id")] Team team)
+        public async Task<IActionResult> Create(Team team)
         {
-            if (ModelState.IsValid)
-            {
-                team.Id = Guid.NewGuid();
-                _uow.Teams.Add(team);
-                await _uow.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(team);
+            if (!ModelState.IsValid) return View(team);
+            //team.Id = Guid.NewGuid();
+            _uow.Teams.Add(team);
+            await _uow.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Teams/Edit/5
@@ -63,7 +60,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var team = await _uow.Teams.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value,false);
+            var team = await _uow.Teams.FirstOrDefaultAsync(id.Value);
 
             if (team == null) return NotFound();
             return View(team);
@@ -78,9 +75,9 @@ namespace WebApp.Controllers
         {
             if (id != team.Id) return NotFound();
 
-            if (!ModelState.IsValid || !await _uow.Teams.ExistsAsync(team.Id, User.GetUserId()!.Value))
+            if (!ModelState.IsValid || !await _uow.Teams.ExistsAsync(team.Id))
                 return View(team);
-
+            
             _uow.Teams.Update(team);
             await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -91,7 +88,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var team = await _uow.Teams.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
+            var team = await _uow.Teams.FirstOrDefaultAsync(id.Value);
 
             if (team == null) return NotFound();
 
@@ -103,10 +100,7 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var uId = User.GetUserId()!.Value;
-            var team = await _uow.Teams.FirstOrDefaultAsync(id, uId);
-            if (team == null) return NotFound();
-            _uow.Teams.Remove(team, uId);
+            await _uow.Teams.RemoveAsync(id);
             await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

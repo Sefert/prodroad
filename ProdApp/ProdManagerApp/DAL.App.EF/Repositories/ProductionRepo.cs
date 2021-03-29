@@ -8,9 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF.Repositories
 {
-    public class ProductionRepo : BaseRepository<Production>, IProductionRepo
+    public class ProductionRepo : BaseRepository<Production, AppDbContext>, IProductionRepo
     {
-        public ProductionRepo(DbContext dbContext) : base(dbContext)
+        public ProductionRepo(AppDbContext dbContext) : base(dbContext)
         {
         }
         

@@ -7,7 +7,7 @@ using Domain.Base;
 
 namespace Domain.App
 {
-    public class Order : DomainEntityId, IDomainAppUser<ApplicationUser>
+    public class Order : DomainEntityId, IDomainAppUser<AppUser>
     {
         [MaxLength(50)]
         public string Number { get; set; } = default!;
@@ -27,6 +27,6 @@ namespace Domain.App
         public Customer? Customer { get; set; }
         
         public Guid AppUserId { get; set; }
-        public ApplicationUser? AppUser { get; set; }
+        public AppUser? AppUser { get; set; }
     }
 }

@@ -8,9 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF.Repositories
 {
-    public class OrderDataRepo : BaseRepository<OrderData>, IOrderDataRepo
+    public class OrderDataRepo : BaseRepository<OrderData, AppDbContext>, IOrderDataRepo
     {
-        public OrderDataRepo(DbContext dbContext) : base(dbContext)
+        public OrderDataRepo(AppDbContext dbContext) : base(dbContext)
         {
         }
         

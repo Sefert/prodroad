@@ -15,10 +15,10 @@ namespace WebApp.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class LoginWithRecoveryCodeModel : PageModel
     {
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly SignInManager<AppUser> _signInManager;
         private readonly ILogger<LoginWithRecoveryCodeModel> _logger;
 
-        public LoginWithRecoveryCodeModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginWithRecoveryCodeModel> logger)
+        public LoginWithRecoveryCodeModel(SignInManager<AppUser> signInManager, ILogger<LoginWithRecoveryCodeModel> logger)
         {
             _signInManager = signInManager;
             _logger = logger;
@@ -27,7 +27,7 @@ namespace WebApp.Areas.Identity.Pages.Account
         [BindProperty]
         public InputModel Input { get; set; }  = default!;
 
-        public string ReturnUrl { get; set; }  = default!;
+        public string? ReturnUrl { get; set; }  = default!;
 
         public class InputModel
         {

@@ -9,9 +9,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF.Repositories
 {
-    public class UserTeamRepo : BaseRepository<UserTeam>, IUserTeamRepo
+    public class UserTeamRepo : BaseRepository<UserTeam, AppDbContext>, IUserTeamRepo
     {
-        public UserTeamRepo(DbContext dbContext) : base(dbContext)
+        public UserTeamRepo(AppDbContext dbContext) : base(dbContext)
         {
         }
         

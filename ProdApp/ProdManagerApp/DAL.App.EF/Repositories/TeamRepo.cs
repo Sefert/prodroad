@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF.Repositories
 {
-    public class TeamRepo : BaseRepository<Team> , ITeamRepo
+    public class TeamRepo : BaseRepository<Team, AppDbContext> , ITeamRepo
     {
-        public TeamRepo(DbContext dbContext) : base(dbContext)
+        public TeamRepo(AppDbContext dbContext) : base(dbContext)
         {
         }
     }

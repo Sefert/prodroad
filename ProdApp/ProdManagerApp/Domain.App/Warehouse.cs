@@ -7,7 +7,7 @@ using Domain.Base;
 
 namespace Domain.App
 {
-    public class Warehouse : DomainEntityId, IDomainAppUserId, IDomainAppUser<ApplicationUser>
+    public class Warehouse : DomainEntityId, IDomainAppUserId, IDomainAppUser<AppUser>
     {
         [MaxLength(50)]
         public string Name { get; set; } = default!;
@@ -17,6 +17,6 @@ namespace Domain.App
         public ICollection<Supply>? Supplys { get; set; }
         
         public Guid AppUserId { get; set; }
-        public ApplicationUser? AppUser { get; set; }
+        public AppUser? AppUser { get; set; }
     }
 }

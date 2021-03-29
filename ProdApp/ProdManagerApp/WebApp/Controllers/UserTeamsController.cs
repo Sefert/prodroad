@@ -88,9 +88,10 @@ namespace WebApp.Controllers
             var uId = User.GetUserId()!.Value;
 
             if (!ModelState.IsValid || !await _uow.UserTeams.ExistsAsync(userTeam.Id, uId))
+            {
+                ViewData["TeamId"] = new SelectList(await _uow.Teams.GetAllAsync(uId), "Id", "Code", userTeam.TeamId);
                 return View(userTeam);
-
-            ViewData["TeamId"] = new SelectList(await _uow.Teams.GetAllAsync(uId), "Id", "Code", userTeam.TeamId);
+            }
 
             _uow.UserTeams.Update(userTeam);
             await _uow.SaveChangesAsync();

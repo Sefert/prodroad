@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF.Repositories
 {
-    public class WarehouseRepo : BaseRepository<Warehouse>, IWarehouseRepo
+    public class WarehouseRepo : BaseRepository<Warehouse, AppDbContext>, IWarehouseRepo
     {
-        public WarehouseRepo(DbContext dbContext) : base(dbContext)
+        public WarehouseRepo(AppDbContext dbContext) : base(dbContext)
         {
         }
     }

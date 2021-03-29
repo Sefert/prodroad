@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF
 {
-    public class AppDbContext : IdentityDbContext<ApplicationUser, UserRole, Guid>
+    public class AppDbContext : IdentityDbContext<AppUser, UserRole, Guid>
     {
         public DbSet<ActiveNotification> ActiveNotifications { get; set; } = default!;
         //public DbSet<ApplicationUser> ApplicationUsers { get; set; } = default!;
