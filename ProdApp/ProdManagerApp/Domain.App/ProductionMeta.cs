@@ -7,7 +7,7 @@ using Domain.Base;
 
 namespace Domain.App
 {
-    public class ProductionMeta : DomainEntityDateTime, IDomainEntityId, IDomainAppUser<AppUser>
+    public class ProductionMeta : DomainEntityDateTime, IDomainEntityId, IDomainAppUserId, IDomainAppUser<AppUser>
     {
         public string Line { get; set; } = default!;
         [DataType(DataType.Date)]

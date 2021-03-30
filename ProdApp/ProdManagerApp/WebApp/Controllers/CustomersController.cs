@@ -4,7 +4,6 @@ using Contracts.DAL.App;
 using Microsoft.AspNetCore.Mvc;
 using Domain.App;
 using Microsoft.AspNetCore.Authorization;
-using WebApp.Helpers;
 
 namespace WebApp.Controllers
 {
@@ -21,7 +20,7 @@ namespace WebApp.Controllers
         // GET: Customers
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.Customers.GetAllAsync(User.GetUserId()!.Value));
+            return View(await _uow.Customers.GetAllAsync());
         }
 
         // GET: Customers/Details/5
@@ -29,7 +28,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var customer = await _uow.Customers.FirstOrDefaultAsync(id.Value,User.GetUserId()!.Value, false);
+            var customer = await _uow.Customers.FirstOrDefaultAsync(id.Value);
 
             if (customer == null) return NotFound();
 
@@ -47,16 +46,12 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,RegNumber,Address,Phone,Email,Id")] Customer customer)
+        public async Task<IActionResult> Create(Customer customer)
         {
-            if (ModelState.IsValid)
-            {
-                customer.Id = Guid.NewGuid();
-                _uow.Customers.Add(customer);
-                await _uow.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(customer);
+            if (!ModelState.IsValid) return View(customer);
+            _uow.Customers.Add(customer);
+            await _uow.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Customers/Edit/5
@@ -64,7 +59,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var customer = await _uow.Customers.FirstOrDefaultAsync(id.Value,User.GetUserId()!.Value, false);
+            var customer = await _uow.Customers.FirstOrDefaultAsync(id.Value);
 
             if (customer == null) return NotFound();
 
@@ -76,11 +71,11 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Name,RegNumber,Address,Phone,Email,Id")] Customer customer)
+        public async Task<IActionResult> Edit(Guid id, Customer customer)
         {
             if (id != customer.Id) return NotFound();
 
-            if (!ModelState.IsValid || !await _uow.Customers.ExistsAsync(customer.Id, User.GetUserId()!.Value))
+            if (!ModelState.IsValid || !await _uow.Customers.ExistsAsync(customer.Id))
                 return View(customer);
 
             _uow.Customers.Update(customer);
@@ -93,7 +88,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var customer = await _uow.Customers.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value, false);
+            var customer = await _uow.Customers.FirstOrDefaultAsync(id.Value);
 
             if (customer == null) return NotFound();
             
@@ -105,11 +100,7 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var customer = await _uow.Customers.FirstOrDefaultAsync(id,User.GetUserId()!.Value);
-            
-            if (customer == null) return NotFound();
-            _uow.Customers.Remove(customer, User.GetUserId()!.Value);
-            
+            await _uow.Customers.RemoveAsync(id);
             await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

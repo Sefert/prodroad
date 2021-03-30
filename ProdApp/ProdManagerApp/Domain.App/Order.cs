@@ -7,7 +7,7 @@ using Domain.Base;
 
 namespace Domain.App
 {
-    public class Order : DomainEntityId, IDomainAppUser<AppUser>
+    public class Order : DomainEntityId, IDomainAppUserId, IDomainAppUser<AppUser>
     {
         [MaxLength(50)]
         public string Number { get; set; } = default!;

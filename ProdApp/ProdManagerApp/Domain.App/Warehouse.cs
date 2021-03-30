@@ -7,7 +7,7 @@ using Domain.Base;
 
 namespace Domain.App
 {
-    public class Warehouse : DomainEntityId, IDomainAppUserId, IDomainAppUser<AppUser>
+    public class Warehouse : DomainEntityId, IDomainAppUserId,  IDomainAppUser<AppUser>
     {
         [MaxLength(50)]
         public string Name { get; set; } = default!;

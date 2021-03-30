@@ -40,7 +40,7 @@ namespace WebApp.Controllers
         // GET: Orders/Create
         public async Task<IActionResult> Create()
         {
-            ViewData["CustomerId"] = new SelectList(await _uow.Customers.GetAllAsync(User.GetUserId()!.Value), "Id", "Address");
+            ViewData["CustomerId"] = new SelectList(await _uow.Customers.GetAllAsync(), "Id", "Address");
             return View();
         }
 
@@ -49,18 +49,16 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Number,Name,DeliveryAddress,DueDate,Info,CustomerId,ApplicationUserId,Id")] Order order)
+        public async Task<IActionResult> Create(Order order)
         {
-            var uId = User.GetUserId()!.Value;
             if (ModelState.IsValid)
             {
-                order.AppUserId = uId;
-                order.Id = Guid.NewGuid();
+                order.AppUserId = User.GetUserId()!.Value;
                 _uow.Orders.Add(order);
                 await _uow.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CustomerId"] = new SelectList(await _uow.Customers.GetAllAsync(uId), "Id", "Address", order.CustomerId);
+            ViewData["CustomerId"] = new SelectList(await _uow.Customers.GetAllAsync(), "Id", "Address", order.CustomerId);
             return View(order);
         }
 
@@ -84,16 +82,18 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Number,Name,DeliveryAddress,DueDate,Info,CustomerId,ApplicationUserId,Id")] Order order)
+        public async Task<IActionResult> Edit(Guid id, Order order)
         {
             if (id != order.Id) return NotFound();
             var uId = User.GetUserId()!.Value;
-            
-            if (!ModelState.IsValid || !await _uow.Orders.ExistsAsync(order.Id, uId))
-                return View(order);
 
-            ViewData["CustomerId"] =
-                new SelectList(await _uow.Customers.GetAllAsync(uId), "Id", "Address", order.CustomerId);
+            if (!ModelState.IsValid || !await _uow.Orders.ExistsAsync(order.Id, uId))
+            {
+                ViewData["CustomerId"] =
+                    new SelectList(await _uow.Customers.GetAllAsync(uId), "Id", "Address", order.CustomerId);
+                return View(order);
+            }
+            
             _uow.Orders.Update(order);
             await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -116,9 +116,7 @@ namespace WebApp.Controllers
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var uId = User.GetUserId()!.Value;
-            var order = await _uow.Orders.FirstOrDefaultAsync(id, uId);
-            if (order == null) return NotFound();
-            _uow.Orders.Remove(order, uId);
+            await _uow.Orders.RemoveAsync(id, uId);
             await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

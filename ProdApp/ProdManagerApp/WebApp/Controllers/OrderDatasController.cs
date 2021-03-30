@@ -53,7 +53,7 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Quantity,Total,OrderId,ComponentId,SupplyId,ItemId,Id")] OrderData orderData)
+        public async Task<IActionResult> Create(OrderData orderData)
         {
             var uId = User.GetUserId()!.Value;
             if (ModelState.IsValid)

@@ -39,7 +39,7 @@ namespace WebApp.Controllers
         // GET: UserTeams/Create
         public async Task<IActionResult> Create()
         {
-            ViewData["TeamId"] = new SelectList(await _uow.Teams.GetAllAsync(User.GetUserId()!.Value), "Id", "Code");
+            ViewData["TeamId"] = new SelectList(await _uow.Teams.GetAllAsync(), "Id", "Code");
             return View();
         }
 
@@ -50,16 +50,14 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(UserTeam userTeam)
         {
-            var uId = User.GetUserId()!.Value;
             if (ModelState.IsValid)
             {
                 userTeam.AppUserId = User.GetUserId()!.Value;
-                userTeam.Id = Guid.NewGuid();
                 _uow.UserTeams.Add(userTeam);
                 await _uow.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TeamId"] = new SelectList(await _uow.Teams.GetAllAsync(User.GetUserId()!.Value), "Id", "Code", userTeam.TeamId);
+            ViewData["TeamId"] = new SelectList(await _uow.Teams.GetAllAsync(), "Id", "Code", userTeam.TeamId);
             return View(userTeam);
         }
 
@@ -73,7 +71,7 @@ namespace WebApp.Controllers
 
             if (userTeam == null) return NotFound();
 
-            ViewData["TeamId"] = new SelectList(await _uow.Teams.GetAllAsync(uId), "Id", "Code", userTeam.TeamId);
+            ViewData["TeamId"] = new SelectList(await _uow.Teams.GetAllAsync(), "Id", "Code", userTeam.TeamId);
             return View(userTeam);
         }
 
@@ -82,7 +80,7 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("MasterTeam,Accepted,ApplicationUserId,TeamId,StartDate,EndDate,Id")] UserTeam userTeam)
+        public async Task<IActionResult> Edit(Guid id, UserTeam userTeam)
         {
             if (id != userTeam.Id) return NotFound();
             var uId = User.GetUserId()!.Value;

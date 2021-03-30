@@ -6,7 +6,7 @@ using Domain.Base;
 
 namespace Domain.App
 {
-    public class UserNotification : DomainEntityId, IDomainAppUser<AppUser>
+    public class UserNotification : DomainEntityId, IDomainAppUserId, IDomainAppUser<AppUser>
     {
         [MaxLength(20)]
         public string Name { get; set; } = default!;
