@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DAL.App.EF.Migrations
 {
-    public partial class Identity : Migration
+    public partial class @new : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -165,8 +165,8 @@ namespace DAL.App.EF.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    ProviderKey = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
@@ -210,8 +210,8 @@ namespace DAL.App.EF.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -232,14 +232,14 @@ namespace DAL.App.EF.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Address = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    ApplicationUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    AppUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Warehouses", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Warehouses_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
+                        name: "FK_Warehouses_AspNetUsers_AppUserId",
+                        column: x => x.AppUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -256,14 +256,14 @@ namespace DAL.App.EF.Migrations
                     DueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Info = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ApplicationUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    AppUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Orders", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Orders_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
+                        name: "FK_Orders_AspNetUsers_AppUserId",
+                        column: x => x.AppUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -337,14 +337,14 @@ namespace DAL.App.EF.Migrations
                     Color = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     Active = table.Column<bool>(type: "bit", nullable: false),
                     NotificationTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ApplicationUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    AppUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserNotifications", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserNotifications_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
+                        name: "FK_UserNotifications_AspNetUsers_AppUserId",
+                        column: x => x.AppUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -363,7 +363,7 @@ namespace DAL.App.EF.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     MasterTeam = table.Column<bool>(type: "bit", nullable: false),
                     Accepted = table.Column<bool>(type: "bit", nullable: false),
-                    ApplicationUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AppUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -372,8 +372,8 @@ namespace DAL.App.EF.Migrations
                 {
                     table.PrimaryKey("PK_UserTeams", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserTeams_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
+                        name: "FK_UserTeams_AspNetUsers_AppUserId",
+                        column: x => x.AppUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -468,7 +468,7 @@ namespace DAL.App.EF.Migrations
                     RealStartDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     RealEndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     SupplyId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ApplicationUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AppUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserTeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -479,8 +479,8 @@ namespace DAL.App.EF.Migrations
                 {
                     table.PrimaryKey("PK_ProductionMetas", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProductionMetas_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
+                        name: "FK_ProductionMetas_AspNetUsers_AppUserId",
+                        column: x => x.AppUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -507,7 +507,7 @@ namespace DAL.App.EF.Migrations
                     Info = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
                     OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SupplyId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ApplicationUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AppUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     MasterNotificationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProductionMetaId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -525,8 +525,8 @@ namespace DAL.App.EF.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ActiveNotifications_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
+                        name: "FK_ActiveNotifications_AspNetUsers_AppUserId",
+                        column: x => x.AppUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -589,9 +589,9 @@ namespace DAL.App.EF.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ActiveNotifications_ApplicationUserId",
+                name: "IX_ActiveNotifications_AppUserId",
                 table: "ActiveNotifications",
-                column: "ApplicationUserId");
+                column: "AppUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ActiveNotifications_MasterNotificationId",
@@ -683,9 +683,9 @@ namespace DAL.App.EF.Migrations
                 column: "SupplyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_ApplicationUserId",
+                name: "IX_Orders_AppUserId",
                 table: "Orders",
-                column: "ApplicationUserId");
+                column: "AppUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_CustomerId",
@@ -703,9 +703,9 @@ namespace DAL.App.EF.Migrations
                 column: "ItemId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductionMetas_ApplicationUserId",
+                name: "IX_ProductionMetas_AppUserId",
                 table: "ProductionMetas",
-                column: "ApplicationUserId");
+                column: "AppUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductionMetas_SupplyId",
@@ -748,9 +748,9 @@ namespace DAL.App.EF.Migrations
                 column: "WarehouseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserNotifications_ApplicationUserId",
+                name: "IX_UserNotifications_AppUserId",
                 table: "UserNotifications",
-                column: "ApplicationUserId");
+                column: "AppUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserNotifications_NotificationTypeId",
@@ -758,9 +758,9 @@ namespace DAL.App.EF.Migrations
                 column: "NotificationTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserTeams_ApplicationUserId",
+                name: "IX_UserTeams_AppUserId",
                 table: "UserTeams",
-                column: "ApplicationUserId");
+                column: "AppUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserTeams_TeamId",
@@ -768,9 +768,9 @@ namespace DAL.App.EF.Migrations
                 column: "TeamId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Warehouses_ApplicationUserId",
+                name: "IX_Warehouses_AppUserId",
                 table: "Warehouses",
-                column: "ApplicationUserId");
+                column: "AppUserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

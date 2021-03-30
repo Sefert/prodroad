@@ -66,14 +66,13 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null) return NotFound();
-            var uId = User.GetUserId()!.Value;
-            
-            var order = await _uow.Orders.FirstOrDefaultAsync(id.Value, uId, false);
+
+            var order = await _uow.Orders.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value, false);
 
             if (order == null) return NotFound();
 
             ViewData["CustomerId"] =
-                new SelectList(await _uow.Customers.GetAllAsync(uId), "Id", "Address", order.CustomerId);
+                new SelectList(await _uow.Customers.GetAllAsync(), "Id", "Address", order.CustomerId);
             return View(order);
         }
 
@@ -85,15 +84,14 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Edit(Guid id, Order order)
         {
             if (id != order.Id) return NotFound();
-            var uId = User.GetUserId()!.Value;
 
-            if (!ModelState.IsValid || !await _uow.Orders.ExistsAsync(order.Id, uId))
+            if (!ModelState.IsValid || !await _uow.Orders.ExistsAsync(order.Id, User.GetUserId()!.Value))
             {
                 ViewData["CustomerId"] =
-                    new SelectList(await _uow.Customers.GetAllAsync(uId), "Id", "Address", order.CustomerId);
+                    new SelectList(await _uow.Customers.GetAllAsync(), "Id", "Address", order.CustomerId);
                 return View(order);
             }
-            
+            order.AppUserId = User.GetUserId()!.Value; // imortant, but why
             _uow.Orders.Update(order);
             await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
