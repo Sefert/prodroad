@@ -9,11 +9,14 @@ using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain.App;
 using Extensions.Base;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApp.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class TeamsController : ControllerBase
     {
         private readonly AppDbContext _context;
