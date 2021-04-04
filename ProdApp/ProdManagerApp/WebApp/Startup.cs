@@ -1,3 +1,6 @@
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 using Contracts.DAL.App;
 using DAL.App.EF;
 using Domain.App.Identity;
@@ -8,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 
 namespace WebApp
 {
@@ -34,6 +38,26 @@ namespace WebApp
             services.AddScoped<IAppUnitOfWork, AppUnitOfWork>();
             
             services.AddDatabaseDeveloperPageExceptionFilter();
+            
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+            services.AddAuthentication()
+                .AddCookie(options =>
+                {
+                    options.SlidingExpiration = true;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.RequireHttpsMetadata = false;
+                    options.SaveToken = true;
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidIssuer = Configuration["JWT:Issuer"],
+                        ValidAudience = Configuration["JWT:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Key"])),
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });
+            
 
             services.AddIdentity<AppUser, UserRole>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddDefaultUI()

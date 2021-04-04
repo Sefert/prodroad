@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using DAL.App.EF.Repositories;
 using Domain.App;
-using WebApp.Helpers;
+using Extensions.Base;
 
 namespace WebApp.ApiControllers
 {

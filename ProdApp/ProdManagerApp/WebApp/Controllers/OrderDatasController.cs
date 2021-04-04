@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Domain.App;
 using Microsoft.AspNetCore.Authorization;
-using WebApp.Helpers;
+using Extensions.Base;
 
 namespace WebApp.Controllers
 {

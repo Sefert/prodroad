@@ -6,6 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.4" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.3" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.3" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.3" />
@@ -16,6 +17,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\DAL.App.EF\DAL.App.EF.csproj" />
+      <ProjectReference Include="..\DTO.App\DTO.App.csproj" />
+      <ProjectReference Include="..\Extensions.Base\Extensions.Base.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -103,6 +106,10 @@
       <_ContentIncludedByDefault Remove="Views\ActiveNotifications\Details.cshtml" />
       <_ContentIncludedByDefault Remove="Views\ActiveNotifications\Edit.cshtml" />
       <_ContentIncludedByDefault Remove="Views\ActiveNotifications\Index.cshtml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Helpers" />
     </ItemGroup>
 
 </Project>

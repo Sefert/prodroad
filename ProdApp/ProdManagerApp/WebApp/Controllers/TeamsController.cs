@@ -4,7 +4,7 @@ using Contracts.DAL.App;
 using Microsoft.AspNetCore.Mvc;
 using Domain.App;
 using Microsoft.AspNetCore.Authorization;
-using WebApp.Helpers;
+using Extensions.Base;
 
 namespace WebApp.Controllers
 {
