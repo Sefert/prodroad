@@ -629,6 +629,38 @@ namespace DAL.App.EF.Migrations
                     b.ToTable("UserTeams");
                 });
 
+            modelBuilder.Entity("Domain.App.UserUnit", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AppUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ComponentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
+
+                    b.HasIndex("ComponentId");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("UserUnits");
+                });
+
             modelBuilder.Entity("Domain.App.Warehouse", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1004,6 +1036,33 @@ namespace DAL.App.EF.Migrations
                     b.Navigation("Team");
                 });
 
+            modelBuilder.Entity("Domain.App.UserUnit", b =>
+                {
+                    b.HasOne("Domain.App.Identity.AppUser", "AppUser")
+                        .WithMany()
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.App.Component", "Component")
+                        .WithMany("UserUnits")
+                        .HasForeignKey("ComponentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.App.Item", "Item")
+                        .WithMany("UserUnits")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+
+                    b.Navigation("Component");
+
+                    b.Navigation("Item");
+                });
+
             modelBuilder.Entity("Domain.App.Warehouse", b =>
                 {
                     b.HasOne("Domain.App.Identity.AppUser", "AppUser")
@@ -1082,6 +1141,8 @@ namespace DAL.App.EF.Migrations
                     b.Navigation("Productions");
 
                     b.Navigation("Supplys");
+
+                    b.Navigation("UserUnits");
                 });
 
             modelBuilder.Entity("Domain.App.Customer", b =>
@@ -1113,6 +1174,8 @@ namespace DAL.App.EF.Migrations
                     b.Navigation("Productions");
 
                     b.Navigation("Supplys");
+
+                    b.Navigation("UserUnits");
                 });
 
             modelBuilder.Entity("Domain.App.NotificationType", b =>

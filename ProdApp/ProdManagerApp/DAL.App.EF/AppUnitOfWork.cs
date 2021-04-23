@@ -26,6 +26,6 @@ namespace DAL.App.EF
         public IUserNotificationRepo UserNotifications => GetRepository(() => new UserNotificationRepo(UowDbContext));
         public IUserTeamRepo UserTeams => GetRepository(() => new UserTeamRepo(UowDbContext));
         public IWarehouseRepo Warehouses => GetRepository(() => new WarehouseRepo(UowDbContext));
-
+        public IUserUnitRepo UserUnits => GetRepository(() => new UserUnitRepo(UowDbContext));
     }
 }

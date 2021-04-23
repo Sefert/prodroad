@@ -15,5 +15,6 @@ namespace Domain.App
         public ICollection<Price>? Prices { get; set; }
         public ICollection<OrderData>? OrderDatas { get; set; }
         public ICollection<Production>? Productions { get; set; }
+        public ICollection<UserUnit> UserUnits { get; set; } = default!;
     }
 }

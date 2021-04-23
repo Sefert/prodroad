@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Contracts.DAL.App.Repositories;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
@@ -17,7 +15,7 @@ namespace WebApp.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    /*[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]*/
     public class UserTeamsController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -35,7 +33,7 @@ namespace WebApp.ApiControllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserTeam>>> GetUserTeams()
         {
-            return Ok(await _repo.GetAllAsync(_uId,false));
+            return Ok(await _repo.GetAllAsync());
         }
 
         // GET: api/UserTeams/5

@@ -21,7 +21,7 @@ namespace WebApp.Controllers
         // GET: Teams
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.Teams.GetAllAsync());
+            return View(await _uow.Teams.GetAllAsync(User.GetUserId()!.Value));
         }
 
         // GET: Teams/Details/5
@@ -51,6 +51,14 @@ namespace WebApp.Controllers
             if (!ModelState.IsValid) return View(team);
             //team.Id = Guid.NewGuid();
             _uow.Teams.Add(team);
+            _uow.UserTeams.Add(new UserTeam
+                {
+                    AppUserId = User.GetUserId()!.Value,
+                    TeamId = team.Id,
+                    Team = team,
+                    StartDate = DateTime.Now
+                }
+            );
             await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

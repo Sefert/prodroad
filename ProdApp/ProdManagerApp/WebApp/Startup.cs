@@ -40,7 +40,9 @@ namespace WebApp
             services.AddDatabaseDeveloperPageExceptionFilter();
             
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-            services.AddAuthentication()
+            
+            /*services
+                .AddAuthentication()
                 .AddCookie(options =>
                 {
                     options.SlidingExpiration = true;
@@ -56,14 +58,27 @@ namespace WebApp
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Key"])),
                         ClockSkew = TimeSpan.Zero
                     };
-                });
+                });*/
             
 
             services.AddIdentity<AppUser, UserRole>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddDefaultUI()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
+            
             services.AddControllersWithViews();
+            
+            services.AddCors(options =>
+                {
+                    options.AddPolicy("CorsAllowAll", builder =>
+                    {
+                        builder.AllowAnyHeader();
+                        builder.AllowAnyMethod();
+                        builder.AllowAnyOrigin();
+                    });
+                }
+            );
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

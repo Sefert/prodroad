@@ -3,4 +3,8 @@
 }
 <h1>@ViewData["Title"]</h1>
 
+<h4>JWT</h4>
+
+@Html.Raw(Extensions.Base.IdentityExtensions.GenerateJwt(User.Claims, "uiwhenrf3477$%^&*(;'dce[wd;.cpdcjnnagbsx64783%^&", "itcollege.taltech.ee", "itcollege.taltech.ee", DateTime.Now.AddDays(30)))
+
 <p>Use this page to detail your site's privacy policy.</p>

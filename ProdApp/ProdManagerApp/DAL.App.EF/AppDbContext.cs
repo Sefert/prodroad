@@ -28,6 +28,7 @@ namespace DAL.App.EF
         public DbSet<UserNotification> UserNotifications { get; set; } = default!;
         public DbSet<UserTeam> UserTeams { get; set; } = default!;
         public DbSet<Warehouse> Warehouses { get; set; } = default!;
+        public DbSet<UserUnit> UserUnits { get; set; } = default!;
         
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)

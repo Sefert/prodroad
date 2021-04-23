@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Contracts.DAL.App.Repositories;
 using DAL.Base.EF.Repositories;
@@ -22,7 +23,8 @@ namespace DAL.App.EF.Repositories
 
             return await query.Include(s => s.Component)
                 .Include(s => s.Item)
-                .Include(s => s.Warehouse).ToListAsync();
+                .Include(s => s.Warehouse)
+                .Where(s =>s.Warehouse.AppUserId.Equals(userId)).ToListAsync();
         }
         
         public override async Task<Supply?> FirstOrDefaultAsync(Guid id, Guid userId, bool noTracking = true)
@@ -34,6 +36,7 @@ namespace DAL.App.EF.Repositories
             return await query.Include(s => s.Component)
                 .Include(s => s.Item)
                 .Include(s => s.Warehouse)
+                .Where(s =>s.Warehouse.AppUserId.Equals(userId))
                 .FirstOrDefaultAsync(m => m.Id == id);
         }
     }

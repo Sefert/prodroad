@@ -21,5 +21,6 @@ namespace Contracts.DAL.App
         IUserNotificationRepo UserNotifications { get; }
         IUserTeamRepo UserTeams { get; }
         IWarehouseRepo Warehouses { get; }
+        IUserUnitRepo UserUnits { get; }
     }
 }

@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Contracts.DAL.App.Repositories;
 using DAL.Base.EF.Repositories;
 using Domain.App;
@@ -9,6 +13,26 @@ namespace DAL.App.EF.Repositories
     {
         public WarehouseRepo(AppDbContext dbContext) : base(dbContext)
         {
+            
+        }
+        
+        public override async Task<IEnumerable<Warehouse>> GetAllAsync(Guid userId, bool noTracking = true)
+        {
+            var query = RepoDbSet.AsQueryable();
+
+            if (noTracking) {query = query.AsNoTracking();}
+
+            return await query.Where(c => c.AppUserId.Equals(userId))
+                .ToListAsync();
+        }
+        
+        public override async Task<Warehouse?> FirstOrDefaultAsync(Guid id, Guid userId, bool noTracking = true)
+        {
+            var query = RepoDbSet.AsQueryable();
+
+            if (noTracking) {query = query.AsNoTracking();}
+            
+            return await query.FirstOrDefaultAsync(m => m.Id == id && m.AppUserId.Equals(userId));
         }
     }
 }
