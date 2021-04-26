@@ -47,7 +47,7 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Address,ApplicationUserId,Id")] Warehouse warehouse)
+        public async Task<IActionResult> Create(Warehouse warehouse)
         {
             var uId = User.GetUserId()!.Value;
             if (ModelState.IsValid)
@@ -77,7 +77,7 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Address,ApplicationUserId,Id")] Warehouse warehouse)
+        public async Task<IActionResult> Edit(Guid id, Warehouse warehouse)
         {
             if (id != warehouse.Id) return NotFound();
 

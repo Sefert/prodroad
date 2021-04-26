@@ -13,7 +13,6 @@ namespace DAL.App.EF
         public IActiveNotificationRepo ActiveNotifications => GetRepository(() => new ActiveNotificationRepo(UowDbContext));
         public IComponentRepo Components => GetRepository(() => new ComponentRepo(UowDbContext));
         public ICustomerRepo Customers => GetRepository(() => new CustomerRepo(UowDbContext));
-        public IItemComponentRepo ItemComponents => GetRepository(() => new ItemComponentRepo(UowDbContext));
         public IItemRepo Items => GetRepository(() => new ItemRepo(UowDbContext));
         public INotificationTypeRepo NotificationTypes => GetRepository(() => new NotificationTypeRepo(UowDbContext));
         public IOrderDataRepo OrderDatas => GetRepository(() => new OrderDataRepo(UowDbContext));

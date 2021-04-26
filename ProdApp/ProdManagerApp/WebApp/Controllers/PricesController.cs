@@ -51,9 +51,10 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Amount,ComponentId,ItemId,StartDate,EndDate,Id")] Price price)
+        public async Task<IActionResult> Create(Price price)
         {
             var uId = User.GetUserId()!.Value;
+            
             if (ModelState.IsValid)
             {
                 price.Id = Guid.NewGuid();

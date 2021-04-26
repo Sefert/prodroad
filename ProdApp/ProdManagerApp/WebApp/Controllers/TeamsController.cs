@@ -29,7 +29,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var team = await _uow.Teams.FirstOrDefaultAsync(id.Value);
+            var team = await _uow.Teams.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value, false);
 
             if (team == null) return NotFound();
             return View(team);
@@ -48,6 +48,7 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Team team)
         {
+            team.StartDate = DateTime.Now;
             if (!ModelState.IsValid) return View(team);
             //team.Id = Guid.NewGuid();
             _uow.Teams.Add(team);
@@ -68,7 +69,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var team = await _uow.Teams.FirstOrDefaultAsync(id.Value);
+            var team = await _uow.Teams.FirstOrDefaultAsync(id.Value,User.GetUserId()!.Value, false);
 
             if (team == null) return NotFound();
             return View(team);
@@ -79,7 +80,7 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, Team team)
+        public async Task<IActionResult> Edit(Guid? id, Team team)
         {
             if (id != team.Id) return NotFound();
 

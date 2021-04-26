@@ -16,7 +16,6 @@ namespace DAL.App.EF
         public DbSet<Component> Components { get; set; } = default!;
         public DbSet<Customer> Customers { get; set; } = default!;
         public DbSet<Item> Items { get; set; } = default!;
-        public DbSet<ItemComponent> ItemComponents { get; set; } = default!;
         public DbSet<NotificationType> NotificationTypes { get; set; } = default!;
         public DbSet<Order> Orders { get; set; } = default!;
         public DbSet<OrderData> OrderDatas { get; set; } = default!;

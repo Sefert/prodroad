@@ -21,7 +21,7 @@ namespace DAL.App.EF.Repositories
             if (noTracking) {query = query.AsNoTracking();}
 
             return await query
-                .Where(i => i.UserUnits
+                .Where(i => i.UserUnits!
                     .Single(u => u.AppUserId.Equals(userId)).ItemId.Equals(i.Id))
                 .ToListAsync();
         }
@@ -33,7 +33,7 @@ namespace DAL.App.EF.Repositories
             if (noTracking) {query = query.AsNoTracking();}
             
             return await query
-                .Where(i => i.UserUnits
+                .Where(i => i.UserUnits!
                     .Single(u => u.AppUserId.Equals(userId)).ItemId.Equals(i.Id))
                 .FirstOrDefaultAsync(i => i.Id == id);
         }

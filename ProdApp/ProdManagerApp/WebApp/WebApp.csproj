@@ -112,4 +112,12 @@
       <Folder Include="Helpers" />
     </ItemGroup>
 
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Views\ItemComponents\Create.cshtml" />
+      <UpToDateCheckInput Remove="Views\ItemComponents\Delete.cshtml" />
+      <UpToDateCheckInput Remove="Views\ItemComponents\Details.cshtml" />
+      <UpToDateCheckInput Remove="Views\ItemComponents\Edit.cshtml" />
+      <UpToDateCheckInput Remove="Views\ItemComponents\Index.cshtml" />
+    </ItemGroup>
+
 </Project>

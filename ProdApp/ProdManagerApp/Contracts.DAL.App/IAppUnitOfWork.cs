@@ -8,7 +8,6 @@ namespace Contracts.DAL.App
         IActiveNotificationRepo ActiveNotifications { get; }
         IComponentRepo Components { get; }
         ICustomerRepo Customers { get; }
-        IItemComponentRepo ItemComponents { get;}
         IItemRepo Items { get;}
         INotificationTypeRepo NotificationTypes { get; }
         IOrderDataRepo OrderDatas { get; }

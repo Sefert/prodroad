@@ -31,9 +31,9 @@ namespace DAL.App.EF.Repositories
 
             if (noTracking) {query = query.AsNoTracking();}
             
-            return await query.FirstOrDefaultAsync(m => 
-                m.Id == id && m.UserTeams!.Single(u => 
-                    u.TeamId.Equals(m.Id)).AppUserId.Equals(id));
+            return await query.FirstOrDefaultAsync(t => 
+                t.Id == id && t.UserTeams!.Single(u => 
+                    u.AppUserId.Equals(userId)).TeamId.Equals(t.Id));
         }
     }
 }

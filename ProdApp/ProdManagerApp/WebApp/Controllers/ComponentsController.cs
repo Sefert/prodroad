@@ -21,7 +21,7 @@ namespace WebApp.Controllers
         // GET: Components
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.Components.GetAllAsync());
+            return View(await _uow.Components.GetAllAsync(User.GetUserId()!.Value));
         }
 
         // GET: Components/Details/5
@@ -29,8 +29,7 @@ namespace WebApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var component = await _uow.Components.
-                FirstOrDefaultAsync(id.Value);
+            var component = await _uow.Components.FirstOrDefaultAsync(id.Value,User.GetUserId()!.Value);
             
             if (component == null) return NotFound();
 
@@ -52,6 +51,14 @@ namespace WebApp.Controllers
         {
             if (!ModelState.IsValid) return View(component);
             _uow.Components.Add(component);
+            _uow.UserUnits.Add(new UserUnit
+                {
+                    AppUserId = User.GetUserId()!.Value,
+                    ComponentId = component.Id,
+                    Component = component,
+                    StartDate = DateTime.Now
+                }
+            );
             await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -74,11 +81,11 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Type,Unit,Id")] Component component)
+        public async Task<IActionResult> Edit(Guid id,Component component)
         {
             if (id != component.Id) return NotFound();
 
-            if (!ModelState.IsValid || !await _uow.Components.ExistsAsync(component.Id,User.GetUserId()!.Value))
+            if (!ModelState.IsValid || !await _uow.Components.ExistsAsync(component.Id))
                 return View(component);
             
             _uow.Components.Update(component);

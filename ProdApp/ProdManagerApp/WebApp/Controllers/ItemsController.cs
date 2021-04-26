@@ -46,16 +46,25 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Type,Unit,Id")] Item item)
+        public async Task<IActionResult> Create(Item item)
         {
-            if (ModelState.IsValid)
-            {
-                item.Id = Guid.NewGuid();
-                _uow.Items.Add(item);
-                await _uow.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(item);
+            if (!ModelState.IsValid) return View(item);
+            
+            //item.Id = Guid.NewGuid();
+            _uow.Items.Add(item);
+                
+            _uow.UserUnits.Add(new UserUnit
+                {
+                    AppUserId = User.GetUserId()!.Value,
+                    ItemId = item.Id,
+                    Item = item,
+                    Component = null,
+                    StartDate = DateTime.Now
+                }
+            );
+                
+            await _uow.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Items/Edit/5
@@ -74,11 +83,11 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Type,Unit,Id")] Item item)
+        public async Task<IActionResult> Edit(Guid id, Item item)
         {
             if (id != item.Id) return NotFound();
 
-            if (!ModelState.IsValid || !await _uow.Items.ExistsAsync(item.Id, User.GetUserId()!.Value))
+            if (!ModelState.IsValid || !await _uow.Items.ExistsAsync(item.Id))
                 return View(item);
 
             _uow.Items.Update(item);

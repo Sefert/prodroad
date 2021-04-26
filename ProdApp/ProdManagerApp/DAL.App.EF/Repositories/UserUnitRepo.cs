@@ -22,7 +22,7 @@ namespace DAL.App.EF.Repositories
             if (noTracking) {query = query.AsNoTracking();}
 
             return await query
-                .Include(u => u.AppUser)
+                /*.Include(u => u.AppUser)*/
                 .Include(u => u.Component)
                 .Include(u => u.Item)
                 .Where(u => u.AppUserId.Equals(userId))
@@ -36,7 +36,7 @@ namespace DAL.App.EF.Repositories
             if (noTracking) {query = query.AsNoTracking();}
             
             return await query
-                .Include(u => u.AppUser)
+                /*.Include(u => u.AppUser)*/
                 .Include(u => u.Component)
                 .Include(u => u.Item)
                 .FirstOrDefaultAsync(u => u.Id == id && u.AppUserId.Equals(userId));
