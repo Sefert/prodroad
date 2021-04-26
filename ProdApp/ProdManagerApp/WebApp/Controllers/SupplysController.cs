@@ -22,8 +22,7 @@ namespace WebApp.Controllers
         // GET: Supplys
         public async Task<IActionResult> Index()
         {
-            var uId = User.GetUserId()!.Value;
-            return View(await _uow.Supplys.GetAllAsync(uId));
+            return View(await _uow.Supplys.GetAllAsync(User.GetUserId()!.Value));
         }
 
         // GET: Supplys/Details/5
@@ -41,10 +40,9 @@ namespace WebApp.Controllers
         // GET: Supplys/Create
         public async Task<IActionResult> Create()
         {
-            var uId = User.GetUserId()!.Value;
-            ViewData["ComponentId"] = new SelectList(await _uow.Components.GetAllAsync(uId), "Id", "Name");
-            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(uId), "Id", "Name");
-            ViewData["WarehouseId"] = new SelectList(await _uow.Warehouses.GetAllAsync(uId), "Id", "Address");
+            ViewData["ComponentId"] = new SelectList(await _uow.Components.GetAllAsync(), "Id", "Name");
+            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(), "Id", "Name");
+            ViewData["WarehouseId"] = new SelectList(await _uow.Warehouses.GetAllAsync(), "Id", "Address");
             return View();
         }
 
@@ -53,9 +51,8 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Quantity,ItemId,ComponentId,WarehouseId,Id")] Supply supply)
+        public async Task<IActionResult> Create(Supply supply)
         {
-            var uId = User.GetUserId()!.Value;
             if (ModelState.IsValid)
             {
                 supply.Id = Guid.NewGuid();
@@ -63,9 +60,9 @@ namespace WebApp.Controllers
                 await _uow.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ComponentId"] = new SelectList(await _uow.Components.GetAllAsync(uId), "Id", "Name", supply.ComponentId);
-            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(uId), "Id", "Name", supply.ItemId);
-            ViewData["WarehouseId"] = new SelectList(await _uow.Warehouses.GetAllAsync(uId), "Id", "Address", supply.WarehouseId);
+            ViewData["ComponentId"] = new SelectList(await _uow.Components.GetAllAsync(), "Id", "Name", supply.ComponentId);
+            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(), "Id", "Name", supply.ItemId);
+            ViewData["WarehouseId"] = new SelectList(await _uow.Warehouses.GetAllAsync(), "Id", "Address", supply.WarehouseId);
             return View(supply);
         }
 
@@ -73,17 +70,16 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null) return NotFound();
-            var uId = User.GetUserId()!.Value;
-            
-            var supply = await _uow.Supplys.FirstOrDefaultAsync(id.Value, uId,false);
+
+            var supply = await _uow.Supplys.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value,false);
 
             if (supply == null) return NotFound();
 
             ViewData["ComponentId"] =
-                new SelectList(await _uow.Components.GetAllAsync(uId), "Id", "Name", supply.ComponentId);
-            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(uId), "Id", "Name", supply.ItemId);
+                new SelectList(await _uow.Components.GetAllAsync(), "Id", "Name", supply.ComponentId);
+            ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(), "Id", "Name", supply.ItemId);
             ViewData["WarehouseId"] =
-                new SelectList(await _uow.Warehouses.GetAllAsync(uId), "Id", "Address", supply.WarehouseId);
+                new SelectList(await _uow.Warehouses.GetAllAsync(), "Id", "Address", supply.WarehouseId);
             return View(supply);
         }
 
@@ -95,14 +91,13 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Edit(Guid id, [Bind("Quantity,ItemId,ComponentId,WarehouseId,Id")] Supply supply)
         {
             if (id != supply.Id) return NotFound();
-            var uId = User.GetUserId()!.Value;
 
-            if (!ModelState.IsValid || !await _uow.Supplys.ExistsAsync(supply.Id, uId))
+            if (!ModelState.IsValid || !await _uow.Supplys.ExistsAsync(supply.Id, User.GetUserId()!.Value))
             {
                 ViewData["ComponentId"] =
-                    new SelectList(await _uow.Components.GetAllAsync(uId), "Id", "Name", supply.ComponentId);
-                ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(uId), "Id", "Name", supply.ItemId);
-                ViewData["WarehouseId"] = new SelectList(await _uow.Warehouses.GetAllAsync(uId), "Id", "Address",
+                    new SelectList(await _uow.Components.GetAllAsync(), "Id", "Name", supply.ComponentId);
+                ViewData["ItemId"] = new SelectList(await _uow.Items.GetAllAsync(), "Id", "Name", supply.ItemId);
+                ViewData["WarehouseId"] = new SelectList(await _uow.Warehouses.GetAllAsync(), "Id", "Address",
                     supply.WarehouseId);
                 return View(supply);
             }

@@ -84,6 +84,7 @@ namespace WebApp.Controllers
             if (!ModelState.IsValid || !await _uow.Warehouses.ExistsAsync(warehouse.Id ,User.GetUserId()!.Value))
                 return View(warehouse);
 
+            warehouse.AppUserId = User.GetUserId()!.Value;
             _uow.Warehouses.Update(warehouse);
             await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
