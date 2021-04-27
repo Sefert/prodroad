@@ -24,7 +24,7 @@ namespace DAL.App.EF.Repositories
             return await query.Include(s => s.Component)
                 .Include(s => s.Item)
                 .Include(s => s.Warehouse)
-                .Where(s =>s.Warehouse.AppUserId.Equals(userId)).ToListAsync();
+                .Where(s =>s.Warehouse!.AppUserId.Equals(userId)).ToListAsync();
         }
         
         public override async Task<Supply?> FirstOrDefaultAsync(Guid id, Guid userId, bool noTracking = true)
@@ -36,7 +36,7 @@ namespace DAL.App.EF.Repositories
             return await query.Include(s => s.Component)
                 .Include(s => s.Item)
                 .Include(s => s.Warehouse)
-                .Where(s =>s.Warehouse.AppUserId.Equals(userId))
+                .Where(s =>s.Warehouse!.AppUserId.Equals(userId))
                 .FirstOrDefaultAsync(m => m.Id == id);
         }
     }

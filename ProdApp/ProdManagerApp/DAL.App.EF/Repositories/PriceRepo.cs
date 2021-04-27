@@ -24,7 +24,7 @@ namespace DAL.App.EF.Repositories
             return await query.Include(p => p.Component)
                 .Include(p => p.Item)
                 .Where(p => p.Item!.Supplys!
-                    .Single(s => s.Warehouse.AppUserId.Equals(userId) && p.Item.Id.Equals(s.ItemId)).Id.Equals(p.ItemId))
+                    .Single(s => s.Warehouse!.AppUserId.Equals(userId) && p.Item.Id.Equals(s.ItemId)).Id.Equals(p.ItemId))
                 .ToListAsync();
         }
 
@@ -40,7 +40,7 @@ namespace DAL.App.EF.Repositories
             return await query.Include(p => p.Component)
                 .Include(p => p.Item)
                 .Where(p => p.Item!.Supplys!
-                    .Single(s => s.Warehouse.AppUserId.Equals(userId) && p.Item.Id.Equals(s.ItemId)).Id.Equals(p.ItemId))
+                    .Single(s => s.Warehouse!.AppUserId.Equals(userId) && p.Item.Id.Equals(s.ItemId)).Id.Equals(p.ItemId))
                 .FirstOrDefaultAsync(m => m.Id == id);
         }
     }

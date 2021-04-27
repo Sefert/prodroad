@@ -50,15 +50,12 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Create(Warehouse warehouse)
         {
             var uId = User.GetUserId()!.Value;
-            if (ModelState.IsValid)
-            {
-                warehouse.AppUserId = uId;
-                warehouse.Id = Guid.NewGuid();
-                _uow.Warehouses.Add(warehouse);
-                await _uow.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(warehouse);
+            if (!ModelState.IsValid) return View(warehouse);
+            warehouse.AppUserId = uId;
+            warehouse.Id = Guid.NewGuid();
+            _uow.Warehouses.Add(warehouse);
+            await _uow.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Warehouse/Edit/5
