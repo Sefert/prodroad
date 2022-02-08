@@ -4,7 +4,7 @@
 COMMANDS:
 npm init
 npm install --save-dev html-webpack-plugin webpack webpack-cli webpack-dev-server
-npm install --save-dev css-loader
+npm install --save-dev style-loader css-loader
 npx webpack serve --mode development
 
 ADMINISTRATIVE HELPERS:
@@ -16,3 +16,4 @@ source ~/.profile
 
 HELP:
 <script src="test.js" type="text/javascript"></script>
+undo last commit: git reset --soft HEAD~1
