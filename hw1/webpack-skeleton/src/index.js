@@ -9,6 +9,7 @@ const operators = ["+","-","/","*"];
 
 let equation = [];
 
+
 buttons.forEach(button =>{
     button.onclick = function(event){
         let btnValue = button.getAttribute('value');
@@ -30,57 +31,118 @@ buttons.forEach(button =>{
 })
 
 function calculateValue(equation){
-
-
-    /*https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find*/
-    while(getIndex('*') >= 0 || getIndex('/') >= 0){
-        multiplyDivide();
-        console.log(equation);
-    } 
-    /*while(getIndex('+') >= 0 || getIndex('-') >= 0){
-        addSubstract();
-        console.log(equation);
-    } */
-
+    while(countSymbolsInEquation(operators)>0){
+        calculateIndexValue(getNextCalculationIndex());
+    }
+    /*for testing */
+    /*for (let sign = 0; sign < countSymbolsInEquation(operators); sign++) {
+        calculateIndexValue(getNextCalculationIndex());
+    }*/
 }
 
-function addSubstract(){
+function countSymbolsInEquation(operators){
+    let symbolCount = 0;
+    let counter = 0;
+    let symbolError = 0;
     equation.forEach(elem => {
-        operators.includes(elem)
+        counter +=1; 
+        operators.forEach(operator =>{
+            if (elem === operator) symbolCount+=1;
+            if (((elem === operator) && (counter === 1)) ||
+                ((elem === operator) && (counter === equation.length))) {symbolError = 1};
+        }) 
     })
+    console.log('Symbol error: ' + symbolError); 
+    console.log('Symbols present: ' + symbolCount);
+    return (symbolError ? 0 : symbolCount);
 }
 
-function multiplyDivide(){
-    let multiplyIndex = NaN;
-    let previousNumber = NaN;
-    let nextNumber = NaN;
+function getNextCalculationIndex(){
+    let startIndex = NaN;
+
+    if (((getIndex('*') !== -1) && (getIndex('*') < getIndex('/'))) || 
+        ((getIndex('/') === -1) && (getIndex('*') > getIndex('/')))) startIndex = getIndex('*');
+    else if (getIndex('/') >= 1) startIndex = getIndex('/');
+    else if (getIndex('+') >= 1) startIndex = getIndex('+');
+    else if (getIndex('-') >= 1) startIndex = getIndex('-');
+
+    console.log('Starting with index: ' + startIndex);
+    return startIndex;
+}
+
+function calculateIndexValue(startIndex){ 
     let value = NaN;
 
-    if (getIndex('*') >= getIndex('/')) multiplyIndex = getIndex('*');
-    else multiplyIndex = getIndex('/');
-  
-    let i = multiplyIndex-1;
+    switch(equation[startIndex]) {
+        case '*':
+            value = parseFloat(getPreviousNumber(startIndex, operators)) * parseFloat(getNextNumber(startIndex, operators));
+            break;
+        case '/':
+            value = parseFloat(getPreviousNumber(startIndex, operators)) / parseFloat(getNextNumber(startIndex, operators));
+            break;
+        case '+':
+            value = parseFloat(getPreviousNumber(startIndex, operators)) + parseFloat(getNextNumber(startIndex, operators));
+            break;
+        case '-':
+            value = parseFloat(getPreviousNumber(startIndex, operators)) - parseFloat(getNextNumber(startIndex, operators));
+            break;
+        default:
+            value;
+      }  
+      console.log('Index calculation value: ' + value);
+      insertCalculationToEquation(startIndex,operators,value.toString());
+      console.log('Equation: ' + JSON.stringify(equation));
+}
 
-    while(!(operators.includes(equation[i])) && i >= 0){
+function insertCalculationToEquation(startIndex, operators, value){
+    let previousIndex = getPreviousSymbolIndex(startIndex, operators);
+    let nextIndex = getNextSymbolIndex(startIndex, operators);
+    
+    console.log('previousIndex: ' + previousIndex);
+    console.log('nextIndex: ' + nextIndex);
 
-        if (!isNaN(previousNumber)) {previousNumber = equation[i].concat(previousNumber);}
-        else {previousNumber = equation[i];}
-        i--;
+    if (startIndex  >= 0) equation.splice(previousIndex + 1,nextIndex-previousIndex-1,value);
+}
+
+function getPreviousSymbolIndex(startIndex, findOperators){
+    let previousIndex = startIndex-1;
+    while(!(findOperators.includes(equation[previousIndex])) && previousIndex >= 0){
+        previousIndex--;
     }
+    return previousIndex;
+}
 
-    let j = multiplyIndex+1;
-
-    while(!(operators.includes(equation[j])) && j < equation.length){
-
-        if (!isNaN(nextNumber)) {nextNumber = nextNumber.concat(equation[j]);}
-        else {nextNumber= equation[j];}  
-        j++;
+function getNextSymbolIndex(startIndex, findOperators){
+    let nextIndex = startIndex+1;
+    while(!(findOperators.includes(equation[nextIndex])) && nextIndex < equation.length){
+        nextIndex++;
     }
+    return nextIndex;
+}
 
-    if (equation[multiplyIndex] === '*') {value = previousNumber*nextNumber;}
-    else if (equation[multiplyIndex] === '/') {value = previousNumber/nextNumber;}
+function getPreviousNumber(startIndex, findOperators){
+    let previousIndex = startIndex-1;
+    let previousNumber = NaN;
+    while(!(findOperators.includes(equation[previousIndex])) && previousIndex >= 0){
 
-    if (multiplyIndex >= 0) equation.splice(i+1,j-multiplyIndex+1,value);
+        if (!isNaN(previousNumber)) {previousNumber = equation[previousIndex].concat(previousNumber);}
+        else {previousNumber = equation[previousIndex];}
+        previousIndex--;
+    }
+    return previousNumber;
+}
+
+function getNextNumber(startIndex, findOperators){
+    let nextIndex = startIndex+1;
+    let nextNumber = NaN;
+
+    while(!(findOperators.includes(equation[nextIndex])) && nextIndex < equation.length){
+
+        if (!isNaN(nextNumber)) {nextNumber = nextNumber.concat(equation[nextIndex]);}
+        else {nextNumber= equation[nextIndex];}  
+        nextIndex++;
+    }
+    return nextNumber;
 }
 
 function getIndex(sign){
