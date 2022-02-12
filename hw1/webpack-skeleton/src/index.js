@@ -44,6 +44,10 @@ function calculateValue(equation){
 function convertFirstMinusToFullNegative(){
     if ((equation[0] === '-') && (Number.isInteger(parseInt(equation[1])))){
         equation.splice(0,2,equation[0].concat(equation[1]));}
+    else {
+        clearEquationElement();
+        displayOnScreen(equation);
+    }
     console.log('Equation: ' + JSON.stringify(equation));
 }
 
