@@ -20,6 +20,7 @@ buttons.forEach(button =>{
                 clearEquationElement(); 
                 break;
             case '=':
+                convertFirstMinusToFullNegative();
                 calculateValue(equation);
                 break;
             default:
@@ -38,6 +39,12 @@ function calculateValue(equation){
     /*for (let sign = 0; sign < countSymbolsInEquation(operators); sign++) {
         calculateIndexValue(getNextCalculationIndex());
     }*/
+}
+
+function convertFirstMinusToFullNegative(){
+    if ((equation[0] === '-') && (Number.isInteger(parseInt(equation[1])))){
+        equation.splice(0,2,equation[0].concat(equation[1]));}
+    console.log('Equation: ' + JSON.stringify(equation));
 }
 
 function countSymbolsInEquation(operators){
@@ -97,7 +104,7 @@ function calculateIndexValue(startIndex){
 function insertCalculationToEquation(startIndex, operators, value){
     let previousIndex = getPreviousSymbolIndex(startIndex, operators);
     let nextIndex = getNextSymbolIndex(startIndex, operators);
-    
+
     console.log('previousIndex: ' + previousIndex);
     console.log('nextIndex: ' + nextIndex);
 
