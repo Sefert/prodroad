@@ -40,7 +40,7 @@ html {
 
   .equal-sign {
     height: 98%;
-    grid-area: 2 / 4 / 6 / 5;
+    grid-area: 4 / 4 / 6 / 5;
   }
 
   .calculator-keys {
@@ -48,4 +48,8 @@ html {
     grid-template-columns: repeat(4, 1fr);
     grid-gap: 20px;
     padding: 20px;
+  }
+
+  button[id="btnEquation"]:visited{
+    color: rgb(221, 47, 47);
   }

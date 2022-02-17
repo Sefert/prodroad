@@ -1,9 +1,11 @@
 "use strict";
-/**/import css from "./index.css";
+import css from "./index.css";
 
-/*https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll  */
-/*https://sebhastian.com/javascript-queryselectorall/ */
-
+/**
+ * Equation is class to preserve user clicked
+ * information and perform basic operations with
+ * array equation
+ */
 class Equation {
 
     equation = [];
@@ -24,6 +26,7 @@ class Equation {
     }
 
 
+    // all individual numeric elements between symbols are converted to full numbers
     convertEquationToFullNumbers = (operators) =>{
         let index=0;
         let number="";
@@ -81,8 +84,15 @@ class Equation {
     changeEquation = (index,value) =>{
         if (index  >= 0) this.equation.splice(index - 1,3,value);
     }
+
+    removeLast = () =>{
+        this.equation.pop();
+    }
 }
 
+/**
+ * Selector class is html similar pointers perserver.
+ */
 class Selector{  
     constructor(tag,selector){
         this.tag = tag;
@@ -90,9 +100,14 @@ class Selector{
     }
 }
 
+/**
+ * Takes care of calculator user interface, which
+ * relays the information from web page to calculation
+ * and pack
+ */
 class CalculatorUI{ 
 
-    /*Arrow functions : https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this */
+
     constructor(calculus){
         this.calculus = calculus;
         this.selectors = [];
@@ -100,44 +115,57 @@ class CalculatorUI{
         this.selectors.push(new Selector('button','.btn'));
         this.selectors.push(new Selector('screen','.calculator-screen'));   
 
+        //iterate through all monitored elements
         this.selectors.forEach(selector =>{
             if (selector.tag === 'button'){
                 selector.atribute.forEach(elem =>{
                     if (elem){
-                    elem.onclick = (() => this.action(elem.getAttribute('value')));
-                }})
+                    elem.onclick = (() => {
+                        this.action(elem.getAttribute('value'));
+                        if (elem.getAttribute('value') === 'eqMode'){
+                            elem.style.color= (elem.style.color === 'red') ? 'black' : 'red';
+                        }
+                    })}
+                })
             }
         }); 
     } 
 
     action = (action) => {
-        //console.log(action);
         this.calculus.actionCaller(action);
         this.refresh();
     }
 
+    //refershes display
     refresh = () => {
         this.selectors.forEach(selector =>{
             if (selector.tag === 'screen'){
                 selector.atribute.forEach(elem =>{
                     if (elem){
-                    elem.value = this.calculus.getEquationState();
-                }})
+                        elem.value = this.calculus.getEquationState();
+                    }
+                })
             }
         });
     }
 }
 
+/**
+ * Businesslogic class to perform calculations and find errors
+ * Todo: move errors to separate class
+ */
 class Calculus {
 
     equation;
     equationState;
     operators;
+    eqMode;
 
     constructor(){
         this.equation = new Equation();
         this.equationState = undefined;
         this.operators = ['+','-','*','/'];
+        this.eqMode = 0;
     }
 
     actionCaller = (action) =>{
@@ -153,6 +181,13 @@ class Calculus {
                     this.equation.convertEquationToFullNumbers(this.operators);
                     this.calculate();
                     break;
+                case 'undo':
+                    this.equation.removeLast();
+                    break; 
+                case 'eqMode':
+                    this.eqMode = this.setEqMode();
+                    console.log("Eqmode :" + JSON.stringify(this.eqMode));
+                    break;   
                 default:
                     this.equation.addElement(action);
             }
@@ -160,28 +195,42 @@ class Calculus {
         this.equationState = this.equation.getConcatEquation();
     }
 
+    //switches system between mathematical standard and linear calculation modes
+    setEqMode = () =>{
+        return (this.eqMode === 1) ? 0 : 1;
+    }
+
+    //returns equation to screen
     getEquationState = () =>{
         return this.equationState;
     }
 
+    //find user enetered problems
     findErrorAction = (action) =>{
         let error = 0;
-        if (this.equation.getConcatEquation().length === 0 && 
-            this.equation.getIndex(this.operators,action) > -1 &&
+        if (this.equation.getConcatEquation().length === 0 && this.equation.getIndex(this.operators,action) > -1 &&
             action !== '-') error = 1;
-        else if (this.equation.getIndex(this.operators,this.equation.equation[this.equation.equation.length-1]) > -1 &&
-            action === '=') error = 1;
-        else if (this.equation.getIndex(this.operators,this.equation.equation[this.equation.equation.length-1]) > -1 &&
-            this.equation.getIndex(this.operators,action) > -1) error = 1;
+        else if ((this.isPreviousEntryAnOperator(this.operators) || this.isPreviousEntryAnOperator(['.'])) &&
+                action === '=') error = 1;
+        else if ((this.isPreviousEntryAnOperator(this.operators) || this.isPreviousEntryAnOperator(['.'])) &&
+                (this.equation.getIndex(this.operators,action) > -1 || action === '.')) error = 1;
         return error;
+    }
+
+    isPreviousEntryAnOperator = (operators) =>{
+        return (this.equation.getIndex(operators,
+            this.equation.equation[this.equation.equation.length-1]) > -1) ? 1 : 0;
     }
 
     calculate = () =>{
         while(this.equation.getNumberOfSymbolsInEquation(this.operators)){
-            this.calculateIndexValue(this.getNextCalculationIndex());
+            if (this.eqMode === 1) this.calculateIndexValue(this.getNextCalculationIndex());
+            else this.calculateIndexValue(1);
         }
     }
 
+    //calculate equation value on index operator with before and after numbers
+    //and inserts subcalculation back to equation
     calculateIndexValue = (startIndex) =>{ 
         let value = NaN;
 
@@ -210,7 +259,7 @@ class Calculus {
           console.log('Equation: ' + JSON.stringify(this.equation.equation));
     }
 
-
+    //based on mathemathical logic get first calcualtion operator 
     getNextCalculationIndex = () =>{
         let startIndex = NaN;
     
@@ -230,6 +279,8 @@ class Calculus {
     }
 }
 
-
+/**
+ * Calling calculation program
+ */
 new CalculatorUI(new Calculus());
 
