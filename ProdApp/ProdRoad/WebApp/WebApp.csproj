@@ -25,4 +25,17 @@
       <Folder Include="Areas\Admin" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Address\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Address\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Address\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Address\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Address\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Customer\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Customer\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Customer\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Customer\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Customer\Index.cshtml" />
+    </ItemGroup>
+
 </Project>

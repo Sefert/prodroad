@@ -50,7 +50,7 @@ namespace WebApp.Areas.Admin.Controllers
         // GET: Admin/Customer/Create
         public IActionResult Create()
         {
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "FirstName");
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
@@ -68,7 +68,7 @@ namespace WebApp.Areas.Admin.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "FirstName", customer.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", customer.AppUserId);
             return View(customer);
         }
 
@@ -85,7 +85,7 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "FirstName", customer.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", customer.AppUserId);
             return View(customer);
         }
 
@@ -121,7 +121,7 @@ namespace WebApp.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "FirstName", customer.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", customer.AppUserId);
             return View(customer);
         }
 

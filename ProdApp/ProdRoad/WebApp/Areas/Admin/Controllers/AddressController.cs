@@ -51,7 +51,7 @@ namespace WebApp.Areas.Admin.Controllers
         // GET: Admin/Address/Create
         public IActionResult Create()
         {
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "FirstName");
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id");
             ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Name");
             return View();
         }
@@ -61,7 +61,7 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AppUserId,CustomerId,Id")] Address address)
+        public async Task<IActionResult> Create([Bind("AppUserId,CustomerId,Country,City,Street,Code,Phone,Email,Id")] Address address)
         {
             if (ModelState.IsValid)
             {
@@ -70,7 +70,7 @@ namespace WebApp.Areas.Admin.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "FirstName", address.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", address.AppUserId);
             ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Name", address.CustomerId);
             return View(address);
         }
@@ -88,7 +88,7 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "FirstName", address.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", address.AppUserId);
             ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Name", address.CustomerId);
             return View(address);
         }
@@ -98,7 +98,7 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("AppUserId,CustomerId,Id")] Address address)
+        public async Task<IActionResult> Edit(Guid id, [Bind("AppUserId,CustomerId,Country,City,Street,Code,Phone,Email,Id")] Address address)
         {
             if (id != address.Id)
             {
@@ -125,7 +125,7 @@ namespace WebApp.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "FirstName", address.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", address.AppUserId);
             ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Name", address.CustomerId);
             return View(address);
         }
