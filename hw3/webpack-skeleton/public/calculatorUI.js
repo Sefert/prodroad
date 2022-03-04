@@ -6,14 +6,13 @@ import { Selector } from "./selector";
  */
  export class CalculatorUI{ 
 
-
-    constructor(calculus){
+    constructor(calculus,moduleId){
         this.calculus = calculus;
         this.selectors = [];
 
-        this.selectors.push(new Selector('button','.btn'));
-        this.selectors.push(new Selector('screen','.calculator-screen'));   
-
+        this.selectors.push(new Selector('button','.card'+moduleId+' .btn'));
+        this.selectors.push(new Selector('screen','.card'+moduleId+' .calculator-screen'));   
+    
         //iterate through all monitored elements
         this.selectors.forEach(selector =>{
             if (selector.tag === 'button'){
@@ -21,13 +20,14 @@ import { Selector } from "./selector";
                     if (elem){
                     elem.onclick = (() => {
                         this.action(elem.getAttribute('value'));
-                        if (elem.getAttribute('value') === 'eqMode'){
+                        if (elem.getAttribute('value') === 'EQ MODE'){
                             elem.style.color= (elem.style.color === 'red') ? 'black' : 'red';
                         }
                     })}
                 })
             }
-        }); 
+        });
+        console.log(this.calcCounter);
     } 
 
     action = (action) => {

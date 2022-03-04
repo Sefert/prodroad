@@ -2,32 +2,52 @@ export class CalculatorModule{
 
     calculatorContent;
 
-    constructor(){
+    constructor(moduleId){
         this.calculatorContent = document.createElement("div");
-        this.calculatorContent.className = "calculator card";
+        this.calculatorContent.className = "calculator card"+moduleId;
+        this.calculatorContent.style.display = 'inline-block';
+
+        //this.calculatorContent.appendChild()
+
+        this.calculatorContent.appendChild(this.calculatorKey('close','material-icons','btn-info','button-close'));
+
         this.calculatorContent.appendChild(this.calculatorScreen("calculator-screen","z-depth-1"));
 
         let calculatorKeyModule = this.calculatorKeyModule();
         ['+','-','*','/'].forEach(operator =>{
-            calculatorKeyModule.appendChild(this.calculatorKey(operator,'btn-info'));
+            calculatorKeyModule.appendChild(this.calculatorKey(operator,'btn-info','btn'));
         });
         ['7','8','9'].forEach(operator =>{
-            calculatorKeyModule.appendChild(this.calculatorKey(operator,'btn-light','waves-effect'));
+            calculatorKeyModule.appendChild(this.calculatorKey(operator,'btn-light','waves-effect','btn'));
         });
-        calculatorKeyModule.appendChild(this.calculatorKey('keyboard_backspace','operator','material-icons','btn-info'));
+        calculatorKeyModule.appendChild(this.calculatorKey('keyboard_backspace','operator','material-icons','btn-info','btn'));
         ['4','5','6'].forEach(operator =>{
-            calculatorKeyModule.appendChild(this.calculatorKey(operator,'btn-light','waves-effect'));
+            calculatorKeyModule.appendChild(this.calculatorKey(operator,'btn-light','waves-effect','btn'));
         });
-        calculatorKeyModule.appendChild(this.calculatorKey('EQ MODE','operator','btn-info'));
+        calculatorKeyModule.appendChild(this.calculatorKey('EQ MODE','operator','btn-info','btn'));
         ['1','2','3','0'].forEach(operator =>{
-            calculatorKeyModule.appendChild(this.calculatorKey(operator,'btn-light','waves-effect'));
+            calculatorKeyModule.appendChild(this.calculatorKey(operator,'btn-light','waves-effect','btn'));
         });
-        calculatorKeyModule.appendChild(this.calculatorKey('.','decimal','function','btn-secondary'));
-        calculatorKeyModule.appendChild(this.calculatorKey('AC','all-clear','function','btn-danger','btn-sm'));
-        calculatorKeyModule.appendChild(this.calculatorKey('=','equal-sign','operator','btn-danger','btn-sm'));
+        calculatorKeyModule.appendChild(this.calculatorKey('.','decimal','function','btn-secondary','btn'));
+        calculatorKeyModule.appendChild(this.calculatorKey('AC','all-clear','function','btn-danger','btn-sm','btn'));
+        calculatorKeyModule.appendChild(this.calculatorKey('=','equal-sign','operator','btn-danger','btn-sm','btn'));
 
         this.calculatorContent.append(calculatorKeyModule);
+
+        this.calculatorContent.childNodes.forEach(node =>{         
+            node.onclick = (() => {
+                if (node.classList.contains('button-close')) {
+                    this.calculatorContent.remove();
+                }
+            })          
+        });
     }
+
+    /*closeModule(...cssClasses){
+        let closeModule = document.createElement("div");
+        closeModule.className = "calculator-keys"
+        return calcModule;
+    }*/
 
     calculatorScreen(...cssClasses){
         let calculatorScreen = document.createElement("input");
@@ -50,7 +70,7 @@ export class CalculatorModule{
 
     calculatorKey(text,...cssClasses){
         let button = document.createElement("button");
-        button.classList.add('btn');
+        //button.classList.add('btn');
 
         cssClasses.forEach(cssClass => {
             button.classList.add(cssClass);
