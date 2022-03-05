@@ -1,4 +1,4 @@
-import { Selector } from "./selector";
+import { CalculatorModule } from "./calculatorModule";
 /**
  * Takes care of calculator user interface, which
  * relays the information from web page to calculation
@@ -6,28 +6,25 @@ import { Selector } from "./selector";
  */
  export class CalculatorUI{ 
 
-    constructor(calculus,moduleId){
+    constructor(calculus,module){
         this.calculus = calculus;
-        this.selectors = [];
+        this.module = module;
+     
+        module.closeKey.onclick = (() => {
+            this.module.freeModuleId();
+            this.module.calculatorContent.remove();
+        });
 
-        this.selectors.push(new Selector('button','.card'+moduleId+' .btn'));
-        this.selectors.push(new Selector('screen','.card'+moduleId+' .calculator-screen'));   
-    
-        //iterate through all monitored elements
-        this.selectors.forEach(selector =>{
-            if (selector.tag === 'button'){
-                selector.atribute.forEach(elem =>{
-                    if (elem){
-                    elem.onclick = (() => {
-                        this.action(elem.getAttribute('value'));
-                        if (elem.getAttribute('value') === 'EQ MODE'){
-                            elem.style.color= (elem.style.color === 'red') ? 'black' : 'red';
-                        }
-                    })}
-                })
+        module.calculatorKeyModule.childNodes.forEach(child =>{
+            if (child){
+                child.onclick = (() => {
+                    this.action(child.getAttribute('value'));
+                    if (child.getAttribute('value') === 'EQ MODE'){
+                        child.style.color= (child.style.color === 'red') ? 'black' : 'red';
+                    }
+                });
             }
         });
-        console.log(this.calcCounter);
     } 
 
     action = (action) => {
@@ -37,14 +34,6 @@ import { Selector } from "./selector";
 
     //refershes display
     refresh = () => {
-        this.selectors.forEach(selector =>{
-            if (selector.tag === 'screen'){
-                selector.atribute.forEach(elem =>{
-                    if (elem){
-                        elem.value = this.calculus.getEquationState();
-                    }
-                })
-            }
-        });
+        this.module.calculatorScreen.value = this.calculus.getEquationState();
     }
 }

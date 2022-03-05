@@ -1,60 +1,54 @@
 import { ModuleId } from "../public/moduleId";
-
+/**
+ * Class which groups together all html elements for calculator
+ */
 export class CalculatorModule{
 
     calculatorContent;
-   // moduleId;
+    calculatorScreen;
+    calculatorKeyModule;
+    closeKey;
+    moduleId;
 
-    constructor(moduleId){
-        //this.moduleId=ModuleId.getNextId();
+    constructor(){
+        this.moduleId=ModuleId.getNextId();
         this.calculatorContent = document.createElement("div");
-        this.calculatorContent.className = "calculator card"+moduleId;
+        this.calculatorContent.className = "calculator card"+this.moduleId;
         this.calculatorContent.style.display = 'inline-block';
 
-        //this.calculatorContent.appendChild()
+        this.closeKey = this.calculatorKey('close','material-icons','btn-info','button-close')
+        this.calculatorContent.appendChild(this.closeKey);
 
-        this.calculatorContent.appendChild(this.calculatorKey('close','material-icons','btn-info','button-close'));
+        this.calculatorScreen = this.setCalculatorScreen("calculator-screen","z-depth-1");
+        this.calculatorContent.appendChild(this.calculatorScreen);
 
-        this.calculatorContent.appendChild(this.calculatorScreen("calculator-screen","z-depth-1"));
-
-        let calculatorKeyModule = this.calculatorKeyModule();
+        this.calculatorKeyModule = this.setCalculatorKeyModule();
         ['+','-','*','/'].forEach(operator =>{
-            calculatorKeyModule.appendChild(this.calculatorKey(operator,'btn-info','btn'));
+            this.calculatorKeyModule.appendChild(this.calculatorKey(operator,'btn-info','btn'));
         });
         ['7','8','9'].forEach(operator =>{
-            calculatorKeyModule.appendChild(this.calculatorKey(operator,'btn-light','waves-effect','btn'));
+            this.calculatorKeyModule.appendChild(this.calculatorKey(operator,'btn-light','waves-effect','btn'));
         });
-        calculatorKeyModule.appendChild(this.calculatorKey('keyboard_backspace','operator','material-icons','btn-info','btn'));
+        this.calculatorKeyModule.appendChild(this.calculatorKey('keyboard_backspace','operator','material-icons','btn-info','btn'));
         ['4','5','6'].forEach(operator =>{
-            calculatorKeyModule.appendChild(this.calculatorKey(operator,'btn-light','waves-effect','btn'));
+            this.calculatorKeyModule.appendChild(this.calculatorKey(operator,'btn-light','waves-effect','btn'));
         });
-        calculatorKeyModule.appendChild(this.calculatorKey('EQ MODE','operator','btn-info','btn'));
+        this.calculatorKeyModule.appendChild(this.calculatorKey('EQ MODE','operator','btn-info','btn'));
         ['1','2','3','0'].forEach(operator =>{
-            calculatorKeyModule.appendChild(this.calculatorKey(operator,'btn-light','waves-effect','btn'));
+            this.calculatorKeyModule.appendChild(this.calculatorKey(operator,'btn-light','waves-effect','btn'));
         });
-        calculatorKeyModule.appendChild(this.calculatorKey('.','decimal','function','btn-secondary','btn'));
-        calculatorKeyModule.appendChild(this.calculatorKey('AC','all-clear','function','btn-danger','btn-sm','btn'));
-        calculatorKeyModule.appendChild(this.calculatorKey('=','equal-sign','operator','btn-danger','btn-sm','btn'));
+        this.calculatorKeyModule.appendChild(this.calculatorKey('.','decimal','function','btn-secondary','btn'));
+        this.calculatorKeyModule.appendChild(this.calculatorKey('AC','all-clear','function','btn-danger','btn-sm','btn'));
+        this.calculatorKeyModule.appendChild(this.calculatorKey('=','equal-sign','operator','btn-danger','btn-sm','btn'));
 
-        this.calculatorContent.append(calculatorKeyModule);
-
-        this.calculatorContent.childNodes.forEach(node =>{         
-            node.onclick = (() => {
-                if (node.classList.contains('button-close')) {
-                    this.calculatorContent.remove();
-                    ModuleId.freeId(moduleId);
-                }
-            })          
-        });
+        this.calculatorContent.append(this.calculatorKeyModule);
     }
 
-    /*closeModule(...cssClasses){
-        let closeModule = document.createElement("div");
-        closeModule.className = "calculator-keys"
-        return calcModule;
-    }*/
+    freeModuleId(){
+        ModuleId.freeId(this.moduleId);
+    }
 
-    calculatorScreen(...cssClasses){
+    setCalculatorScreen(...cssClasses){
         let calculatorScreen = document.createElement("input");
         calculatorScreen.type = "text";
 
@@ -67,7 +61,7 @@ export class CalculatorModule{
         return calculatorScreen;
     }
 
-    calculatorKeyModule(){
+    setCalculatorKeyModule(){
         let calcModule = document.createElement("div");
         calcModule.className = "calculator-keys"
         return calcModule;
@@ -75,7 +69,7 @@ export class CalculatorModule{
 
     calculatorKey(text,...cssClasses){
         let button = document.createElement("button");
-        //button.classList.add('btn');
+
 
         cssClasses.forEach(cssClass => {
             button.classList.add(cssClass);
@@ -84,9 +78,5 @@ export class CalculatorModule{
         button.value = text;
         button.textContent = text;
         return button;
-    }
-
-    getCalculatorModule = () => {
-        return this.calculatorContent;
     }
 }
