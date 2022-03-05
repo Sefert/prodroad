@@ -1,8 +1,12 @@
+import { ModuleId } from "../public/moduleId";
+
 export class CalculatorModule{
 
     calculatorContent;
+   // moduleId;
 
     constructor(moduleId){
+        //this.moduleId=ModuleId.getNextId();
         this.calculatorContent = document.createElement("div");
         this.calculatorContent.className = "calculator card"+moduleId;
         this.calculatorContent.style.display = 'inline-block';
@@ -38,6 +42,7 @@ export class CalculatorModule{
             node.onclick = (() => {
                 if (node.classList.contains('button-close')) {
                     this.calculatorContent.remove();
+                    ModuleId.freeId(moduleId);
                 }
             })          
         });
