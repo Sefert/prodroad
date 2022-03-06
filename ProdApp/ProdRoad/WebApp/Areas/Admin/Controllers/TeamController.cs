@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using DAL.App;
+using DAL.App.EF;
 using Domain.App;
 
 namespace WebApp.Areas.Admin.Controllers
@@ -50,7 +50,7 @@ namespace WebApp.Areas.Admin.Controllers
         // GET: Admin/Team/Create
         public IActionResult Create()
         {
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "FirstName");
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
@@ -68,7 +68,7 @@ namespace WebApp.Areas.Admin.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "FirstName", team.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", team.AppUserId);
             return View(team);
         }
 
@@ -85,7 +85,7 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "FirstName", team.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", team.AppUserId);
             return View(team);
         }
 
@@ -121,7 +121,7 @@ namespace WebApp.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "FirstName", team.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", team.AppUserId);
             return View(team);
         }
 

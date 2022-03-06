@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using DAL.App;
+using DAL.App.EF;
 using Domain.App;
 
 namespace WebApp.Areas.Admin.Controllers
@@ -51,7 +51,7 @@ namespace WebApp.Areas.Admin.Controllers
         // GET: Admin/Item/Create
         public IActionResult Create()
         {
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "FirstName");
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id");
             ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Name");
             return View();
         }
@@ -70,7 +70,7 @@ namespace WebApp.Areas.Admin.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "FirstName", item.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", item.AppUserId);
             ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Name", item.ItemId);
             return View(item);
         }
@@ -88,7 +88,7 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "FirstName", item.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", item.AppUserId);
             ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Name", item.ItemId);
             return View(item);
         }
@@ -125,7 +125,7 @@ namespace WebApp.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "FirstName", item.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", item.AppUserId);
             ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Name", item.ItemId);
             return View(item);
         }

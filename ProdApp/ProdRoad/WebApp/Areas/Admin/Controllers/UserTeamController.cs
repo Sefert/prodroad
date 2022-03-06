@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using DAL.App;
+using DAL.App.EF;
 using Domain.App;
 
 namespace WebApp.Areas.Admin.Controllers
@@ -51,7 +51,7 @@ namespace WebApp.Areas.Admin.Controllers
         // GET: Admin/UserTeam/Create
         public IActionResult Create()
         {
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "FirstName");
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id");
             ViewData["TeamId"] = new SelectList(_context.Teams, "Id", "Code");
             return View();
         }
@@ -70,7 +70,7 @@ namespace WebApp.Areas.Admin.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "FirstName", userTeam.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", userTeam.AppUserId);
             ViewData["TeamId"] = new SelectList(_context.Teams, "Id", "Code", userTeam.TeamId);
             return View(userTeam);
         }
@@ -88,7 +88,7 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "FirstName", userTeam.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", userTeam.AppUserId);
             ViewData["TeamId"] = new SelectList(_context.Teams, "Id", "Code", userTeam.TeamId);
             return View(userTeam);
         }
@@ -125,7 +125,7 @@ namespace WebApp.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "FirstName", userTeam.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", userTeam.AppUserId);
             ViewData["TeamId"] = new SelectList(_context.Teams, "Id", "Code", userTeam.TeamId);
             return View(userTeam);
         }
