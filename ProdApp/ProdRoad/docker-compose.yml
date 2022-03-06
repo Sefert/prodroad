@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  prodroad-postgres:
+    container_name: prodroad-postgres
+    image: postgres:latest
+    restart: unless-stopped
+    environment: 
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    ports:
+      - "5432:5432"
+    volumes:
+      - prodroad-postgres-volume:/var/lib/postgresql/data
+volumes:
+  prodroad-postgres-volume:

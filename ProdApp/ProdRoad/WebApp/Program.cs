@@ -18,13 +18,21 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 */
 
 // Allows us to use more customisable Identity
-builder.Services.AddIdentity<AppUser, AppRole>(options =>
-    {
-        options.SignIn.RequireConfirmedAccount = false;
-    })
-    .AddDefaultUI() //gives login and register pages
-    .AddEntityFrameworkStores<AppDbContext>()
-    .AddDefaultTokenProviders();
+builder.Services
+    .AddIdentity<AppUser, AppRole>(options =>
+        {
+            options.SignIn.RequireConfirmedAccount = false;
+            options.Password.RequireDigit = false;
+            options.Password.RequireLowercase = false;
+            options.Password.RequireUppercase = false;
+            options.Password.RequiredUniqueChars = 0;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequiredLength = 1;
+        }
+    )
+    .AddDefaultUI()
+    .AddDefaultTokenProviders()
+    .AddEntityFrameworkStores<AppDbContext>();
     
 
 builder.Services.AddControllersWithViews();

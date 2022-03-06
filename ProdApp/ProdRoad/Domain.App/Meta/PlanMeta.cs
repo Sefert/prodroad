@@ -1,4 +1,4 @@
-namespace Domain.App;
+namespace Domain.App.Meta;
 
 public abstract class PlanMeta : UpdateMeta
 {

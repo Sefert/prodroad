@@ -1,5 +1,4 @@
-﻿using Domain;
-using Domain.App;
+﻿using Domain.App;
 using Domain.App.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +19,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     public DbSet<Procedure> Procedures { get; set; } = default!;
     public DbSet<Process> Processes { get; set; } = default!;
     public DbSet<RoadMap> RoadMaps { get; set; } = default!;
-    public DbSet<Team> Teams{ get; set; } = default!;
+    public DbSet<Team> Teams { get; set; } = default!;
     public DbSet<UserNotification> UserNotifications { get; set; } = default!;
     public DbSet<UserTeam> UserTeams { get; set; } = default!;
     public DbSet<Warehouse> Warehouses { get; set; } = default!;

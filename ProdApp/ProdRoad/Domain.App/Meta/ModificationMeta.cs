@@ -2,7 +2,7 @@
 using Domain.App.Identity;
 using Domain.Base;
 
-namespace Domain.App;
+namespace Domain.App.Meta;
 
 public abstract class ModificationMeta : BaseEntity
 {

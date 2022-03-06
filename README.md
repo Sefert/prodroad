@@ -26,3 +26,4 @@ export DOTNET_ROOT=/usr/local/share/x64
 sudo nano /etc/dotnet/install_location
 
 /usr/local/share/dotnet/dotnet
+

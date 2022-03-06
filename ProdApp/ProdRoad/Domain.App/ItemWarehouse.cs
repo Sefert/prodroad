@@ -1,4 +1,4 @@
-using Domain.Base;
+using Domain.App.Meta;
 
 namespace Domain.App;
 
