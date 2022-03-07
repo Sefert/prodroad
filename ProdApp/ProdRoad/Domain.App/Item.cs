@@ -6,11 +6,11 @@ namespace Domain.App;
 
 public class Item : BaseEntity
 {
-    public Guid ItemId { get; set; }
+    public Guid? ItemId { get; set; }
     public Item? ItemPart { get; set; }
 
     public Guid AppUserId { get; set; }
-    public AppUser AppUser { get; set; } = default!;
+    public AppUser? AppUser { get; set; }
 
     public ICollection<Item>? Items { get; set; }
     public ICollection<Price>? Prices { get; set; }
@@ -19,5 +19,5 @@ public class Item : BaseEntity
     [MaxLength(80)] public string Name { get; set; } = default!;
     [MaxLength(30)] public string Type { get; set; } = default!;
     [MaxLength(30)] public string Unit { get; set; } = default!;
-    public decimal Quantity { get; set; } = default!;
+    public decimal Quantity { get; set; }
 }

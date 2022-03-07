@@ -3,6 +3,7 @@ using System;
 using DAL.App.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DAL.App.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220307151604_testWarehouse")]
+    partial class testWarehouse
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,7 +36,7 @@ namespace DAL.App.EF.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("CreatedById")
+                    b.Property<Guid>("CreatedById")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("CreatedId")
@@ -162,7 +164,7 @@ namespace DAL.App.EF.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("CreatedById")
+                    b.Property<Guid>("CreatedById")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("CreatedId")
@@ -309,7 +311,7 @@ namespace DAL.App.EF.Migrations
                     b.Property<Guid>("AppUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ItemId")
+                    b.Property<Guid>("ItemId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Name")
@@ -351,7 +353,10 @@ namespace DAL.App.EF.Migrations
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ProcedureId")
+                    b.Property<Guid?>("ProcedureId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProcessId")
                         .HasColumnType("uuid");
 
                     b.Property<decimal>("Quantity")
@@ -362,6 +367,8 @@ namespace DAL.App.EF.Migrations
                     b.HasIndex("ItemId");
 
                     b.HasIndex("ProcedureId");
+
+                    b.HasIndex("ProcessId");
 
                     b.ToTable("ItemProcedures");
                 });
@@ -381,7 +388,7 @@ namespace DAL.App.EF.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("UpdatedById")
+                    b.Property<Guid>("UpdatedById")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("UpdatedId")
@@ -419,7 +426,7 @@ namespace DAL.App.EF.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("UpdatedById")
+                    b.Property<Guid>("UpdatedById")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("UpdatedId")
@@ -533,7 +540,7 @@ namespace DAL.App.EF.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("UpdatedById")
+                    b.Property<Guid>("UpdatedById")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("UpdatedId")
@@ -669,7 +676,6 @@ namespace DAL.App.EF.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
@@ -677,7 +683,6 @@ namespace DAL.App.EF.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
@@ -796,7 +801,8 @@ namespace DAL.App.EF.Migrations
                     b.HasOne("Domain.App.Identity.AppUser", "CreatedBy")
                         .WithMany("ActiveNotificationCreatedBys")
                         .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Domain.App.Process", "Process")
                         .WithMany("ActiveNotifications")
@@ -864,7 +870,8 @@ namespace DAL.App.EF.Migrations
                     b.HasOne("Domain.App.Identity.AppUser", "CreatedBy")
                         .WithMany("CustomerPriceGroupCreatedBys")
                         .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Domain.App.Customer", "Customer")
                         .WithMany("CustomerPriceGroups")
@@ -903,7 +910,8 @@ namespace DAL.App.EF.Migrations
                     b.HasOne("Domain.App.Item", "ItemPart")
                         .WithMany("Items")
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("AppUser");
 
@@ -918,15 +926,20 @@ namespace DAL.App.EF.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.App.Procedure", "Procedure")
+                    b.HasOne("Domain.App.Procedure", null)
                         .WithMany("ItemProcedures")
                         .HasForeignKey("ProcedureId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Domain.App.Process", "Process")
+                        .WithMany()
+                        .HasForeignKey("ProcessId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Item");
 
-                    b.Navigation("Procedure");
+                    b.Navigation("Process");
                 });
 
             modelBuilder.Entity("Domain.App.ItemWarehouse", b =>
@@ -940,10 +953,11 @@ namespace DAL.App.EF.Migrations
                     b.HasOne("Domain.App.Identity.AppUser", "UpdatedBy")
                         .WithMany("ItemWarehouseUpdatedBys")
                         .HasForeignKey("UpdatedById")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Domain.App.Warehouse", "Warehouse")
-                        .WithMany("ItemWarehouses")
+                        .WithMany()
                         .HasForeignKey("WarehouseId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -971,7 +985,8 @@ namespace DAL.App.EF.Migrations
                     b.HasOne("Domain.App.Identity.AppUser", "UpdatedBy")
                         .WithMany("PriceUpdatedBys")
                         .HasForeignKey("UpdatedById")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Item");
 
@@ -1036,7 +1051,8 @@ namespace DAL.App.EF.Migrations
                     b.HasOne("Domain.App.Identity.AppUser", "UpdatedBy")
                         .WithMany("ProcessUpdatedBys")
                         .HasForeignKey("UpdatedById")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Procedure");
 
@@ -1257,11 +1273,6 @@ namespace DAL.App.EF.Migrations
             modelBuilder.Entity("Domain.App.UserNotification", b =>
                 {
                     b.Navigation("ActiveNotifications");
-                });
-
-            modelBuilder.Entity("Domain.App.Warehouse", b =>
-                {
-                    b.Navigation("ItemWarehouses");
                 });
 #pragma warning restore 612, 618
         }

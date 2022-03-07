@@ -5,11 +5,11 @@ namespace Domain.App;
 
 public class ItemProcedure : BaseEntity
 {
-    public Guid ProcessId { get; set; }
-    public Process Process { get; set; } = default!;
+    public Guid ProcedureId { get; set; }
+    public Procedure? Procedure { get; set; }
     
     public Guid ItemId { get; set; }
-    public Item Item { get; set; } = default!;
+    public Item? Item { get; set; }
     
     public bool CreatedUsed { get; set; }
     public decimal Quantity { get; set; }

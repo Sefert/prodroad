@@ -17,5 +17,6 @@ public class Address : BaseEntity
     [MaxLength(50)] public string? Street { get; set; }
     [MaxLength(30)] public string? Code { get; set; }
     [MaxLength(20)] public string? Phone { get; set; }
+    //TODO: Remove if can
     [MaxLength(50)] public string? Email { get; set; }
 }

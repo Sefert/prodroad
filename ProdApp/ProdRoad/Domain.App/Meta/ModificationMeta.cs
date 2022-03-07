@@ -9,7 +9,7 @@ public abstract class ModificationMeta : BaseEntity
     public DateTime CreatedAt { get; set; }
     
     public Guid CreatedId { get; set; }
-    public AppUser CreatedBy { get; set; } = default!;
+    public AppUser? CreatedBy { get; set; }
     
     public DateTime? UpdatedAt { get; set; }
     

@@ -3,6 +3,7 @@ using System;
 using DAL.App.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DAL.App.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220307165850_meta_tablefix")]
+    partial class meta_tablefix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -351,7 +353,10 @@ namespace DAL.App.EF.Migrations
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ProcedureId")
+                    b.Property<Guid?>("ProcedureId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProcessId")
                         .HasColumnType("uuid");
 
                     b.Property<decimal>("Quantity")
@@ -362,6 +367,8 @@ namespace DAL.App.EF.Migrations
                     b.HasIndex("ItemId");
 
                     b.HasIndex("ProcedureId");
+
+                    b.HasIndex("ProcessId");
 
                     b.ToTable("ItemProcedures");
                 });
@@ -918,15 +925,20 @@ namespace DAL.App.EF.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.App.Procedure", "Procedure")
+                    b.HasOne("Domain.App.Procedure", null)
                         .WithMany("ItemProcedures")
                         .HasForeignKey("ProcedureId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Domain.App.Process", "Process")
+                        .WithMany()
+                        .HasForeignKey("ProcessId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Item");
 
-                    b.Navigation("Procedure");
+                    b.Navigation("Process");
                 });
 
             modelBuilder.Entity("Domain.App.ItemWarehouse", b =>

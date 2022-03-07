@@ -8,5 +8,5 @@ public abstract class UpdateMeta : BaseEntity
     public DateTime? UpdatedAt { get; set; }
     
     public Guid UpdatedId { get; set; }
-    public AppUser UpdatedBy { get; set; } = default!;
+    public AppUser? UpdatedBy { get; set; }
 }

@@ -1,6 +1,6 @@
-﻿
-using Domain.App;
+﻿using Domain.App;
 using Domain.App.Identity;
+using Domain.Base.Enum;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,7 +24,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     public DbSet<UserNotification> UserNotifications { get; set; } = default!;
     public DbSet<UserTeam> UserTeams { get; set; } = default!;
     public DbSet<Warehouse> Warehouses { get; set; } = default!;
-    
+
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
     {

@@ -10,5 +10,5 @@ public class Price : UpdateMeta
     public Guid? ItemWarehouseId { get; set; }
     public ItemWarehouse? ItemWarehouse { get; set; }
     
-    public decimal PureCost { get; set; } = default!;
+    public decimal PureCost { get; set; }
 }

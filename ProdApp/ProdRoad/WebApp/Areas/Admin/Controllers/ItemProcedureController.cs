@@ -24,7 +24,7 @@ namespace WebApp.Areas.Admin.Controllers
         // GET: Admin/ItemProcedure
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.ItemProcedures.Include(i => i.Item).Include(i => i.Process);
+            var appDbContext = _context.ItemProcedures.Include(i => i.Item).Include(i => i.Procedure);
             return View(await appDbContext.ToListAsync());
         }
 
@@ -38,7 +38,7 @@ namespace WebApp.Areas.Admin.Controllers
 
             var itemProcedure = await _context.ItemProcedures
                 .Include(i => i.Item)
-                .Include(i => i.Process)
+                .Include(i => i.Procedure)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (itemProcedure == null)
             {
@@ -52,7 +52,7 @@ namespace WebApp.Areas.Admin.Controllers
         public IActionResult Create()
         {
             ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Name");
-            ViewData["ProcessId"] = new SelectList(_context.Processes, "Id", "Id");
+            ViewData["ProcedureId"] = new SelectList(_context.Procedures, "Id", "Code");
             return View();
         }
 
@@ -61,7 +61,7 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProcessId,ItemId,CreatedUsed,Quantity,Id")] ItemProcedure itemProcedure)
+        public async Task<IActionResult> Create([Bind("ProcedureId,ItemId,CreatedUsed,Quantity,Id")] ItemProcedure itemProcedure)
         {
             if (ModelState.IsValid)
             {
@@ -71,7 +71,7 @@ namespace WebApp.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Name", itemProcedure.ItemId);
-            ViewData["ProcessId"] = new SelectList(_context.Processes, "Id", "Id", itemProcedure.ProcessId);
+            ViewData["ProcedureId"] = new SelectList(_context.Procedures, "Id", "Code", itemProcedure.ProcedureId);
             return View(itemProcedure);
         }
 
@@ -89,7 +89,7 @@ namespace WebApp.Areas.Admin.Controllers
                 return NotFound();
             }
             ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Name", itemProcedure.ItemId);
-            ViewData["ProcessId"] = new SelectList(_context.Processes, "Id", "Id", itemProcedure.ProcessId);
+            ViewData["ProcedureId"] = new SelectList(_context.Procedures, "Id", "Code", itemProcedure.ProcedureId);
             return View(itemProcedure);
         }
 
@@ -98,7 +98,7 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("ProcessId,ItemId,CreatedUsed,Quantity,Id")] ItemProcedure itemProcedure)
+        public async Task<IActionResult> Edit(Guid id, [Bind("ProcedureId,ItemId,CreatedUsed,Quantity,Id")] ItemProcedure itemProcedure)
         {
             if (id != itemProcedure.Id)
             {
@@ -126,7 +126,7 @@ namespace WebApp.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Name", itemProcedure.ItemId);
-            ViewData["ProcessId"] = new SelectList(_context.Processes, "Id", "Id", itemProcedure.ProcessId);
+            ViewData["ProcedureId"] = new SelectList(_context.Procedures, "Id", "Code", itemProcedure.ProcedureId);
             return View(itemProcedure);
         }
 
@@ -140,7 +140,7 @@ namespace WebApp.Areas.Admin.Controllers
 
             var itemProcedure = await _context.ItemProcedures
                 .Include(i => i.Item)
-                .Include(i => i.Process)
+                .Include(i => i.Procedure)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (itemProcedure == null)
             {

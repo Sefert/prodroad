@@ -7,7 +7,7 @@ namespace Domain.App;
 public class PriceGroup :BaseEntity
 {
     public Guid AppUserId { get; set; }
-    public AppUser AppUser { get; set; } = default!;
+    public AppUser? AppUser { get; set; }
 
     public Guid? PriceGroupId { get; set; }
     public PriceGroup? SubPriceGroup { get; set; }

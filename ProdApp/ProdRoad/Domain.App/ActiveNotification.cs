@@ -16,5 +16,5 @@ public class ActiveNotification : ModificationMeta
 
     [MaxLength(50)] public string Head { get; set; } = default!;
     [MaxLength(200)] public string Info { get; set; } = default!; 
-    public bool Active{ get; set; } = default!;
+    public bool Active{ get; set; }
 }

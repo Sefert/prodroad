@@ -7,7 +7,7 @@ namespace Domain.App;
 public class RoadMap : BaseEntity
 {
     public Guid AppUserId { get; set; }
-    public AppUser AppUser { get; set; } = default!;
+    public AppUser? AppUser { get; set; }
     
     [MaxLength(50)] public string Name { get; set; } = default!;
     [MaxLength(2)] public string? Position { get; set; }
