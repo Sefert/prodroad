@@ -2,8 +2,8 @@
 
 Database migration and update
 ~~~sh
-dotnet ef migrations add --project DAL.App.EF --startup-project WebApp Initial
-dotnet ef database update --project Dal.App.EF --startup-project WebApp
+dotnet ef migrations add --project DAL.App.EF --startup-project WebApp --context AppDbContext Initial
+dotnet ef database update --project Dal.App.EF --startup-project WebApp --context AppDbContext
 dotnet ef migrations remove InitialCreate --project DAL.App.EF //not working on my m1
 dotnet ef database drop --project DAL.App.EF  --startup-project WebApp
 

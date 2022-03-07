@@ -5,8 +5,8 @@ namespace Domain.App;
 public class CustomerPriceGroup : ModificationMeta
 {
     public Guid PriceGroupId { get; set; }
-    public PriceGroup PriceGroup { get; set; } = default!;
+    public PriceGroup? PriceGroup { get; set; }
 
     public Guid CustomerId { get; set; }
-    public Customer Customer { get; set; } = default!;
+    public Customer? Customer { get; set; }
 }

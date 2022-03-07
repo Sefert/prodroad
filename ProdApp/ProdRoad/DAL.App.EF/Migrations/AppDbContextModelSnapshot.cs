@@ -56,13 +56,13 @@ namespace DAL.App.EF.Migrations
                     b.Property<Guid?>("TeamId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid?>("UpdatedById")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("UpdatedId")
+                    b.Property<Guid>("UpdatedId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("UserNotificationId")
@@ -174,13 +174,13 @@ namespace DAL.App.EF.Migrations
                     b.Property<Guid>("PriceGroupId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid?>("UpdatedById")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("UpdatedId")
+                    b.Property<Guid>("UpdatedId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -378,7 +378,7 @@ namespace DAL.App.EF.Migrations
                     b.Property<decimal>("Quantity")
                         .HasColumnType("numeric");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid?>("UpdatedById")
@@ -416,7 +416,7 @@ namespace DAL.App.EF.Migrations
                     b.Property<decimal>("PureCost")
                         .HasColumnType("numeric");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid?>("UpdatedById")
@@ -530,7 +530,7 @@ namespace DAL.App.EF.Migrations
                     b.Property<Guid>("TeamId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid?>("UpdatedById")

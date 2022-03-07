@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace DAL.App.EF.Migrations
 {
-    public partial class Initial : Migration
+    public partial class Clean : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -183,7 +183,7 @@ namespace DAL.App.EF.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ItemId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ItemId = table.Column<Guid>(type: "uuid", nullable: true),
                     AppUserId = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(80)", maxLength: 80, nullable: false),
                     Type = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
@@ -379,9 +379,9 @@ namespace DAL.App.EF.Migrations
                     CustomerId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CreatedById = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedById = table.Column<Guid>(type: "uuid", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    UpdatedId = table.Column<Guid>(type: "uuid", nullable: true),
+                    UpdatedId = table.Column<Guid>(type: "uuid", nullable: false),
                     UpdatedById = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
@@ -409,6 +409,33 @@ namespace DAL.App.EF.Migrations
                         name: "FK_CustomerPriceGroups_PriceGroups_PriceGroupId",
                         column: x => x.PriceGroupId,
                         principalTable: "PriceGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ItemProcedures",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProcedureId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ItemId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedUsed = table.Column<bool>(type: "boolean", nullable: false),
+                    Quantity = table.Column<decimal>(type: "numeric", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ItemProcedures", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ItemProcedures_Items_ItemId",
+                        column: x => x.ItemId,
+                        principalTable: "Items",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ItemProcedures_Procedures_ProcedureId",
+                        column: x => x.ProcedureId,
+                        principalTable: "Procedures",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -448,7 +475,7 @@ namespace DAL.App.EF.Migrations
                     Quantity = table.Column<decimal>(type: "numeric", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     UpdatedId = table.Column<Guid>(type: "uuid", nullable: false),
-                    UpdatedById = table.Column<Guid>(type: "uuid", nullable: false)
+                    UpdatedById = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -483,7 +510,7 @@ namespace DAL.App.EF.Migrations
                     PureCost = table.Column<decimal>(type: "numeric", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     UpdatedId = table.Column<Guid>(type: "uuid", nullable: false),
-                    UpdatedById = table.Column<Guid>(type: "uuid", nullable: false)
+                    UpdatedById = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -520,7 +547,7 @@ namespace DAL.App.EF.Migrations
                     ItemWarehouseId = table.Column<Guid>(type: "uuid", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     UpdatedId = table.Column<Guid>(type: "uuid", nullable: false),
-                    UpdatedById = table.Column<Guid>(type: "uuid", nullable: false),
+                    UpdatedById = table.Column<Guid>(type: "uuid", nullable: true),
                     StartAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     EndAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     RealStartAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -574,9 +601,9 @@ namespace DAL.App.EF.Migrations
                     Active = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CreatedById = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedById = table.Column<Guid>(type: "uuid", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    UpdatedId = table.Column<Guid>(type: "uuid", nullable: true),
+                    UpdatedId = table.Column<Guid>(type: "uuid", nullable: false),
                     UpdatedById = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
@@ -610,40 +637,6 @@ namespace DAL.App.EF.Migrations
                         name: "FK_ActiveNotifications_UserNotifications_UserNotificationId",
                         column: x => x.UserNotificationId,
                         principalTable: "UserNotifications",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ItemProcedures",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ProcessId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ItemId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CreatedUsed = table.Column<bool>(type: "boolean", nullable: false),
-                    Quantity = table.Column<decimal>(type: "numeric", nullable: false),
-                    ProcedureId = table.Column<Guid>(type: "uuid", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ItemProcedures", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ItemProcedures_Items_ItemId",
-                        column: x => x.ItemId,
-                        principalTable: "Items",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ItemProcedures_Procedures_ProcedureId",
-                        column: x => x.ProcedureId,
-                        principalTable: "Procedures",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ItemProcedures_Processes_ProcessId",
-                        column: x => x.ProcessId,
-                        principalTable: "Processes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -754,11 +747,6 @@ namespace DAL.App.EF.Migrations
                 name: "IX_ItemProcedures_ProcedureId",
                 table: "ItemProcedures",
                 column: "ProcedureId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ItemProcedures_ProcessId",
-                table: "ItemProcedures",
-                column: "ProcessId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Items_AppUserId",
@@ -907,6 +895,9 @@ namespace DAL.App.EF.Migrations
                 name: "UserTeams");
 
             migrationBuilder.DropTable(
+                name: "Processes");
+
+            migrationBuilder.DropTable(
                 name: "UserNotifications");
 
             migrationBuilder.DropTable(
@@ -917,9 +908,6 @@ namespace DAL.App.EF.Migrations
 
             migrationBuilder.DropTable(
                 name: "PriceGroups");
-
-            migrationBuilder.DropTable(
-                name: "Processes");
 
             migrationBuilder.DropTable(
                 name: "ItemWarehouses");

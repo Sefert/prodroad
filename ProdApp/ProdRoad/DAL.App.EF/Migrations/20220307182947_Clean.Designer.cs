@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DAL.App.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220307165850_meta_tablefix")]
-    partial class meta_tablefix
+    [Migration("20220307182947_Clean")]
+    partial class Clean
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -64,7 +64,7 @@ namespace DAL.App.EF.Migrations
                     b.Property<Guid?>("UpdatedById")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("UpdatedId")
+                    b.Property<Guid>("UpdatedId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("UserNotificationId")
@@ -182,7 +182,7 @@ namespace DAL.App.EF.Migrations
                     b.Property<Guid?>("UpdatedById")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("UpdatedId")
+                    b.Property<Guid>("UpdatedId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -353,10 +353,7 @@ namespace DAL.App.EF.Migrations
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ProcedureId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ProcessId")
+                    b.Property<Guid>("ProcedureId")
                         .HasColumnType("uuid");
 
                     b.Property<decimal>("Quantity")
@@ -367,8 +364,6 @@ namespace DAL.App.EF.Migrations
                     b.HasIndex("ItemId");
 
                     b.HasIndex("ProcedureId");
-
-                    b.HasIndex("ProcessId");
 
                     b.ToTable("ItemProcedures");
                 });
@@ -925,20 +920,15 @@ namespace DAL.App.EF.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.App.Procedure", null)
+                    b.HasOne("Domain.App.Procedure", "Procedure")
                         .WithMany("ItemProcedures")
                         .HasForeignKey("ProcedureId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Domain.App.Process", "Process")
-                        .WithMany()
-                        .HasForeignKey("ProcessId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Item");
 
-                    b.Navigation("Process");
+                    b.Navigation("Procedure");
                 });
 
             modelBuilder.Entity("Domain.App.ItemWarehouse", b =>

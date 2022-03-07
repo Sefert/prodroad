@@ -4,7 +4,7 @@
 
 namespace DAL.App.EF.Migrations
 {
-    public partial class item_warehouse : Migration
+    public partial class Test : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
