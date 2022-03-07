@@ -24,7 +24,7 @@ namespace WebApp.Areas.Admin.Controllers
         // GET: Admin/CustomerPrice
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.CustomerPrices.Include(c => c.Price);
+            var appDbContext = _context.CustomerPrices.Include(c => c.CustomerPriceGroup).Include(c => c.Price);
             return View(await appDbContext.ToListAsync());
         }
 
@@ -37,6 +37,7 @@ namespace WebApp.Areas.Admin.Controllers
             }
 
             var customerPrice = await _context.CustomerPrices
+                .Include(c => c.CustomerPriceGroup)
                 .Include(c => c.Price)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (customerPrice == null)
@@ -50,6 +51,7 @@ namespace WebApp.Areas.Admin.Controllers
         // GET: Admin/CustomerPrice/Create
         public IActionResult Create()
         {
+            ViewData["CustomerPriceGroupId"] = new SelectList(_context.CustomerPriceGroups, "Id", "Id");
             ViewData["PriceId"] = new SelectList(_context.Prices, "Id", "Id");
             return View();
         }
@@ -68,6 +70,7 @@ namespace WebApp.Areas.Admin.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["CustomerPriceGroupId"] = new SelectList(_context.CustomerPriceGroups, "Id", "Id", customerPrice.CustomerPriceGroupId);
             ViewData["PriceId"] = new SelectList(_context.Prices, "Id", "Id", customerPrice.PriceId);
             return View(customerPrice);
         }
@@ -85,6 +88,7 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+            ViewData["CustomerPriceGroupId"] = new SelectList(_context.CustomerPriceGroups, "Id", "Id", customerPrice.CustomerPriceGroupId);
             ViewData["PriceId"] = new SelectList(_context.Prices, "Id", "Id", customerPrice.PriceId);
             return View(customerPrice);
         }
@@ -121,6 +125,7 @@ namespace WebApp.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["CustomerPriceGroupId"] = new SelectList(_context.CustomerPriceGroups, "Id", "Id", customerPrice.CustomerPriceGroupId);
             ViewData["PriceId"] = new SelectList(_context.Prices, "Id", "Id", customerPrice.PriceId);
             return View(customerPrice);
         }
@@ -134,6 +139,7 @@ namespace WebApp.Areas.Admin.Controllers
             }
 
             var customerPrice = await _context.CustomerPrices
+                .Include(c => c.CustomerPriceGroup)
                 .Include(c => c.Price)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (customerPrice == null)
