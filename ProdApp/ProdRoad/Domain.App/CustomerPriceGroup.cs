@@ -9,4 +9,6 @@ public class CustomerPriceGroup : ModificationMeta
 
     public Guid CustomerId { get; set; }
     public Customer? Customer { get; set; }
+    
+    public ICollection<CustomerPrice>? CustomerPrices { get; set; }
 }

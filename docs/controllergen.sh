@@ -16,3 +16,4 @@ dotnet aspnet-codegenerator controller -name TeamController -actions -m Domain.A
 dotnet aspnet-codegenerator controller -name UserNotificationController -actions -m Domain.App.UserNotification -dc AppDbContext -outDir Areas/Admin/Controllers --useDefaultLayout --useAsyncActions --referenceScriptLibraries -f
 dotnet aspnet-codegenerator controller -name UserTeamController -actions -m Domain.App.UserTeam -dc AppDbContext -outDir Areas/Admin/Controllers --useDefaultLayout --useAsyncActions --referenceScriptLibraries -f
 dotnet aspnet-codegenerator controller -name WarehouseController -actions -m Domain.App.Warehouse -dc AppDbContext -outDir Areas/Admin/Controllers --useDefaultLayout --useAsyncActions --referenceScriptLibraries -f
+dotnet aspnet-codegenerator controller -name CustomerPriceController -actions -m Domain.App.CustomerPrice -dc AppDbContext -outDir Areas/Admin/Controllers --useDefaultLayout --useAsyncActions --referenceScriptLibraries -f

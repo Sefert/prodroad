@@ -1,5 +1,6 @@
 ﻿using Domain.App;
 using Domain.App.Identity;
+using Domain.Base.Enum;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,6 +25,8 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     public DbSet<UserTeam> UserTeams { get; set; } = default!;
     public DbSet<Warehouse> Warehouses { get; set; } = default!;
 
+    public DbSet<CustomerPrice> CustomerPrices { get; set; } = default!;
+
     public AppDbContext(DbContextOptions<AppDbContext> options): base(options)
     {
     }
@@ -40,6 +43,10 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
         {
             relationship.DeleteBehavior = DeleteBehavior.Restrict;
         }
+        
+        /*builder.Entity<NotificationType>()
+            .Property(un => un.NotificationType)
+            .HasConversion<int>();*/
         
     }
 
