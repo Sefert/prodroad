@@ -33,8 +33,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        base.OnModelCreating(builder);
-        
+        //builder.Entity().Property(c => c.NotificationType).HasConversion();
         
         // Remove cascade delete
         foreach (var relationship in builder.Model
@@ -44,10 +43,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
             relationship.DeleteBehavior = DeleteBehavior.Restrict;
         }
         
-        /*builder.Entity<NotificationType>()
-            .Property(un => un.NotificationType)
-            .HasConversion<int>();*/
-        
+        base.OnModelCreating(builder);
     }
 
     public override int SaveChanges()

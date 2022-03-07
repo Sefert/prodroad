@@ -5,11 +5,11 @@ namespace Domain.App;
 
 public class ActiveNotification : ModificationMeta
 {
-    public Guid ProcessId { get; set; }
+    public Guid? ProcessId { get; set; }
     public Process? Process { get; set; }
     
     public Guid UserNotificationId { get; set; }
-    public UserNotification UserNotification { get; set; } = default!;
+    public UserNotification? UserNotification { get; set; }
 
     public Guid? TeamId { get; set; }
     public Team? Team { get; set; }
