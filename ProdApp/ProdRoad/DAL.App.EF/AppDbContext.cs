@@ -24,8 +24,8 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     public DbSet<UserNotification> UserNotifications { get; set; } = default!;
     public DbSet<UserTeam> UserTeams { get; set; } = default!;
     public DbSet<Warehouse> Warehouses { get; set; } = default!;
-
     public DbSet<CustomerPrice> CustomerPrices { get; set; } = default!;
+
 
     public AppDbContext(DbContextOptions<AppDbContext> options): base(options)
     {
@@ -33,8 +33,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        //builder.Entity().Property(c => c.NotificationType).HasConversion();
-        
+
         // Remove cascade delete
         foreach (var relationship in builder.Model
                      .GetEntityTypes()

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
+using Domain.Base.Enum;
 
 namespace WebApp.Areas.Admin.Controllers
 {
