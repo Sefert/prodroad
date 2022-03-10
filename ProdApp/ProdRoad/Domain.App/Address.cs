@@ -12,7 +12,9 @@ public class Address : BaseEntity
     public Guid? CustomerId { get; set; }
     public Customer? Customer { get; set; }
 
-    [MaxLength(30)] public string? Country { get; set; }
+    [MaxLength(30)]
+    [Display(ResourceType = typeof(Resources.App.Domain.App.Address), Name = nameof(Country)) ]
+    public string? Country { get; set; }
     [MaxLength(40)] public string? City { get; set; }
     [MaxLength(50)] public string? Street { get; set; }
     [MaxLength(30)] public string? Code { get; set; }
