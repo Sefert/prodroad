@@ -1,6 +1,5 @@
 ﻿using Domain.App;
 using Domain.App.Identity;
-using Domain.Base.Enum;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

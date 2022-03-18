@@ -1,4 +1,5 @@
 ﻿using System;
+using Domain.Base;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -6,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace DAL.App.EF.Migrations
 {
-    public partial class Clean : Migration
+    public partial class addressjsonb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -70,7 +71,7 @@ namespace DAL.App.EF.Migrations
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -91,7 +92,7 @@ namespace DAL.App.EF.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -111,7 +112,7 @@ namespace DAL.App.EF.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -129,13 +130,13 @@ namespace DAL.App.EF.Migrations
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_AspNetUserRoles_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -155,7 +156,7 @@ namespace DAL.App.EF.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -346,12 +347,12 @@ namespace DAL.App.EF.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     AppUserId = table.Column<Guid>(type: "uuid", nullable: true),
                     CustomerId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Country = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: true),
-                    City = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: true),
-                    Street = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    Code = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: true),
-                    Phone = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
-                    Email = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true)
+                    Country = table.Column<LangStr>(type: "jsonb", maxLength: 30, nullable: true),
+                    City = table.Column<LangStr>(type: "jsonb", maxLength: 40, nullable: true),
+                    Street = table.Column<LangStr>(type: "jsonb", maxLength: 50, nullable: true),
+                    Code = table.Column<LangStr>(type: "jsonb", maxLength: 30, nullable: true),
+                    Phone = table.Column<LangStr>(type: "jsonb", maxLength: 20, nullable: true),
+                    Email = table.Column<LangStr>(type: "jsonb", maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -380,7 +381,7 @@ namespace DAL.App.EF.Migrations
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedById = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedId = table.Column<Guid>(type: "uuid", nullable: false),
                     UpdatedById = table.Column<Guid>(type: "uuid", nullable: true)
                 },
@@ -473,7 +474,7 @@ namespace DAL.App.EF.Migrations
                     ItemId = table.Column<Guid>(type: "uuid", nullable: false),
                     WarehouseId = table.Column<Guid>(type: "uuid", nullable: false),
                     Quantity = table.Column<decimal>(type: "numeric", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedId = table.Column<Guid>(type: "uuid", nullable: false),
                     UpdatedById = table.Column<Guid>(type: "uuid", nullable: true)
                 },
@@ -508,7 +509,7 @@ namespace DAL.App.EF.Migrations
                     ItemId = table.Column<Guid>(type: "uuid", nullable: false),
                     ItemWarehouseId = table.Column<Guid>(type: "uuid", nullable: true),
                     PureCost = table.Column<decimal>(type: "numeric", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedId = table.Column<Guid>(type: "uuid", nullable: false),
                     UpdatedById = table.Column<Guid>(type: "uuid", nullable: true)
                 },
@@ -545,13 +546,13 @@ namespace DAL.App.EF.Migrations
                     ProcedureId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAmount = table.Column<decimal>(type: "numeric", nullable: false),
                     ItemWarehouseId = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedId = table.Column<Guid>(type: "uuid", nullable: false),
                     UpdatedById = table.Column<Guid>(type: "uuid", nullable: true),
                     StartAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     EndAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    RealStartAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    RealEndAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    RealStartAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    RealEndAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -589,20 +590,62 @@ namespace DAL.App.EF.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CustomerPrices",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    CustomerPriceGroupId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PriceId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedById = table.Column<Guid>(type: "uuid", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UpdatedById = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CustomerPrices", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CustomerPrices_AspNetUsers_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CustomerPrices_AspNetUsers_UpdatedById",
+                        column: x => x.UpdatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CustomerPrices_CustomerPriceGroups_CustomerPriceGroupId",
+                        column: x => x.CustomerPriceGroupId,
+                        principalTable: "CustomerPriceGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CustomerPrices_Prices_PriceId",
+                        column: x => x.PriceId,
+                        principalTable: "Prices",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ActiveNotifications",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ProcessId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProcessId = table.Column<Guid>(type: "uuid", nullable: true),
                     UserNotificationId = table.Column<Guid>(type: "uuid", nullable: false),
                     TeamId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Head = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Info = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Active = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedById = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedId = table.Column<Guid>(type: "uuid", nullable: false),
                     UpdatedById = table.Column<Guid>(type: "uuid", nullable: true)
                 },
@@ -731,6 +774,26 @@ namespace DAL.App.EF.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_CustomerPriceGroups_UpdatedById",
                 table: "CustomerPriceGroups",
+                column: "UpdatedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CustomerPrices_CreatedById",
+                table: "CustomerPrices",
+                column: "CreatedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CustomerPrices_CustomerPriceGroupId",
+                table: "CustomerPrices",
+                column: "CustomerPriceGroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CustomerPrices_PriceId",
+                table: "CustomerPrices",
+                column: "PriceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CustomerPrices_UpdatedById",
+                table: "CustomerPrices",
                 column: "UpdatedById");
 
             migrationBuilder.CreateIndex(
@@ -883,13 +946,10 @@ namespace DAL.App.EF.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "CustomerPriceGroups");
+                name: "CustomerPrices");
 
             migrationBuilder.DropTable(
                 name: "ItemProcedures");
-
-            migrationBuilder.DropTable(
-                name: "Prices");
 
             migrationBuilder.DropTable(
                 name: "UserTeams");
@@ -904,13 +964,10 @@ namespace DAL.App.EF.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Customers");
+                name: "CustomerPriceGroups");
 
             migrationBuilder.DropTable(
-                name: "PriceGroups");
-
-            migrationBuilder.DropTable(
-                name: "ItemWarehouses");
+                name: "Prices");
 
             migrationBuilder.DropTable(
                 name: "Procedures");
@@ -920,6 +977,15 @@ namespace DAL.App.EF.Migrations
 
             migrationBuilder.DropTable(
                 name: "Teams");
+
+            migrationBuilder.DropTable(
+                name: "Customers");
+
+            migrationBuilder.DropTable(
+                name: "PriceGroups");
+
+            migrationBuilder.DropTable(
+                name: "ItemWarehouses");
 
             migrationBuilder.DropTable(
                 name: "Items");

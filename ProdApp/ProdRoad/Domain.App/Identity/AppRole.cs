@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Identity;
+using Domain.Base.Identity;
 
 namespace Domain.App.Identity;
 
-public class AppRole : IdentityRole<Guid>
+public class AppRole : BaseRole
 {
     
 }

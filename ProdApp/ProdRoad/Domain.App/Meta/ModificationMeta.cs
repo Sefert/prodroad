@@ -1,6 +1,6 @@
-
 using Domain.App.Identity;
 using Domain.Base;
+using Domain.Base.Identity;
 
 namespace Domain.App.Meta;
 

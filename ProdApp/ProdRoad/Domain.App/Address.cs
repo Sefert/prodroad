@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Domain.App.Identity;
 using Domain.Base;
 
@@ -10,15 +11,30 @@ public class Address : BaseEntity
     public AppUser? AppUser { get; set; }
 
     public Guid? CustomerId { get; set; }
-    public Customer? Customer { get; set; }
+    public Customer? Customer { get; set; } 
 
     [MaxLength(30)]
-    [Display(ResourceType = typeof(Resources.App.Domain.App.Address), Name = nameof(Country)) ]
-    public string? Country { get; set; }
-    [MaxLength(40)] public string? City { get; set; }
-    [MaxLength(50)] public string? Street { get; set; }
-    [MaxLength(30)] public string? Code { get; set; }
-    [MaxLength(20)] public string? Phone { get; set; }
-    //TODO: Remove if can
-    [MaxLength(50)] public string? Email { get; set; }
+    //[Display(ResourceType = typeof(Resources.App.Domain.App.Address), Name = nameof(Country)) ]
+    [Column(TypeName = "jsonb")] 
+    public LangStr? Country { get; set; } = new();
+    
+    [MaxLength(40)]
+    [Column(TypeName = "jsonb")] 
+    public LangStr? City { get; set; } = new();
+    
+    [MaxLength(50)]
+    [Column(TypeName = "jsonb")] 
+    public LangStr? Street { get; set; } = new();
+    
+    [MaxLength(30)] 
+    [Column(TypeName = "jsonb")]
+    public LangStr? Code { get; set; }= new();
+
+    [MaxLength(20)]
+    [Column(TypeName = "jsonb")]
+    public LangStr? Phone { get; set; } = new();
+    
+    [MaxLength(50)] 
+    [Column(TypeName = "jsonb")]
+    public LangStr? Email { get; set; }= new();
 }

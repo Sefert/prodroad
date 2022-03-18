@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.AspNetCore.Identity;
+using Domain.Base.Identity;
 
 namespace Domain.App.Identity;
 
 /*TODO: fix firstname and lastname*/
-public class AppUser : IdentityUser<Guid>
+public class AppUser : BaseUser
 {
     [MaxLength(30)] public string? FirstName { get; set; }
     [MaxLength(30)] public string? LastName { get; set; }

@@ -1,5 +1,4 @@
 using Domain.App.Meta;
-
 namespace Domain.App;
 
 public class CustomerPrice : ModificationMeta
