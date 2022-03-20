@@ -36,7 +36,7 @@ public static class AppDataHelper
         {
             await SeedAddresses(context);
             await SeedCustomers(context);
-            //SeedItems(context);
+            await SeedItems(context);
         }
     }
 
@@ -75,7 +75,7 @@ public static class AppDataHelper
         await context.SaveChangesAsync();
     }
     
-    private static void SeedItems(AppDbContext context)
+    private static async Task SeedItems(AppDbContext context)
     {
         var data = new Item()
         {
@@ -100,7 +100,7 @@ public static class AppDataHelper
         };
         
         context.Items.Add(data);
-        context.SaveChangesAsync();
+        await context.SaveChangesAsync();
         
         data = new Item()
         {
@@ -125,7 +125,7 @@ public static class AppDataHelper
         };
         
         context.Items.Add(data);
-        context.SaveChangesAsync();
+        await context.SaveChangesAsync();
     }
 
 }
