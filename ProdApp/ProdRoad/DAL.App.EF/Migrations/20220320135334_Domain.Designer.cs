@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DAL.App.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220320093346_jsonb")]
-    partial class jsonb
+    [Migration("20220320135334_Domain")]
+    partial class Domain
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -43,10 +43,15 @@ namespace DAL.App.EF.Migrations
                     b.Property<Guid>("CreatedId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Info")
+                    b.Property<LangStr>("Head")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("jsonb");
+
+                    b.Property<LangStr>("Info")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("jsonb");
 
                     b.Property<Guid?>("ProcessId")
                         .HasColumnType("uuid");
@@ -137,6 +142,10 @@ namespace DAL.App.EF.Migrations
 
                     b.Property<LangStr>("Name")
                         .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("jsonb");
+
+                    b.Property<LangStr>("Registration")
                         .HasMaxLength(50)
                         .HasColumnType("jsonb");
 
@@ -335,6 +344,25 @@ namespace DAL.App.EF.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e"),
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "a9a3fe1c-34c1-41f3-a7c1-5c422f372e54",
+                            Email = "admin@gmail.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN@GMAIL.COM",
+                            NormalizedUserName = "ADMIN@GMAIL.COM",
+                            PasswordHash = "AQAAAAEAACcQAAAAEMR/smZ8pt3QO9si0uMVr1RcIflzVcLc/0Vg8aOJEkNpnoP30pBphSNVMqG6FQuZ7Q==",
+                            PhoneNumber = "1234567890",
+                            PhoneNumberConfirmed = true,
+                            SecurityStamp = "9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e",
+                            TwoFactorEnabled = false,
+                            UserName = "admin@gmail.com"
+                        });
                 });
 
             modelBuilder.Entity("Domain.App.Item", b =>

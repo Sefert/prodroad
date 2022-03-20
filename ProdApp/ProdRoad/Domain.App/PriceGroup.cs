@@ -18,7 +18,7 @@ public class PriceGroup :BaseEntity
     
     [MaxLength(30)] 
     [Column(TypeName = "jsonb")] 
-    public LangStr Name { get; set; } = default!;
+    public LangStr Name { get; set; } = new();
     public decimal? Tax { get; set; }
     public decimal? Margin { get; set; }
     public decimal? Discount { get; set; }

@@ -15,11 +15,11 @@ public class UserNotification : BaseEntity
     
     [MaxLength(20)] 
     [Column(TypeName = "jsonb")] 
-    public LangStr Name { get; set; } = default!;
+    public LangStr Name { get; set; } = new();
     
     [MaxLength(20)] 
     [Column(TypeName = "jsonb")] 
-    public LangStr Color { get; set; } = default!;
+    public LangStr Color { get; set; } = new();
     
     public bool Active { get; set; }
 

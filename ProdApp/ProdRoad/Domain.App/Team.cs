@@ -12,13 +12,13 @@ public class Team : BaseEntity
     
     [MaxLength(50)] 
     [Column(TypeName = "jsonb")] 
-    public LangStr Name { get; set; } = default!;
+    public LangStr Name { get; set; } = new();
     
     [MaxLength(20)] 
     [Column(TypeName = "jsonb")] 
-    public LangStr Code { get; set; } = default!;
+    public LangStr Code { get; set; } = new();
 
-    public ICollection<Process>? Processes { get; set; }
+    public ICollection<Process>? Processes { get; set; } 
     public ICollection<UserTeam>? UserTeams { get; set; }
     public ICollection<ActiveNotification>? ActiveNotifications { get; set; }
 }

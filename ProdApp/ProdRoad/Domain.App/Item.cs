@@ -19,15 +19,15 @@ public class Item : BaseEntity
 
     [MaxLength(80)] 
     [Column(TypeName = "jsonb")] 
-    public LangStr Name { get; set; } = default!;
+    public LangStr Name { get; set; } = new();
     
     [MaxLength(30)]  
     [Column(TypeName = "jsonb")]  
-    public LangStr Type { get; set; } = default!;
+    public LangStr Type { get; set; } = new();
     
     [MaxLength(30)] 
     [Column(TypeName = "jsonb")] 
-    public LangStr Unit { get; set; } = default!;
+    public LangStr Unit { get; set; } = new();
     
     public decimal Quantity { get; set; }
 }

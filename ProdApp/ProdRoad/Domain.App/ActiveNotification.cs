@@ -17,7 +17,12 @@ public class ActiveNotification : ModificationMeta
     public Team? Team { get; set; }
 
     [MaxLength(50)]
-    public LangStr Head { get; set; } = default!;
-    [MaxLength(200)] public string Info { get; set; } = default!; 
+    [Column(TypeName = "jsonb")]
+    public LangStr Head { get; set; } = new();
+    
+    [MaxLength(200)]
+    [Column(TypeName = "jsonb")]
+    public LangStr Info { get; set; } = new();
+    
     public bool Active{ get; set; }
 }

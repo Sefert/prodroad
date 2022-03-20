@@ -12,11 +12,11 @@ public class Procedure : BaseEntity
 
     [MaxLength(32)] 
     [Column(TypeName = "jsonb")] 
-    public LangStr Name { get; set; } = default!;
+    public LangStr Name { get; set; } = new();
     
     [MaxLength(32)]
     [Column(TypeName = "jsonb")] 
-    public LangStr Code { get; set; } = default!;
+    public LangStr Code { get; set; } = new();
 
     public ICollection<Process>? Processes { get; set; }
     public ICollection<ItemProcedure>? ItemProcedures { get; set; }

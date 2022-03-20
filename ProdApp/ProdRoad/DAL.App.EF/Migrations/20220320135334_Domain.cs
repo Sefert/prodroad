@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace DAL.App.EF.Migrations
 {
-    public partial class jsonb : Migration
+    public partial class Domain : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -165,7 +165,8 @@ namespace DAL.App.EF.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     AppUserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<LangStr>(type: "jsonb", maxLength: 50, nullable: false)
+                    Name = table.Column<LangStr>(type: "jsonb", maxLength: 50, nullable: false),
+                    Registration = table.Column<LangStr>(type: "jsonb", maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -639,7 +640,8 @@ namespace DAL.App.EF.Migrations
                     ProcessId = table.Column<Guid>(type: "uuid", nullable: true),
                     UserNotificationId = table.Column<Guid>(type: "uuid", nullable: false),
                     TeamId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Info = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Head = table.Column<LangStr>(type: "jsonb", maxLength: 50, nullable: false),
+                    Info = table.Column<LangStr>(type: "jsonb", maxLength: 200, nullable: false),
                     Active = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedId = table.Column<Guid>(type: "uuid", nullable: false),
@@ -682,6 +684,11 @@ namespace DAL.App.EF.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PersonalCode", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { new Guid("9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e"), 0, "a9a3fe1c-34c1-41f3-a7c1-5c422f372e54", "admin@gmail.com", true, null, null, false, null, "ADMIN@GMAIL.COM", "ADMIN@GMAIL.COM", "AQAAAAEAACcQAAAAEMR/smZ8pt3QO9si0uMVr1RcIflzVcLc/0Vg8aOJEkNpnoP30pBphSNVMqG6FQuZ7Q==", null, "1234567890", true, "9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e", false, "admin@gmail.com" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ActiveNotifications_CreatedById",

@@ -12,11 +12,11 @@ public class Warehouse : BaseEntity
     
     [MaxLength(50)] 
     [Column(TypeName = "jsonb")] 
-    public LangStr Name { get; set; } = default!;
+    public LangStr Name { get; set; } = new();
     
     [MaxLength(50)] 
     [Column(TypeName = "jsonb")] 
-    public LangStr Address { get; set; } = default!;
+    public LangStr Address { get; set; } = new();
     
     public ICollection<ItemWarehouse>? ItemWarehouses { get; set; }
 }

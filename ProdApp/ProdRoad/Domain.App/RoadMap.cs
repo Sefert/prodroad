@@ -12,15 +12,15 @@ public class RoadMap : BaseEntity
     
     [MaxLength(50)] 
     [Column(TypeName = "jsonb")] 
-    public LangStr Name { get; set; } = default!;
-    [MaxLength(2)] 
-    [Column(TypeName = "jsonb")] 
+    public LangStr Name { get; set; } = new();
     
-    public LangStr? Position { get; set; }
     [MaxLength(2)] 
-    [Column(TypeName = "jsonb")] 
+    [Column(TypeName = "jsonb")]
+    public LangStr? Position { get; set; } = new();
     
-    public LangStr? Line { get; set; }
+    [MaxLength(2)] 
+    [Column(TypeName = "jsonb")]
+    public LangStr? Line { get; set; } = new();
 
     public ICollection<Process>? Processes { get; set; }
 }
