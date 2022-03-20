@@ -6,7 +6,7 @@ namespace WebApp;
 
 public static class AppDataHelper
 {
-    public static void SetupAppData(IApplicationBuilder app, IWebHostEnvironment env, IConfiguration conf)
+    public static async Task SetupAppData(IApplicationBuilder app, IWebHostEnvironment env, IConfiguration conf)
     {
         using var serviceScope = app.
             ApplicationServices.
@@ -34,13 +34,13 @@ public static class AppDataHelper
         
         if (conf.GetValue<bool>("DataInitialization:SeedIdentity"))
         {
-            SeedAddresses(context);
-            SeedCustomers(context);
+            await SeedAddresses(context);
+            await SeedCustomers(context);
             //SeedItems(context);
         }
     }
 
-    private static void SeedAddresses(AppDbContext context)
+    private static async Task SeedAddresses(AppDbContext context)
     {
         var data = new Address()
         {
@@ -52,10 +52,10 @@ public static class AppDataHelper
             }
         };
         context.Addresses.Add(data);
-        context.SaveChangesAsync();
+        await context.SaveChangesAsync();
     }
     
-    private static void SeedCustomers(AppDbContext context)
+    private static async Task SeedCustomers(AppDbContext context)
     {
         var data = new Customer()
         {
@@ -72,7 +72,7 @@ public static class AppDataHelper
             }
         };
         context.Customers.Add(data);
-        context.SaveChangesAsync();
+        await context.SaveChangesAsync();
     }
     
     private static void SeedItems(AppDbContext context)
