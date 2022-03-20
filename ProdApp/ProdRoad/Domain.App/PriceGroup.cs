@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Domain.Base;
 using Domain.App.Identity;
 
@@ -15,7 +16,9 @@ public class PriceGroup :BaseEntity
     public ICollection<PriceGroup>? PriceGroups { get; set; }
     public ICollection<CustomerPriceGroup>? CustomerPriceGroups { get; set; }
     
-    [MaxLength(30)] public string Name { get; set; } = default!;
+    [MaxLength(30)] 
+    [Column(TypeName = "jsonb")] 
+    public LangStr Name { get; set; } = default!;
     public decimal? Tax { get; set; }
     public decimal? Margin { get; set; }
     public decimal? Discount { get; set; }

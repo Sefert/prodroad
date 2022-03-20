@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Domain.Base;
 using Domain.App.Identity;
 
@@ -16,8 +17,17 @@ public class Item : BaseEntity
     public ICollection<Price>? Prices { get; set; }
     public ICollection<ItemWarehouse>? ItemWarehouses { get; set; }
 
-    [MaxLength(80)] public string Name { get; set; } = default!;
-    [MaxLength(30)] public string Type { get; set; } = default!;
-    [MaxLength(30)] public string Unit { get; set; } = default!;
+    [MaxLength(80)] 
+    [Column(TypeName = "jsonb")] 
+    public LangStr Name { get; set; } = default!;
+    
+    [MaxLength(30)]  
+    [Column(TypeName = "jsonb")]  
+    public LangStr Type { get; set; } = default!;
+    
+    [MaxLength(30)] 
+    [Column(TypeName = "jsonb")] 
+    public LangStr Unit { get; set; } = default!;
+    
     public decimal Quantity { get; set; }
 }
