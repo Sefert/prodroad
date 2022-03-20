@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
+using WebApp.DTO;
 
 namespace WebApp.ApiControllers
 {
@@ -24,21 +25,40 @@ namespace WebApp.ApiControllers
 
         // GET: api/RoadMap
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RoadMap>>> GetRoadMaps()
+        public async Task<ActionResult<IEnumerable<RoadMapDTO>>> GetRoadMaps()
         {
-            return await _context.RoadMaps.ToListAsync();
+            var dataList = (await _context.RoadMaps
+                    .ToListAsync())
+                .Select(row => new RoadMapDTO()
+                {
+                    AppUserId = row.AppUserId,
+                    Name = row.Name,
+                    Position = row.Position,
+                    Line = row.Line
+                })
+                .ToList();
+            return dataList;
         }
 
         // GET: api/RoadMap/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<RoadMap>> GetRoadMap(Guid id)
+        public async Task<ActionResult<RoadMapDTO>> GetRoadMap(Guid id)
         {
-            var roadMap = await _context.RoadMaps.FindAsync(id);
-
-            if (roadMap == null)
+            var dbRow = await _context.RoadMaps.FindAsync(id);
+            
+            if (dbRow == null)
             {
                 return NotFound();
             }
+            
+            var roadMap = new RoadMapDTO()
+            {
+                Id = dbRow.Id,
+                AppUserId = dbRow.AppUserId,
+                Name = dbRow.Name,
+                Position = dbRow.Position,
+                Line = dbRow.Line
+            };
 
             return roadMap;
         }
@@ -46,12 +66,20 @@ namespace WebApp.ApiControllers
         // PUT: api/RoadMap/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRoadMap(Guid id, RoadMap roadMap)
+        public async Task<IActionResult> PutRoadMap(Guid id, RoadMapDTO roadMap)
         {
             if (id != roadMap.Id)
             {
                 return BadRequest();
             }
+
+            var dbRow = await _context.RoadMaps.FindAsync(id);
+            
+            if (dbRow == null) {return NotFound();}
+
+            dbRow.Name!.SetTranslation(roadMap.Name!);
+            dbRow.Position!.SetTranslation(roadMap.Position!);
+            dbRow.Line!.SetTranslation(roadMap.Line!);
 
             _context.Entry(roadMap).State = EntityState.Modified;
 
@@ -77,9 +105,19 @@ namespace WebApp.ApiControllers
         // POST: api/RoadMap
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<RoadMap>> PostRoadMap(RoadMap roadMap)
+        public async Task<ActionResult<RoadMapDTO>> PostRoadMap(RoadMapDTO roadMap)
         {
-            _context.RoadMaps.Add(roadMap);
+            var dbRow = new RoadMap()
+            {
+                AppUserId = roadMap.AppUserId,
+            };
+            
+            dbRow.Name!.SetTranslation(roadMap.Name!);
+            dbRow.Position!.SetTranslation(roadMap.Position!);
+            dbRow.Line!.SetTranslation(roadMap.Line!);
+            
+            _context.RoadMaps.Add(dbRow);
+            
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetRoadMap", new { id = roadMap.Id }, roadMap);

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
+using WebApp.DTO;
 
 namespace WebApp.ApiControllers
 {
@@ -24,34 +25,57 @@ namespace WebApp.ApiControllers
 
         // GET: api/ItemProcedure
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ItemProcedure>>> GetItemProcedures()
+        public async Task<ActionResult<IEnumerable<ItemProcedureDTO>>> GetItemProcedures()
         {
-            return await _context.ItemProcedures.ToListAsync();
+            var dataList = (await _context.ItemProcedures
+                    .ToListAsync())
+                .Select(row => new ItemProcedureDTO()
+                {
+                    ProcedureId = row.ProcedureId,
+                    ItemId = row.ItemId,
+                    CreatedUsed= row.CreatedUsed,
+                    Quantity = row.Quantity
+                })
+                .ToList();
+            return dataList;
         }
 
         // GET: api/ItemProcedure/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ItemProcedure>> GetItemProcedure(Guid id)
+        public async Task<ActionResult<ItemProcedureDTO>> GetItemProcedure(Guid id)
         {
-            var itemProcedure = await _context.ItemProcedures.FindAsync(id);
-
-            if (itemProcedure == null)
+            var dbRow = await _context.ItemProcedures.FindAsync(id);
+            
+            if (dbRow == null)
             {
                 return NotFound();
             }
-
+            
+            var itemProcedure = new ItemProcedureDTO()
+            {
+                Id = dbRow.Id,
+                ProcedureId = dbRow.ProcedureId,
+                ItemId = dbRow.ItemId,
+                CreatedUsed= dbRow.CreatedUsed,
+                Quantity = dbRow.Quantity
+            };
+            
             return itemProcedure;
         }
 
         // PUT: api/ItemProcedure/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutItemProcedure(Guid id, ItemProcedure itemProcedure)
+        public async Task<IActionResult> PutItemProcedure(Guid id, ItemProcedureDTO itemProcedure)
         {
             if (id != itemProcedure.Id)
             {
                 return BadRequest();
             }
+
+            var dbRow = await _context.ItemProcedures.FindAsync(id);
+            
+            if (dbRow == null) {return NotFound();}
 
             _context.Entry(itemProcedure).State = EntityState.Modified;
 
@@ -77,9 +101,18 @@ namespace WebApp.ApiControllers
         // POST: api/ItemProcedure
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ItemProcedure>> PostItemProcedure(ItemProcedure itemProcedure)
+        public async Task<ActionResult<ItemProcedureDTO>> PostItemProcedure(ItemProcedureDTO itemProcedure)
         {
-            _context.ItemProcedures.Add(itemProcedure);
+            var dbRow = new ItemProcedure()
+            {
+                ProcedureId = itemProcedure.ProcedureId,
+                ItemId = itemProcedure.ItemId,
+                CreatedUsed= itemProcedure.CreatedUsed,
+                Quantity = itemProcedure.Quantity
+            };     
+            
+            _context.ItemProcedures.Add(dbRow);
+            
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetItemProcedure", new { id = itemProcedure.Id }, itemProcedure);

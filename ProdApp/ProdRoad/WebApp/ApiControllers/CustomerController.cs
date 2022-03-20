@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
+using WebApp.DTO;
 
 namespace WebApp.ApiControllers
 {
@@ -24,21 +25,38 @@ namespace WebApp.ApiControllers
 
         // GET: api/Customer
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
+        public async Task<ActionResult<IEnumerable<CustomerDTO>>> GetCustomers()
         {
-            return await _context.Customers.ToListAsync();
+            var dataList = (await _context.Customers
+                    .ToListAsync())
+                    .Select(row => new CustomerDTO()
+                    {
+                        AppUserId = row.AppUserId,
+                        Name = row.Name,
+                        Registration = row.Registration
+                    })
+                    .ToList();
+            return dataList;
         }
 
         // GET: api/Customer/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Customer>> GetCustomer(Guid id)
+        public async Task<ActionResult<CustomerDTO>> GetCustomer(Guid id)
         {
-            var customer = await _context.Customers.FindAsync(id);
-
-            if (customer == null)
+            var dbRow = await _context.Customers.FindAsync(id);
+            
+            if (dbRow == null)
             {
                 return NotFound();
             }
+            
+            var customer = new CustomerDTO()
+            {
+                Id = dbRow.Id,
+                AppUserId = dbRow.AppUserId,
+                Name = dbRow.Name,
+                Registration = dbRow.Registration
+            };
 
             return customer;
         }
@@ -46,12 +64,19 @@ namespace WebApp.ApiControllers
         // PUT: api/Customer/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCustomer(Guid id, Customer customer)
+        public async Task<IActionResult> PutCustomer(Guid id, CustomerDTO customer)
         {
             if (id != customer.Id)
             {
                 return BadRequest();
             }
+
+            var dbRow = await _context.Customers.FindAsync(id);
+            
+            if (dbRow == null) {return NotFound();}
+
+            dbRow.Name!.SetTranslation(customer.Name!);
+            dbRow.Registration!.SetTranslation(customer.Registration!);
 
             _context.Entry(customer).State = EntityState.Modified;
 
@@ -77,9 +102,17 @@ namespace WebApp.ApiControllers
         // POST: api/Customer
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Customer>> PostCustomer(Customer customer)
+        public async Task<ActionResult<CustomerDTO>> PostCustomer(CustomerDTO customer)
         {
-            _context.Customers.Add(customer);
+            var dbRow = new Customer()
+            {
+                AppUserId = customer.AppUserId,
+            };
+            
+            dbRow.Name!.SetTranslation(customer.Name!);
+            dbRow.Registration!.SetTranslation(customer.Registration!);
+            
+            _context.Customers.Add(dbRow);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetCustomer", new { id = customer.Id }, customer);

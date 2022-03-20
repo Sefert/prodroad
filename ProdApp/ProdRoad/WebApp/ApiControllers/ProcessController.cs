@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
+using WebApp.DTO;
 
 namespace WebApp.ApiControllers
 {
@@ -24,21 +25,40 @@ namespace WebApp.ApiControllers
 
         // GET: api/Process
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Process>>> GetProcesses()
+        public async Task<ActionResult<IEnumerable<ProcessDTO>>> GetProcesses()
         {
-            return await _context.Processes.ToListAsync();
+            var dataList = (await _context.Processes
+                    .ToListAsync())
+                .Select(row => new ProcessDTO()
+                {
+                    TeamId = row.TeamId,
+                    RoadMapId = row.RoadMapId,
+                    ProcedureId = row.ProcedureId,
+                    CreatedAmount = row.CreatedAmount
+                })
+                .ToList();
+            return dataList;
         }
 
         // GET: api/Process/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Process>> GetProcess(Guid id)
+        public async Task<ActionResult<ProcessDTO>> GetProcess(Guid id)
         {
-            var process = await _context.Processes.FindAsync(id);
-
-            if (process == null)
+            var dbRow = await _context.Processes.FindAsync(id);
+            
+            if (dbRow == null)
             {
                 return NotFound();
             }
+            
+            var process = new ProcessDTO()
+            {
+                Id = dbRow.Id,
+                TeamId = dbRow.TeamId,
+                RoadMapId = dbRow.RoadMapId,
+                ProcedureId = dbRow.ProcedureId,
+                CreatedAmount = dbRow.CreatedAmount
+            };
 
             return process;
         }
@@ -46,12 +66,16 @@ namespace WebApp.ApiControllers
         // PUT: api/Process/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProcess(Guid id, Process process)
+        public async Task<IActionResult> PutProcess(Guid id, ProcessDTO process)
         {
             if (id != process.Id)
             {
                 return BadRequest();
             }
+
+            var dbRow = await _context.Processes.FindAsync(id);
+            
+            if (dbRow == null) {return NotFound();}
 
             _context.Entry(process).State = EntityState.Modified;
 
@@ -77,9 +101,17 @@ namespace WebApp.ApiControllers
         // POST: api/Process
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Process>> PostProcess(Process process)
+        public async Task<ActionResult<ProcessDTO>> PostProcess(ProcessDTO process)
         {
-            _context.Processes.Add(process);
+            var dbRow = new Process()
+            {
+                TeamId = process.TeamId,
+                RoadMapId = process.RoadMapId,
+                ProcedureId = process.ProcedureId,
+                CreatedAmount = process.CreatedAmount
+            };
+            
+            _context.Processes.Add(dbRow);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetProcess", new { id = process.Id }, process);

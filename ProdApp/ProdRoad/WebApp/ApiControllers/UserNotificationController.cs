@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
+using WebApp.DTO;
 
 namespace WebApp.ApiControllers
 {
@@ -24,21 +25,42 @@ namespace WebApp.ApiControllers
 
         // GET: api/UserNotification
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserNotification>>> GetUserNotifications()
+        public async Task<ActionResult<IEnumerable<UserNotificationDTO>>> GetUserNotifications()
         {
-            return await _context.UserNotifications.ToListAsync();
+            var dataList = (await _context.UserNotifications
+                    .ToListAsync())
+                .Select(row => new UserNotificationDTO()
+                {
+                    NotificationType = row.NotificationType,
+                    AppUserId = row.AppUserId,
+                    Name = row.Name,
+                    Color = row.Color,
+                    Active = row.Active
+                })
+                .ToList();
+            return dataList;
         }
 
         // GET: api/UserNotification/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserNotification>> GetUserNotification(Guid id)
+        public async Task<ActionResult<UserNotificationDTO>> GetUserNotification(Guid id)
         {
-            var userNotification = await _context.UserNotifications.FindAsync(id);
-
-            if (userNotification == null)
+            var dbRow = await _context.UserNotifications.FindAsync(id);
+            
+            if (dbRow == null)
             {
                 return NotFound();
             }
+            
+            var userNotification = new UserNotificationDTO()
+            {
+                Id = dbRow.Id,
+                NotificationType = dbRow.NotificationType,
+                AppUserId = dbRow.AppUserId,
+                Name = dbRow.Name,
+                Color = dbRow.Color,
+                Active = dbRow.Active
+            };
 
             return userNotification;
         }
@@ -46,12 +68,19 @@ namespace WebApp.ApiControllers
         // PUT: api/UserNotification/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUserNotification(Guid id, UserNotification userNotification)
+        public async Task<IActionResult> PutUserNotification(Guid id, UserNotificationDTO userNotification)
         {
             if (id != userNotification.Id)
             {
                 return BadRequest();
             }
+
+            var dbRow = await _context.UserNotifications.FindAsync(id);
+            
+            if (dbRow == null) {return NotFound();}
+
+            dbRow.Name!.SetTranslation(userNotification.Name!);
+            dbRow.Color!.SetTranslation(userNotification.Color!);
 
             _context.Entry(userNotification).State = EntityState.Modified;
 
@@ -77,9 +106,18 @@ namespace WebApp.ApiControllers
         // POST: api/UserNotification
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<UserNotification>> PostUserNotification(UserNotification userNotification)
+        public async Task<ActionResult<UserNotificationDTO>> PostUserNotification(UserNotificationDTO userNotification)
         {
-            _context.UserNotifications.Add(userNotification);
+            var dbRow = new UserNotification()
+            {
+                AppUserId = userNotification.AppUserId,
+                Active = userNotification.Active
+            };
+            
+            dbRow.Name!.SetTranslation(userNotification.Name!);
+            dbRow.Color!.SetTranslation(userNotification.Color!);
+            
+            _context.UserNotifications.Add(dbRow);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetUserNotification", new { id = userNotification.Id }, userNotification);

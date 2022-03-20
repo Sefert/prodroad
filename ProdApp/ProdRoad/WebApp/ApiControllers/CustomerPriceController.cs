@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
+using WebApp.DTO;
 
 namespace WebApp.ApiControllers
 {
@@ -24,21 +25,36 @@ namespace WebApp.ApiControllers
 
         // GET: api/CustomerPrice
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CustomerPrice>>> GetCustomerPrices()
+        public async Task<ActionResult<IEnumerable<CustomerPriceDTO>>> GetCustomerPrices()
         {
-            return await _context.CustomerPrices.ToListAsync();
+            var dataList = (await _context.CustomerPrices
+                    .ToListAsync())
+                .Select(row => new CustomerPriceDTO()
+                {
+                    CustomerPriceGroupId = row.CustomerPriceGroupId,
+                    PriceId = row.PriceId
+                })
+                .ToList();
+            return dataList;
         }
 
         // GET: api/CustomerPrice/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CustomerPrice>> GetCustomerPrice(Guid id)
+        public async Task<ActionResult<CustomerPriceDTO>> GetCustomerPrice(Guid id)
         {
-            var customerPrice = await _context.CustomerPrices.FindAsync(id);
-
-            if (customerPrice == null)
+            var dbRow = await _context.CustomerPrices.FindAsync(id);
+            
+            if (dbRow == null)
             {
                 return NotFound();
             }
+            
+            var customerPrice = new CustomerPriceDTO()
+            {
+                Id = dbRow.Id,
+                CustomerPriceGroupId = dbRow.CustomerPriceGroupId,
+                PriceId = dbRow.PriceId
+            };
 
             return customerPrice;
         }
@@ -46,12 +62,16 @@ namespace WebApp.ApiControllers
         // PUT: api/CustomerPrice/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCustomerPrice(Guid id, CustomerPrice customerPrice)
+        public async Task<IActionResult> PutCustomerPrice(Guid id, CustomerPriceDTO customerPrice)
         {
             if (id != customerPrice.Id)
             {
                 return BadRequest();
             }
+
+            var dbRow = await _context.CustomerPrices.FindAsync(id);
+            
+            if (dbRow == null) {return NotFound();}
 
             _context.Entry(customerPrice).State = EntityState.Modified;
 

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
+using WebApp.DTO;
 
 namespace WebApp.ApiControllers
 {
@@ -24,21 +25,38 @@ namespace WebApp.ApiControllers
 
         // GET: api/Price
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Price>>> GetPrices()
+        public async Task<ActionResult<IEnumerable<PriceDTO>>> GetPrices()
         {
-            return await _context.Prices.ToListAsync();
+            var dataList = (await _context.Prices
+                    .ToListAsync())
+                .Select(row => new PriceDTO()
+                {
+                    ItemId = row.ItemId,
+                    ItemWarehouseId = row.ItemWarehouseId,
+                    PureCost = row.PureCost
+                })
+                .ToList();
+            return dataList;
         }
 
         // GET: api/Price/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Price>> GetPrice(Guid id)
+        public async Task<ActionResult<PriceDTO>> GetPrice(Guid id)
         {
-            var price = await _context.Prices.FindAsync(id);
-
-            if (price == null)
+            var dbRow = await _context.Prices.FindAsync(id);
+            
+            if (dbRow == null)
             {
                 return NotFound();
             }
+            
+            var price = new PriceDTO()
+            {
+                Id = dbRow.Id,
+                ItemId = dbRow.ItemId,
+                ItemWarehouseId = dbRow.ItemWarehouseId,
+                PureCost = dbRow.PureCost
+            };
 
             return price;
         }
@@ -46,12 +64,16 @@ namespace WebApp.ApiControllers
         // PUT: api/Price/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPrice(Guid id, Price price)
+        public async Task<IActionResult> PutPrice(Guid id, PriceDTO price)
         {
             if (id != price.Id)
             {
                 return BadRequest();
             }
+
+            var dbRow = await _context.Prices.FindAsync(id);
+            
+            if (dbRow == null) {return NotFound();}
 
             _context.Entry(price).State = EntityState.Modified;
 
@@ -77,9 +99,15 @@ namespace WebApp.ApiControllers
         // POST: api/Price
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Price>> PostPrice(Price price)
+        public async Task<ActionResult<PriceDTO>> PostPrice(PriceDTO price)
         {
-            _context.Prices.Add(price);
+            var dbRow = new Price()
+            {
+                ItemId = price.ItemId,
+                ItemWarehouseId = price.ItemWarehouseId,
+                PureCost = price.PureCost
+            };
+            _context.Prices.Add(dbRow);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetPrice", new { id = price.Id }, price);

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
+using WebApp.DTO;
 
 namespace WebApp.ApiControllers
 {
@@ -24,21 +25,38 @@ namespace WebApp.ApiControllers
 
         // GET: api/Team
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Team>>> GetTeams()
+        public async Task<ActionResult<IEnumerable<TeamDTO>>> GetTeams()
         {
-            return await _context.Teams.ToListAsync();
+            var dataList = (await _context.Teams
+                    .ToListAsync())
+                .Select(row => new TeamDTO()
+                {
+                    AppUserId = row.AppUserId,
+                    Name = row.Name,
+                    Code = row.Code
+                })
+                .ToList();
+            return dataList;
         }
 
         // GET: api/Team/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Team>> GetTeam(Guid id)
+        public async Task<ActionResult<TeamDTO>> GetTeam(Guid id)
         {
-            var team = await _context.Teams.FindAsync(id);
-
-            if (team == null)
+            var dbRow = await _context.Teams.FindAsync(id);
+            
+            if (dbRow == null)
             {
                 return NotFound();
             }
+            
+            var team = new TeamDTO()
+            {
+                Id = dbRow.Id,
+                AppUserId = dbRow.AppUserId,
+                Name = dbRow.Name,
+                Code = dbRow.Code
+            };
 
             return team;
         }
@@ -46,12 +64,19 @@ namespace WebApp.ApiControllers
         // PUT: api/Team/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTeam(Guid id, Team team)
+        public async Task<IActionResult> PutTeam(Guid id, TeamDTO team)
         {
             if (id != team.Id)
             {
                 return BadRequest();
             }
+
+            var dbRow = await _context.Teams.FindAsync(id);
+            
+            if (dbRow == null) {return NotFound();}
+
+            dbRow.Name!.SetTranslation(team.Name!);
+            dbRow.Code!.SetTranslation(team.Code!);
 
             _context.Entry(team).State = EntityState.Modified;
 
@@ -77,9 +102,17 @@ namespace WebApp.ApiControllers
         // POST: api/Team
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Team>> PostTeam(Team team)
+        public async Task<ActionResult<TeamDTO>> PostTeam(TeamDTO team)
         {
-            _context.Teams.Add(team);
+            var dbRow = new Team()
+            {
+                AppUserId = team.AppUserId,
+            };
+            
+            dbRow.Name!.SetTranslation(team.Name!);
+            dbRow.Code!.SetTranslation(team.Code!);
+            
+            _context.Teams.Add(dbRow);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetTeam", new { id = team.Id }, team);

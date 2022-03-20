@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
+using WebApp.DTO;
 
 namespace WebApp.ApiControllers
 {
@@ -24,21 +25,38 @@ namespace WebApp.ApiControllers
 
         // GET: api/ItemWarehouse
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ItemWarehouse>>> GetItemWarehouses()
+        public async Task<ActionResult<IEnumerable<ItemWarehouseDTO>>> GetItemWarehouses()
         {
-            return await _context.ItemWarehouses.ToListAsync();
+            var dataList = (await _context.ItemWarehouses
+                    .ToListAsync())
+                .Select(row => new ItemWarehouseDTO()
+                {
+                    ItemId = row.ItemId,
+                    WarehouseId = row.WarehouseId,
+                    Quantity = row.Quantity
+                })
+                .ToList();
+            return dataList;
         }
 
         // GET: api/ItemWarehouse/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ItemWarehouse>> GetItemWarehouse(Guid id)
+        public async Task<ActionResult<ItemWarehouseDTO>> GetItemWarehouse(Guid id)
         {
-            var itemWarehouse = await _context.ItemWarehouses.FindAsync(id);
-
-            if (itemWarehouse == null)
+            var dbRow = await _context.ItemWarehouses.FindAsync(id);
+            
+            if (dbRow == null)
             {
                 return NotFound();
             }
+            
+            var itemWarehouse = new ItemWarehouseDTO()
+            {
+                Id = dbRow.Id,
+                ItemId = dbRow.ItemId,
+                WarehouseId = dbRow.WarehouseId,
+                Quantity = dbRow.Quantity
+            };
 
             return itemWarehouse;
         }
@@ -46,12 +64,16 @@ namespace WebApp.ApiControllers
         // PUT: api/ItemWarehouse/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutItemWarehouse(Guid id, ItemWarehouse itemWarehouse)
+        public async Task<IActionResult> PutItemWarehouse(Guid id, ItemWarehouseDTO itemWarehouse)
         {
             if (id != itemWarehouse.Id)
             {
                 return BadRequest();
             }
+
+            var dbRow = await _context.ItemWarehouses.FindAsync(id);
+            
+            if (dbRow == null) {return NotFound();}
 
             _context.Entry(itemWarehouse).State = EntityState.Modified;
 
@@ -77,9 +99,16 @@ namespace WebApp.ApiControllers
         // POST: api/ItemWarehouse
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ItemWarehouse>> PostItemWarehouse(ItemWarehouse itemWarehouse)
+        public async Task<ActionResult<ItemWarehouseDTO>> PostItemWarehouse(ItemWarehouseDTO itemWarehouse)
         {
-            _context.ItemWarehouses.Add(itemWarehouse);
+            var dbRow = new ItemWarehouse()
+            {
+                ItemId = itemWarehouse.ItemId,
+                WarehouseId = itemWarehouse.WarehouseId,
+                Quantity = itemWarehouse.Quantity
+            };
+            
+            _context.ItemWarehouses.Add(dbRow);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetItemWarehouse", new { id = itemWarehouse.Id }, itemWarehouse);

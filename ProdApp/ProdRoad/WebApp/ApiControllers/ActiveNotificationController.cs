@@ -1,13 +1,9 @@
 #nullable disable
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
+using WebApp.DTO;
 
 namespace WebApp.ApiControllers
 {
@@ -21,24 +17,47 @@ namespace WebApp.ApiControllers
         {
             _context = context;
         }
-
+        
         // GET: api/ActiveNotification
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ActiveNotification>>> GetActiveNotifications()
+        public async Task<ActionResult<IEnumerable<ActiveNotificationDTO>>> GetActiveNotifications()
         {
-            return await _context.ActiveNotifications.ToListAsync();
+            var dataList = (await _context.ActiveNotifications
+                .ToListAsync())
+                .Select(row => new ActiveNotificationDTO()
+                {
+                    ProcessId = row.ProcessId,
+                    UserNotificationId = row.UserNotificationId,
+                    TeamId = row.TeamId,
+                    Head =  row.Head,
+                    Info = row.Info,
+                    Active = row.Active,
+                })
+                .ToList();
+            return dataList;
         }
 
         // GET: api/ActiveNotification/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ActiveNotification>> GetActiveNotification(Guid id)
+        public async Task<ActionResult<ActiveNotificationDTO>> GetActiveNotification(Guid id)
         {
-            var activeNotification = await _context.ActiveNotifications.FindAsync(id);
-
-            if (activeNotification == null)
+            var dbData = await _context.ActiveNotifications.FindAsync(id);
+            
+            if (dbData == null)
             {
                 return NotFound();
             }
+            
+            var activeNotification = new ActiveNotificationDTO()
+            {
+                Id = dbData.Id,
+                ProcessId = dbData.ProcessId,
+                UserNotificationId = dbData.UserNotificationId,
+                TeamId = dbData.TeamId,
+                Head =  dbData.Head,
+                Info = dbData.Info,
+                Active = dbData.Active
+            };
 
             return activeNotification;
         }
@@ -46,12 +65,19 @@ namespace WebApp.ApiControllers
         // PUT: api/ActiveNotification/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutActiveNotification(Guid id, ActiveNotification activeNotification)
+        public async Task<IActionResult> PutActiveNotification(Guid id, ActiveNotificationDTO activeNotification)
         {
             if (id != activeNotification.Id)
             {
                 return BadRequest();
             }
+
+            var dbData = await _context.ActiveNotifications.FindAsync(id);
+            
+            if (dbData == null) {return NotFound();}
+
+            dbData.Info!.SetTranslation(activeNotification.Info!);
+            dbData.Head!.SetTranslation(activeNotification.Head!);
 
             _context.Entry(activeNotification).State = EntityState.Modified;
 
@@ -77,9 +103,20 @@ namespace WebApp.ApiControllers
         // POST: api/ActiveNotification
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ActiveNotification>> PostActiveNotification(ActiveNotification activeNotification)
+        public async Task<ActionResult<ActiveNotificationDTO>> PostActiveNotification(ActiveNotificationDTO activeNotification)
         {
-            _context.ActiveNotifications.Add(activeNotification);
+            var dbRow = new ActiveNotification()
+            {
+                ProcessId = activeNotification.ProcessId,
+                UserNotificationId = activeNotification.UserNotificationId,
+                TeamId = activeNotification.TeamId
+            };
+            
+            dbRow.Info!.SetTranslation(activeNotification.Info!);
+            dbRow.Head!.SetTranslation(activeNotification.Head!);
+            
+            _context.ActiveNotifications.Add(dbRow);
+            
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetActiveNotification", new { id = activeNotification.Id }, activeNotification);
