@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DAL.App.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220312192930_address-jsonb")]
-    partial class addressjsonb
+    [Migration("20220320093346_jsonb")]
+    partial class jsonb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -135,14 +135,10 @@ namespace DAL.App.EF.Migrations
                     b.Property<Guid>("AppUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Name")
+                    b.Property<LangStr>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("Registration")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("jsonb");
 
                     b.HasKey("Id");
 
@@ -353,23 +349,23 @@ namespace DAL.App.EF.Migrations
                     b.Property<Guid?>("ItemId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Name")
+                    b.Property<LangStr>("Name")
                         .IsRequired()
                         .HasMaxLength(80)
-                        .HasColumnType("character varying(80)");
+                        .HasColumnType("jsonb");
 
                     b.Property<decimal>("Quantity")
                         .HasColumnType("numeric");
 
-                    b.Property<string>("Type")
+                    b.Property<LangStr>("Type")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                        .HasColumnType("jsonb");
 
-                    b.Property<string>("Unit")
+                    b.Property<LangStr>("Unit")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                        .HasColumnType("jsonb");
 
                     b.HasKey("Id");
 
@@ -492,10 +488,10 @@ namespace DAL.App.EF.Migrations
                     b.Property<decimal?>("Margin")
                         .HasColumnType("numeric");
 
-                    b.Property<string>("Name")
+                    b.Property<LangStr>("Name")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                        .HasColumnType("jsonb");
 
                     b.Property<Guid?>("PriceGroupId")
                         .HasColumnType("uuid");
@@ -521,15 +517,15 @@ namespace DAL.App.EF.Migrations
                     b.Property<Guid>("AppUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Code")
+                    b.Property<LangStr>("Code")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasColumnType("jsonb");
 
-                    b.Property<string>("Name")
+                    b.Property<LangStr>("Name")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                        .HasColumnType("jsonb");
 
                     b.HasKey("Id");
 
@@ -604,18 +600,18 @@ namespace DAL.App.EF.Migrations
                     b.Property<Guid>("AppUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Line")
+                    b.Property<LangStr>("Line")
                         .HasMaxLength(2)
-                        .HasColumnType("character varying(2)");
+                        .HasColumnType("jsonb");
 
-                    b.Property<string>("Name")
+                    b.Property<LangStr>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("jsonb");
 
-                    b.Property<string>("Position")
+                    b.Property<LangStr>("Position")
                         .HasMaxLength(2)
-                        .HasColumnType("character varying(2)");
+                        .HasColumnType("jsonb");
 
                     b.HasKey("Id");
 
@@ -633,15 +629,15 @@ namespace DAL.App.EF.Migrations
                     b.Property<Guid>("AppUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Code")
+                    b.Property<LangStr>("Code")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("jsonb");
 
-                    b.Property<string>("Name")
+                    b.Property<LangStr>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("jsonb");
 
                     b.HasKey("Id");
 
@@ -662,15 +658,15 @@ namespace DAL.App.EF.Migrations
                     b.Property<Guid>("AppUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Color")
+                    b.Property<LangStr>("Color")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("jsonb");
 
-                    b.Property<string>("Name")
+                    b.Property<LangStr>("Name")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("jsonb");
 
                     b.Property<int>("NotificationType")
                         .HasColumnType("integer");
@@ -709,18 +705,18 @@ namespace DAL.App.EF.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Address")
+                    b.Property<LangStr>("Address")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("jsonb");
 
                     b.Property<Guid>("AppUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Name")
+                    b.Property<LangStr>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("jsonb");
 
                     b.HasKey("Id");
 

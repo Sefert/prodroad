@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace DAL.App.EF.Migrations
 {
-    public partial class addressjsonb : Migration
+    public partial class jsonb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -165,8 +165,7 @@ namespace DAL.App.EF.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     AppUserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Registration = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true)
+                    Name = table.Column<LangStr>(type: "jsonb", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -186,9 +185,9 @@ namespace DAL.App.EF.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ItemId = table.Column<Guid>(type: "uuid", nullable: true),
                     AppUserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(80)", maxLength: 80, nullable: false),
-                    Type = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
-                    Unit = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    Name = table.Column<LangStr>(type: "jsonb", maxLength: 80, nullable: false),
+                    Type = table.Column<LangStr>(type: "jsonb", maxLength: 30, nullable: false),
+                    Unit = table.Column<LangStr>(type: "jsonb", maxLength: 30, nullable: false),
                     Quantity = table.Column<decimal>(type: "numeric", nullable: false)
                 },
                 constraints: table =>
@@ -215,7 +214,7 @@ namespace DAL.App.EF.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     AppUserId = table.Column<Guid>(type: "uuid", nullable: false),
                     PriceGroupId = table.Column<Guid>(type: "uuid", nullable: true),
-                    Name = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    Name = table.Column<LangStr>(type: "jsonb", maxLength: 30, nullable: false),
                     Tax = table.Column<decimal>(type: "numeric", nullable: true),
                     Margin = table.Column<decimal>(type: "numeric", nullable: true),
                     Discount = table.Column<decimal>(type: "numeric", nullable: true)
@@ -243,8 +242,8 @@ namespace DAL.App.EF.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     AppUserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
-                    Code = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false)
+                    Name = table.Column<LangStr>(type: "jsonb", maxLength: 32, nullable: false),
+                    Code = table.Column<LangStr>(type: "jsonb", maxLength: 32, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -263,9 +262,9 @@ namespace DAL.App.EF.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     AppUserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Position = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: true),
-                    Line = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: true)
+                    Name = table.Column<LangStr>(type: "jsonb", maxLength: 50, nullable: false),
+                    Position = table.Column<LangStr>(type: "jsonb", maxLength: 2, nullable: true),
+                    Line = table.Column<LangStr>(type: "jsonb", maxLength: 2, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -284,8 +283,8 @@ namespace DAL.App.EF.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     AppUserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Code = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false)
+                    Name = table.Column<LangStr>(type: "jsonb", maxLength: 50, nullable: false),
+                    Code = table.Column<LangStr>(type: "jsonb", maxLength: 20, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -305,8 +304,8 @@ namespace DAL.App.EF.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     NotificationType = table.Column<int>(type: "integer", nullable: false),
                     AppUserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
-                    Color = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    Name = table.Column<LangStr>(type: "jsonb", maxLength: 20, nullable: false),
+                    Color = table.Column<LangStr>(type: "jsonb", maxLength: 20, nullable: false),
                     Active = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
@@ -326,8 +325,8 @@ namespace DAL.App.EF.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     AppUserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Address = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
+                    Name = table.Column<LangStr>(type: "jsonb", maxLength: 50, nullable: false),
+                    Address = table.Column<LangStr>(type: "jsonb", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {

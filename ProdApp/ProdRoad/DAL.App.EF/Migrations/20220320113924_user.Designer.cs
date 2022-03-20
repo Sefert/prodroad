@@ -4,6 +4,7 @@ using DAL.App.EF;
 using Domain.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DAL.App.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220320113924_user")]
+    partial class user
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -339,18 +341,14 @@ namespace DAL.App.EF.Migrations
                         {
                             Id = new Guid("9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "d86fc1e4-3ae5-4a09-b544-e87f8b7dc0bd",
+                            ConcurrencyStamp = "9825f1e7-da57-4d1c-a21f-f99ad1494d56",
                             Email = "admin@gmail.com",
-                            EmailConfirmed = true,
+                            EmailConfirmed = false,
                             LockoutEnabled = false,
-                            NormalizedEmail = "ADMIN@GMAIL.COM",
-                            NormalizedUserName = "ADMIN@GMAIL.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEO1RlHCKyVtk0frN1xzsb6d+6sVdAv0UPfOsUg0qkZvlB/h2SEWUI0eKW3dvXVzdJg==",
                             PhoneNumber = "1234567890",
-                            PhoneNumberConfirmed = true,
-                            SecurityStamp = "9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e",
+                            PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
-                            UserName = "admin@gmail.com"
+                            UserName = "Admin"
                         });
                 });
 

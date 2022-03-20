@@ -1,5 +1,6 @@
 ﻿using Domain.App;
 using Domain.App.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,11 +26,13 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     public DbSet<Warehouse> Warehouses { get; set; } = default!;
     public DbSet<CustomerPrice> CustomerPrices { get; set; } = default!;
 
-
     public AppDbContext(DbContextOptions<AppDbContext> options): base(options)
     {
     }
 
+    /*
+     * https://www.c-sharpcorner.com/article/seed-data-in-net-core-identity/
+     */
     protected override void OnModelCreating(ModelBuilder builder)
     {
 
@@ -42,6 +45,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
         }
         
         base.OnModelCreating(builder);
+        SeedUsers(builder); 
     }
 
     public override int SaveChanges()
@@ -93,5 +97,27 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
                 prop.SetValue(entity, DateTime.SpecifyKind(originalValue.Value, DateTimeKind.Utc));
             }
         }
+    }
+    private void SeedUsers(ModelBuilder builder)  
+    {
+        var passwordHasher = new PasswordHasher<AppUser>(); 
+        
+        var appUser = new AppUser() 
+        {  
+            Id = Guid.Parse("9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e"),  
+            UserName = "admin@gmail.com",  
+            Email = "admin@gmail.com",  
+            LockoutEnabled = false,  
+            PhoneNumber = "1234567890",
+            NormalizedUserName = "ADMIN@GMAIL.COM",
+            NormalizedEmail = "ADMIN@GMAIL.COM",
+            EmailConfirmed = true,
+            PhoneNumberConfirmed = true,
+            SecurityStamp = Guid.Parse("9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e").ToString("D")
+        };
+        
+        appUser.PasswordHash = passwordHasher.HashPassword(appUser, "1.TestWebApp");
+
+        builder.Entity<AppUser>().HasData(appUser);  
     }
 }

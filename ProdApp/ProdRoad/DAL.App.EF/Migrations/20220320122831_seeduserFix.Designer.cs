@@ -4,6 +4,7 @@ using DAL.App.EF;
 using Domain.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DAL.App.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220320122831_seeduserFix")]
+    partial class seeduserFix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -339,16 +341,16 @@ namespace DAL.App.EF.Migrations
                         {
                             Id = new Guid("9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "d86fc1e4-3ae5-4a09-b544-e87f8b7dc0bd",
+                            ConcurrencyStamp = "fce4feed-43a7-4f40-9c70-c2cf4a846b99",
                             Email = "admin@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@GMAIL.COM",
                             NormalizedUserName = "ADMIN@GMAIL.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEO1RlHCKyVtk0frN1xzsb6d+6sVdAv0UPfOsUg0qkZvlB/h2SEWUI0eKW3dvXVzdJg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAECXiy8NayHtVTt5NQR+CzeUnlQRUyM0/uB1ED7heLxfZFjJtgaSMFP1cokNmCZmkHw==",
                             PhoneNumber = "1234567890",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e",
+                            SecurityStamp = "1540a51f-d5d9-45d4-8a85-e7585901d4e6",
                             TwoFactorEnabled = false,
                             UserName = "admin@gmail.com"
                         });

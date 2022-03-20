@@ -1,5 +1,7 @@
 using DAL.App.EF;
 using Domain.App;
+using Domain.App.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace WebApp;
@@ -45,12 +47,12 @@ public static class AppDataHelper
                 Country =
                 {
                     ["et"] = "Eesti",
-                    ["en"] = "Estonia"
+                    ["en"] = "Estonia",
                 }
             };
             context.Addresses.Add(address);
             context.SaveChanges();
         }
     }
-    
+
 }
