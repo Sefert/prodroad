@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DAL.App.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220320135334_Domain")]
-    partial class Domain
+    [Migration("20220322165916_initial_generics")]
+    partial class initial_generics
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -350,13 +350,13 @@ namespace DAL.App.EF.Migrations
                         {
                             Id = new Guid("9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a9a3fe1c-34c1-41f3-a7c1-5c422f372e54",
+                            ConcurrencyStamp = "71673ec3-4f42-4ccc-9a5c-c294b92be53f",
                             Email = "admin@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@GMAIL.COM",
                             NormalizedUserName = "ADMIN@GMAIL.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEMR/smZ8pt3QO9si0uMVr1RcIflzVcLc/0Vg8aOJEkNpnoP30pBphSNVMqG6FQuZ7Q==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEASVYvRUMF7+8a2dKan7UZ8lDZ3rf7AmmIJWt+fArBinvFV9kHCoimBXqFW5m5W7+Q==",
                             PhoneNumber = "1234567890",
                             PhoneNumberConfirmed = true,
                             SecurityStamp = "9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e",
@@ -571,6 +571,15 @@ namespace DAL.App.EF.Migrations
                     b.Property<decimal>("CreatedAmount")
                         .HasColumnType("numeric");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("EndAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -605,6 +614,8 @@ namespace DAL.App.EF.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
 
                     b.HasIndex("ItemWarehouseId");
 
@@ -1108,6 +1119,11 @@ namespace DAL.App.EF.Migrations
 
             modelBuilder.Entity("Domain.App.Process", b =>
                 {
+                    b.HasOne("Domain.App.Identity.AppUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Domain.App.ItemWarehouse", null)
                         .WithMany("Processes")
                         .HasForeignKey("ItemWarehouseId")
@@ -1134,6 +1150,8 @@ namespace DAL.App.EF.Migrations
                         .WithMany("ProcessUpdatedBys")
                         .HasForeignKey("UpdatedById")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("CreatedBy");
 
                     b.Navigation("Procedure");
 

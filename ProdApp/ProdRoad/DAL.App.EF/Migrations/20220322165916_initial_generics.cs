@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace DAL.App.EF.Migrations
 {
-    public partial class Domain : Migration
+    public partial class initial_generics : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -379,9 +379,9 @@ namespace DAL.App.EF.Migrations
                     PriceGroupId = table.Column<Guid>(type: "uuid", nullable: false),
                     CustomerId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedById = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedId = table.Column<Guid>(type: "uuid", nullable: false),
                     UpdatedById = table.Column<Guid>(type: "uuid", nullable: true)
                 },
@@ -546,17 +546,26 @@ namespace DAL.App.EF.Migrations
                     ProcedureId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAmount = table.Column<decimal>(type: "numeric", nullable: false),
                     ItemWarehouseId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedId = table.Column<Guid>(type: "uuid", nullable: false),
-                    UpdatedById = table.Column<Guid>(type: "uuid", nullable: true),
                     StartAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     EndAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     RealStartAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    RealEndAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    RealEndAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedById = table.Column<Guid>(type: "uuid", nullable: true),
+                    UpdatedId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UpdatedById = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Processes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Processes_AspNetUsers_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Processes_AspNetUsers_UpdatedById",
                         column: x => x.UpdatedById,
@@ -597,9 +606,9 @@ namespace DAL.App.EF.Migrations
                     CustomerPriceGroupId = table.Column<Guid>(type: "uuid", nullable: false),
                     PriceId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedById = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedId = table.Column<Guid>(type: "uuid", nullable: false),
                     UpdatedById = table.Column<Guid>(type: "uuid", nullable: true)
                 },
@@ -644,9 +653,9 @@ namespace DAL.App.EF.Migrations
                     Info = table.Column<LangStr>(type: "jsonb", maxLength: 200, nullable: false),
                     Active = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedById = table.Column<Guid>(type: "uuid", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedId = table.Column<Guid>(type: "uuid", nullable: false),
                     UpdatedById = table.Column<Guid>(type: "uuid", nullable: true)
                 },
@@ -688,7 +697,7 @@ namespace DAL.App.EF.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PersonalCode", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { new Guid("9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e"), 0, "a9a3fe1c-34c1-41f3-a7c1-5c422f372e54", "admin@gmail.com", true, null, null, false, null, "ADMIN@GMAIL.COM", "ADMIN@GMAIL.COM", "AQAAAAEAACcQAAAAEMR/smZ8pt3QO9si0uMVr1RcIflzVcLc/0Vg8aOJEkNpnoP30pBphSNVMqG6FQuZ7Q==", null, "1234567890", true, "9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e", false, "admin@gmail.com" });
+                values: new object[] { new Guid("9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e"), 0, "71673ec3-4f42-4ccc-9a5c-c294b92be53f", "admin@gmail.com", true, null, null, false, null, "ADMIN@GMAIL.COM", "ADMIN@GMAIL.COM", "AQAAAAEAACcQAAAAEASVYvRUMF7+8a2dKan7UZ8lDZ3rf7AmmIJWt+fArBinvFV9kHCoimBXqFW5m5W7+Q==", null, "1234567890", true, "9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e", false, "admin@gmail.com" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ActiveNotifications_CreatedById",
@@ -871,6 +880,11 @@ namespace DAL.App.EF.Migrations
                 name: "IX_Procedures_AppUserId",
                 table: "Procedures",
                 column: "AppUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Processes_CreatedById",
+                table: "Processes",
+                column: "CreatedById");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Processes_ItemWarehouseId",

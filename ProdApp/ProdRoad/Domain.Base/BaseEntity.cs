@@ -1,6 +1,13 @@
+using Base.Contracts.Domain;
+
 namespace Domain.Base;
 
-public abstract class BaseEntity
+public abstract class BaseEntity : BaseEntity<Guid>, IBaseEntity 
 {
-    public Guid Id { get; set; }
+}
+
+public abstract class BaseEntity<TKey> : IBaseEntity<TKey> 
+    where TKey : IEquatable<TKey>
+{
+    public TKey Id { get; set; } = default!;
 }
