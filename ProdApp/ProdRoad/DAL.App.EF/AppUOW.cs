@@ -1,28 +1,17 @@
 #nullable enable
 using DAL.App.Contracts;
 using DAL.App.EF.Repositories;
+using DAL.Base.EF;
 
 namespace DAL.App.EF;
 
-public class AppUOW : IAppUnitOfWork
+public class AppUOW : BaseUOW<AppDbContext>,  IAppUnitOfWork
 {
-    protected readonly AppDbContext UOWDbContext;
-    
-    public AppUOW(AppDbContext uowDbContext)
+    public AppUOW(AppDbContext uowDbContext) : base(uowDbContext)
     {
-        UOWDbContext = uowDbContext;
-    }
-    public virtual async Task<int> SaveChangesAsync()
-    {
-        return await UOWDbContext.SaveChangesAsync();
     }
 
-    public virtual int SaveChanges()
-    {
-        return UOWDbContext.SaveChanges();
-    }
-
-    //one possible way (lazy initialization)
+    //one possible way (lazy initialization), better way is to use factory pattern
     private IAddressRepository? _addresses;
     public virtual IAddressRepository Addresses => 
         _addresses ??= new AddressRepository(UOWDbContext);
