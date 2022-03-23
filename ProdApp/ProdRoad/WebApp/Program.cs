@@ -1,5 +1,7 @@
 using System.Globalization;
+using DAL.App.Contracts;
 using DAL.App.EF;
+using DAL.App.EF.Repositories;
 using Domain.App.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
@@ -38,6 +40,7 @@ builder.Services
     .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<AppDbContext>();
     
+builder.Services.AddScoped<IAppUnitOfWork, AppUOW>();
 
 builder.Services.AddControllersWithViews();
 
@@ -71,7 +74,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 
 var app = builder.Build();
 
-AppDataHelper.SetupAppData(app,app.Environment,app.Configuration);
+await AppDataHelper.SetupAppData(app,app.Environment,app.Configuration);
 
 //###################Configure the HTTP request pipeline.#################
 if (app.Environment.IsDevelopment())

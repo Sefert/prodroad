@@ -1,7 +1,7 @@
 ﻿using Base.Contracts.DAL;
 using Domain.App;
 
-namespace Contracts.App.DAL;
+namespace DAL.App.Contracts;
 
 public interface IAddressRepository : IEntityRepository<Address>
 {

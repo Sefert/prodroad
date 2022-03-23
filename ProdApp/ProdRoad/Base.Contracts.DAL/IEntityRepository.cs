@@ -20,6 +20,8 @@ public interface IEntityRepository<TEntity, TKey>
     TEntity? FirstOrDefault(TKey id, bool noTracking = true);
     IEnumerable<TEntity> GetAll(bool noTracking = true);
     bool Exists(TKey id);
+    void ModifyState(TEntity entity);
+    
     
     //async 
     

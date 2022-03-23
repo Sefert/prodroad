@@ -2,7 +2,7 @@
 using Base.Contracts.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace Base.DAL.EF;
+namespace DAL.Base.EF;
 
 public class BaseEntityRepository<TEntity, TDbContext> : BaseEntityRepository<TEntity, Guid, TDbContext>
     where TEntity : class, IBaseEntity<Guid>
@@ -80,6 +80,11 @@ public class BaseEntityRepository<TEntity,TKey, TDbContext> : IEntityRepository<
         return RepoDbSet.Any(a => a.Id.Equals(id));
     }
 
+    public void ModifyState(TEntity entity)
+    {
+        RepoDbContext.Entry(entity).State = EntityState.Modified;
+    }
+
     public virtual async Task<TEntity?> FirstOrDefaultAsync(TKey id, bool noTracking = true)
     {
         return await CreateQuery(noTracking).FirstOrDefaultAsync(a => a.Id.Equals(id));
@@ -106,4 +111,5 @@ public class BaseEntityRepository<TEntity,TKey, TDbContext> : IEntityRepository<
 
         return Remove(entity);
     }
+    
 }

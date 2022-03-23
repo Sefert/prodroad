@@ -32,9 +32,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Base.Contracts.DAL", "Base.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Base.Contracts.Domain", "Base.Contracts.Domain\Base.Contracts.Domain.csproj", "{2DADCE21-D9BE-41C0-87F9-A70219764BD2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Base.DAL.EF", "Base.DAL.EF\Base.DAL.EF.csproj", "{D388D32E-1355-4149-8067-72E4AA0612D6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL.Base.EF", "DAL.Base.EF\DAL.Base.EF.csproj", "{D388D32E-1355-4149-8067-72E4AA0612D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts.App.DAL", "Contracts.App.DAL\Contracts.App.DAL.csproj", "{729E398C-68E1-41A0-9439-E0CD3A22D1E1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL.App.Contracts", "DAL.App.Contracts\DAL.App.Contracts.csproj", "{729E398C-68E1-41A0-9439-E0CD3A22D1E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
