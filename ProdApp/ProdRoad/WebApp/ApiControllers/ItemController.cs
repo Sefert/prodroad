@@ -1,12 +1,7 @@
-#nullable disable
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+#nullable enable
+using DAL.App.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DAL.App.EF;
 using Domain.App;
 using WebApp.DTO;
 
@@ -16,19 +11,19 @@ namespace WebApp.ApiControllers
     [ApiController]
     public class ItemController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IAppUnitOfWork _uow;
 
-        public ItemController(AppDbContext context)
+        public ItemController(IAppUnitOfWork uow)
         {
-            _context = context;
+            _uow = uow;
         }
 
         // GET: api/Item
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ItemDTO>>> GetItems()
         {
-            var dataList = (await _context.Items
-                    .ToListAsync())
+            var dataList = (await _uow.Items
+                    .GetAllAsync())
                 .Select(row => new ItemDTO()
                 {
                     ItemId = row.ItemId,
@@ -46,7 +41,7 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ItemDTO>> GetItem(Guid id)
         {
-            var dbRow = await _context.Items.FindAsync(id);
+            var dbRow = await _uow.Items.FirstOrDefaultAsync(id);
             
             if (dbRow == null)
             {
@@ -76,7 +71,7 @@ namespace WebApp.ApiControllers
                 return BadRequest();
             }
 
-            var dbRow = await _context.Items.FindAsync(id);
+            var dbRow = await _uow.Items.FirstOrDefaultAsync(id);
             
             if (dbRow == null) {return NotFound();}
 
@@ -84,11 +79,11 @@ namespace WebApp.ApiControllers
             dbRow.Type!.SetTranslation(item.Type!);
             dbRow.Unit!.SetTranslation(item.Unit!);
 
-            _context.Entry(item).State = EntityState.Modified;
+            _uow.Items.ModifyState(dbRow);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _uow.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -120,8 +115,8 @@ namespace WebApp.ApiControllers
             dbRow.Type!.SetTranslation(item.Type!);
             dbRow.Unit!.SetTranslation(item.Unit!);
             
-            _context.Items.Add(dbRow);
-            await _context.SaveChangesAsync();
+            _uow.Items.Add(dbRow);
+            await _uow.SaveChangesAsync();
 
             return CreatedAtAction("GetItem", new { id = item.Id }, item);
         }
@@ -130,21 +125,21 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteItem(Guid id)
         {
-            var item = await _context.Items.FindAsync(id);
+            var item = await _uow.Items.FirstOrDefaultAsync(id);
             if (item == null)
             {
                 return NotFound();
             }
 
-            _context.Items.Remove(item);
-            await _context.SaveChangesAsync();
+            _uow.Items.Remove(item);
+            await _uow.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool ItemExists(Guid id)
         {
-            return _context.Items.Any(e => e.Id == id);
+            return _uow.Items.Exists(id);
         }
     }
 }

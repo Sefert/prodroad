@@ -1,12 +1,7 @@
-#nullable disable
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+#nullable enable
+using DAL.App.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DAL.App.EF;
 using Domain.App;
 using WebApp.DTO;
 
@@ -16,19 +11,19 @@ namespace WebApp.ApiControllers
     [ApiController]
     public class UserNotificationController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IAppUnitOfWork _uow;
 
-        public UserNotificationController(AppDbContext context)
+        public UserNotificationController(IAppUnitOfWork uow)
         {
-            _context = context;
+            _uow = uow;
         }
 
         // GET: api/UserNotification
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserNotificationDTO>>> GetUserNotifications()
         {
-            var dataList = (await _context.UserNotifications
-                    .ToListAsync())
+            var dataList = (await _uow.UserNotifications
+                    .GetAllAsync())
                 .Select(row => new UserNotificationDTO()
                 {
                     NotificationType = row.NotificationType,
@@ -45,7 +40,7 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<UserNotificationDTO>> GetUserNotification(Guid id)
         {
-            var dbRow = await _context.UserNotifications.FindAsync(id);
+            var dbRow = await _uow.UserNotifications.FirstOrDefaultAsync(id);
             
             if (dbRow == null)
             {
@@ -75,18 +70,18 @@ namespace WebApp.ApiControllers
                 return BadRequest();
             }
 
-            var dbRow = await _context.UserNotifications.FindAsync(id);
+            var dbRow = await _uow.UserNotifications.FirstOrDefaultAsync(id);
             
             if (dbRow == null) {return NotFound();}
 
             dbRow.Name!.SetTranslation(userNotification.Name!);
             dbRow.Color!.SetTranslation(userNotification.Color!);
 
-            _context.Entry(userNotification).State = EntityState.Modified;
+            _uow.UserNotifications.ModifyState(dbRow);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _uow.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -117,8 +112,8 @@ namespace WebApp.ApiControllers
             dbRow.Name!.SetTranslation(userNotification.Name!);
             dbRow.Color!.SetTranslation(userNotification.Color!);
             
-            _context.UserNotifications.Add(dbRow);
-            await _context.SaveChangesAsync();
+            _uow.UserNotifications.Add(dbRow);
+            await _uow.SaveChangesAsync();
 
             return CreatedAtAction("GetUserNotification", new { id = userNotification.Id }, userNotification);
         }
@@ -127,21 +122,21 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUserNotification(Guid id)
         {
-            var userNotification = await _context.UserNotifications.FindAsync(id);
+            var userNotification = await _uow.UserNotifications.FirstOrDefaultAsync(id);
             if (userNotification == null)
             {
                 return NotFound();
             }
 
-            _context.UserNotifications.Remove(userNotification);
-            await _context.SaveChangesAsync();
+            _uow.UserNotifications.Remove(userNotification);
+            await _uow.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool UserNotificationExists(Guid id)
         {
-            return _context.UserNotifications.Any(e => e.Id == id);
+            return _uow.UserNotifications.Exists(id);
         }
     }
 }

@@ -1,12 +1,7 @@
-#nullable disable
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+#nullable enable
+using DAL.App.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DAL.App.EF;
 using Domain.App;
 using WebApp.DTO;
 
@@ -16,19 +11,19 @@ namespace WebApp.ApiControllers
     [ApiController]
     public class ProcedureController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IAppUnitOfWork _uow;
 
-        public ProcedureController(AppDbContext context)
+        public ProcedureController(IAppUnitOfWork uow)
         {
-            _context = context;
+            _uow = uow;
         }
 
         // GET: api/Procedure
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProcedureDTO>>> GetProcedures()
         {
-            var dataList = (await _context.Procedures
-                    .ToListAsync())
+            var dataList = (await _uow.Procedures
+                    .GetAllAsync())
                 .Select(row => new ProcedureDTO()
                 {
                     AppUserId = row.AppUserId,
@@ -43,7 +38,7 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ProcedureDTO>> GetProcedure(Guid id)
         {
-            var dbRow = await _context.Procedures.FindAsync(id);
+            var dbRow = await _uow.Procedures.FirstOrDefaultAsync(id);
             
             if (dbRow == null)
             {
@@ -71,18 +66,18 @@ namespace WebApp.ApiControllers
                 return BadRequest();
             }
 
-            var dbRow = await _context.Procedures.FindAsync(id);
+            var dbRow = await _uow.Procedures.FirstOrDefaultAsync(id);
             
             if (dbRow == null) {return NotFound();}
 
             dbRow.Name!.SetTranslation(procedure.Name!);
             dbRow.Code!.SetTranslation(procedure.Code!);
             
-            _context.Entry(procedure).State = EntityState.Modified;
+            _uow.Procedures.ModifyState(dbRow);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _uow.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -112,8 +107,8 @@ namespace WebApp.ApiControllers
             dbRow.Name!.SetTranslation(procedure.Name!);
             dbRow.Code!.SetTranslation(procedure.Code!);
             
-            _context.Procedures.Add(dbRow);
-            await _context.SaveChangesAsync();
+            _uow.Procedures.Add(dbRow);
+            await _uow.SaveChangesAsync();
 
             return CreatedAtAction("GetProcedure", new { id = procedure.Id }, procedure);
         }
@@ -122,21 +117,21 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProcedure(Guid id)
         {
-            var procedure = await _context.Procedures.FindAsync(id);
+            var procedure = await _uow.Procedures.FirstOrDefaultAsync(id);
             if (procedure == null)
             {
                 return NotFound();
             }
 
-            _context.Procedures.Remove(procedure);
-            await _context.SaveChangesAsync();
+            _uow.Procedures.Remove(procedure);
+            await _uow.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool ProcedureExists(Guid id)
         {
-            return _context.Procedures.Any(e => e.Id == id);
+            return _uow.Procedures.Exists(id);
         }
     }
 }

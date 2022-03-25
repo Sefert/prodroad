@@ -1,12 +1,7 @@
-#nullable disable
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+#nullable enable
+using DAL.App.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DAL.App.EF;
 using Domain.App;
 using WebApp.DTO;
 
@@ -16,19 +11,19 @@ namespace WebApp.ApiControllers
     [ApiController]
     public class PriceGroupController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IAppUnitOfWork _uow;
 
-        public PriceGroupController(AppDbContext context)
+        public PriceGroupController(IAppUnitOfWork uow)
         {
-            _context = context;
+            _uow = uow;
         }
 
         // GET: api/PriceGroup
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PriceGroupDTO>>> GetPriceGroups()
         {
-            var dataList = (await _context.PriceGroups
-                    .ToListAsync())
+            var dataList = (await _uow.PriceGroups
+                    .GetAllAsync())
                 .Select(row => new PriceGroupDTO()
                 {
                     AppUserId = row.AppUserId,
@@ -46,7 +41,7 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<PriceGroupDTO>> GetPriceGroup(Guid id)
         {
-            var dbRow = await _context.PriceGroups.FindAsync(id);
+            var dbRow = await _uow.PriceGroups.FirstOrDefaultAsync(id);
             
             if (dbRow == null)
             {
@@ -77,17 +72,17 @@ namespace WebApp.ApiControllers
                 return BadRequest();
             }
 
-            var dbRow = await _context.PriceGroups.FindAsync(id);
+            var dbRow = await _uow.PriceGroups.FirstOrDefaultAsync(id);
             
             if (dbRow == null) {return NotFound();}
 
             dbRow.Name!.SetTranslation(priceGroup.Name!);
 
-            _context.Entry(priceGroup).State = EntityState.Modified;
+            _uow.PriceGroups.ModifyState(dbRow);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _uow.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -120,8 +115,8 @@ namespace WebApp.ApiControllers
             
             dbRow.Name!.SetTranslation(priceGroup.Name!);
             
-            _context.PriceGroups.Add(dbRow);
-            await _context.SaveChangesAsync();
+            _uow.PriceGroups.Add(dbRow);
+            await _uow.SaveChangesAsync();
 
             return CreatedAtAction("GetPriceGroup", new { id = priceGroup.Id }, priceGroup);
         }
@@ -130,21 +125,21 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePriceGroup(Guid id)
         {
-            var priceGroup = await _context.PriceGroups.FindAsync(id);
+            var priceGroup = await _uow.PriceGroups.FirstOrDefaultAsync(id);
             if (priceGroup == null)
             {
                 return NotFound();
             }
 
-            _context.PriceGroups.Remove(priceGroup);
-            await _context.SaveChangesAsync();
+            _uow.PriceGroups.Remove(priceGroup);
+            await _uow.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool PriceGroupExists(Guid id)
         {
-            return _context.PriceGroups.Any(e => e.Id == id);
+            return _uow.PriceGroups.Exists(id);
         }
     }
 }

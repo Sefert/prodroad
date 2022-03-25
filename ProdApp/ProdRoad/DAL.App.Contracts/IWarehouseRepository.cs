@@ -5,5 +5,4 @@ namespace DAL.App.Contracts;
 
 public interface IWarehouseRepository : IEntityRepository<Warehouse>
 {
-    
 }

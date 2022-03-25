@@ -1,12 +1,7 @@
-#nullable disable
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+#nullable enable
+using DAL.App.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DAL.App.EF;
 using Domain.App;
 using WebApp.DTO;
 
@@ -16,19 +11,19 @@ namespace WebApp.ApiControllers
     [ApiController]
     public class CustomerPriceController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IAppUnitOfWork _uow;
 
-        public CustomerPriceController(AppDbContext context)
+        public CustomerPriceController(IAppUnitOfWork uow)
         {
-            _context = context;
+            _uow = uow;
         }
 
         // GET: api/CustomerPrice
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CustomerPriceDTO>>> GetCustomerPrices()
         {
-            var dataList = (await _context.CustomerPrices
-                    .ToListAsync())
+            var dataList = (await _uow.CustomerPrices
+                    .GetAllAsync())
                 .Select(row => new CustomerPriceDTO()
                 {
                     CustomerPriceGroupId = row.CustomerPriceGroupId,
@@ -42,7 +37,7 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<CustomerPriceDTO>> GetCustomerPrice(Guid id)
         {
-            var dbRow = await _context.CustomerPrices.FindAsync(id);
+            var dbRow = await _uow.CustomerPrices.FirstOrDefaultAsync(id);
             
             if (dbRow == null)
             {
@@ -69,15 +64,15 @@ namespace WebApp.ApiControllers
                 return BadRequest();
             }
 
-            var dbRow = await _context.CustomerPrices.FindAsync(id);
+            var dbRow = await _uow.CustomerPrices.FirstOrDefaultAsync(id);
             
             if (dbRow == null) {return NotFound();}
 
-            _context.Entry(customerPrice).State = EntityState.Modified;
+            _uow.CustomerPrices.ModifyState(dbRow);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _uow.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -99,8 +94,8 @@ namespace WebApp.ApiControllers
         [HttpPost]
         public async Task<ActionResult<CustomerPrice>> PostCustomerPrice(CustomerPrice customerPrice)
         {
-            _context.CustomerPrices.Add(customerPrice);
-            await _context.SaveChangesAsync();
+            _uow.CustomerPrices.Add(customerPrice);
+            await _uow.SaveChangesAsync();
 
             return CreatedAtAction("GetCustomerPrice", new { id = customerPrice.Id }, customerPrice);
         }
@@ -109,21 +104,21 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomerPrice(Guid id)
         {
-            var customerPrice = await _context.CustomerPrices.FindAsync(id);
+            var customerPrice = await _uow.CustomerPrices.FirstOrDefaultAsync(id);
             if (customerPrice == null)
             {
                 return NotFound();
             }
 
-            _context.CustomerPrices.Remove(customerPrice);
-            await _context.SaveChangesAsync();
+            _uow.CustomerPrices.Remove(customerPrice);
+            await _uow.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool CustomerPriceExists(Guid id)
         {
-            return _context.CustomerPrices.Any(e => e.Id == id);
+            return _uow.Customers.Exists(id);
         }
     }
 }

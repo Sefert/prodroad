@@ -1,12 +1,7 @@
-#nullable disable
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+#nullable enable
+using DAL.App.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DAL.App.EF;
 using Domain.App;
 using WebApp.DTO;
 
@@ -16,19 +11,19 @@ namespace WebApp.ApiControllers
     [ApiController]
     public class UserTeamController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IAppUnitOfWork _uow;
 
-        public UserTeamController(AppDbContext context)
+        public UserTeamController(IAppUnitOfWork uow)
         {
-            _context = context;
+            _uow = uow;
         }
 
         // GET: api/UserTeam
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserTeamDTO>>> GetUserTeams()
         {
-            var dataList = (await _context.UserTeams
-                    .ToListAsync())
+            var dataList = (await _uow.UserTeams
+                    .GetAllAsync())
                 .Select(row => new UserTeamDTO()
                 {
                     AppUserId = row.AppUserId,
@@ -42,7 +37,7 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<UserTeamDTO>> GetUserTeam(Guid id)
         {
-            var dbRow = await _context.UserTeams.FindAsync(id);
+            var dbRow = await _uow.UserTeams.FirstOrDefaultAsync(id);
             
             if (dbRow == null)
             {
@@ -69,15 +64,15 @@ namespace WebApp.ApiControllers
                 return BadRequest();
             }
 
-            var dbRow = await _context.UserTeams.FindAsync(id);
+            var dbRow = await _uow.UserTeams.FirstOrDefaultAsync(id);
             
             if (dbRow == null) {return NotFound();}
 
-            _context.Entry(userTeam).State = EntityState.Modified;
+            _uow.UserTeams.ModifyState(dbRow);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _uow.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -104,8 +99,8 @@ namespace WebApp.ApiControllers
                 AppUserId = userTeam.AppUserId,
                 TeamId = userTeam.TeamId
             };
-            _context.UserTeams.Add(dbRow);
-            await _context.SaveChangesAsync();
+            _uow.UserTeams.Add(dbRow);
+            await _uow.SaveChangesAsync();
 
             return CreatedAtAction("GetUserTeam", new { id = userTeam.Id }, userTeam);
         }
@@ -114,21 +109,21 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUserTeam(Guid id)
         {
-            var userTeam = await _context.UserTeams.FindAsync(id);
+            var userTeam = await _uow.UserTeams.FirstOrDefaultAsync(id);
             if (userTeam == null)
             {
                 return NotFound();
             }
 
-            _context.UserTeams.Remove(userTeam);
-            await _context.SaveChangesAsync();
+            _uow.UserTeams.Remove(userTeam);
+            await _uow.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool UserTeamExists(Guid id)
         {
-            return _context.UserTeams.Any(e => e.Id == id);
+            return _uow.UserTeams.Exists(id);
         }
     }
 }

@@ -1,12 +1,7 @@
-#nullable disable
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+#nullable enable
+using DAL.App.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DAL.App.EF;
 using Domain.App;
 using WebApp.DTO;
 
@@ -16,19 +11,19 @@ namespace WebApp.ApiControllers
     [ApiController]
     public class ItemWarehouseController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IAppUnitOfWork _uow;
 
-        public ItemWarehouseController(AppDbContext context)
+        public ItemWarehouseController(IAppUnitOfWork uow)
         {
-            _context = context;
+            _uow = uow;
         }
 
         // GET: api/ItemWarehouse
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ItemWarehouseDTO>>> GetItemWarehouses()
         {
-            var dataList = (await _context.ItemWarehouses
-                    .ToListAsync())
+            var dataList = (await _uow.ItemWarehouses
+                    .GetAllAsync())
                 .Select(row => new ItemWarehouseDTO()
                 {
                     ItemId = row.ItemId,
@@ -43,7 +38,7 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ItemWarehouseDTO>> GetItemWarehouse(Guid id)
         {
-            var dbRow = await _context.ItemWarehouses.FindAsync(id);
+            var dbRow = await _uow.ItemWarehouses.FirstOrDefaultAsync(id);
             
             if (dbRow == null)
             {
@@ -71,15 +66,15 @@ namespace WebApp.ApiControllers
                 return BadRequest();
             }
 
-            var dbRow = await _context.ItemWarehouses.FindAsync(id);
+            var dbRow = await _uow.ItemWarehouses.FirstOrDefaultAsync(id);
             
             if (dbRow == null) {return NotFound();}
 
-            _context.Entry(itemWarehouse).State = EntityState.Modified;
+            _uow.ItemWarehouses.ModifyState(dbRow);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _uow.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -108,8 +103,8 @@ namespace WebApp.ApiControllers
                 Quantity = itemWarehouse.Quantity
             };
             
-            _context.ItemWarehouses.Add(dbRow);
-            await _context.SaveChangesAsync();
+            _uow.ItemWarehouses.Add(dbRow);
+            await _uow.SaveChangesAsync();
 
             return CreatedAtAction("GetItemWarehouse", new { id = itemWarehouse.Id }, itemWarehouse);
         }
@@ -118,21 +113,21 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteItemWarehouse(Guid id)
         {
-            var itemWarehouse = await _context.ItemWarehouses.FindAsync(id);
+            var itemWarehouse = await _uow.ItemWarehouses.FirstOrDefaultAsync(id);
             if (itemWarehouse == null)
             {
                 return NotFound();
             }
 
-            _context.ItemWarehouses.Remove(itemWarehouse);
-            await _context.SaveChangesAsync();
+            _uow.ItemWarehouses.Remove(itemWarehouse);
+            await _uow.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool ItemWarehouseExists(Guid id)
         {
-            return _context.ItemWarehouses.Any(e => e.Id == id);
+            return _uow.ItemWarehouses.Exists(id);
         }
     }
 }

@@ -1,7 +1,7 @@
-#nullable disable
+#nullable enable
+using DAL.App.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DAL.App.EF;
 using Domain.App;
 using WebApp.DTO;
 
@@ -11,19 +11,19 @@ namespace WebApp.ApiControllers
     [ApiController]
     public class ActiveNotificationController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IAppUnitOfWork _uow;
 
-        public ActiveNotificationController(AppDbContext context)
+        public ActiveNotificationController(IAppUnitOfWork uow)
         {
-            _context = context;
+            _uow = uow;
         }
         
         // GET: api/ActiveNotification
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ActiveNotificationDTO>>> GetActiveNotifications()
         {
-            var dataList = (await _context.ActiveNotifications
-                .ToListAsync())
+            var dataList = (await _uow.ActiveNotifications
+                .GetAllAsync())
                 .Select(row => new ActiveNotificationDTO()
                 {
                     ProcessId = row.ProcessId,
@@ -41,7 +41,7 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ActiveNotificationDTO>> GetActiveNotification(Guid id)
         {
-            var dbData = await _context.ActiveNotifications.FindAsync(id);
+            var dbData = await _uow.ActiveNotifications.FirstOrDefaultAsync(id);
             
             if (dbData == null)
             {
@@ -72,18 +72,18 @@ namespace WebApp.ApiControllers
                 return BadRequest();
             }
 
-            var dbData = await _context.ActiveNotifications.FindAsync(id);
+            var dbData = await _uow.ActiveNotifications.FirstOrDefaultAsync(id);
             
             if (dbData == null) {return NotFound();}
 
             dbData.Info!.SetTranslation(activeNotification.Info!);
             dbData.Head!.SetTranslation(activeNotification.Head!);
 
-            _context.Entry(activeNotification).State = EntityState.Modified;
+            _uow.ActiveNotifications.ModifyState(dbData);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _uow.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -115,9 +115,9 @@ namespace WebApp.ApiControllers
             dbRow.Info!.SetTranslation(activeNotification.Info!);
             dbRow.Head!.SetTranslation(activeNotification.Head!);
             
-            _context.ActiveNotifications.Add(dbRow);
+            _uow.ActiveNotifications.Add(dbRow);
             
-            await _context.SaveChangesAsync();
+            await _uow.SaveChangesAsync();
 
             return CreatedAtAction("GetActiveNotification", new { id = activeNotification.Id }, activeNotification);
         }
@@ -126,21 +126,21 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteActiveNotification(Guid id)
         {
-            var activeNotification = await _context.ActiveNotifications.FindAsync(id);
+            var activeNotification = await _uow.ActiveNotifications.FirstOrDefaultAsync(id);
             if (activeNotification == null)
             {
                 return NotFound();
             }
 
-            _context.ActiveNotifications.Remove(activeNotification);
-            await _context.SaveChangesAsync();
+            _uow.ActiveNotifications.Remove(activeNotification);
+            await _uow.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool ActiveNotificationExists(Guid id)
         {
-            return _context.ActiveNotifications.Any(e => e.Id == id);
+            return _uow.ActiveNotifications.Exists(id);
         }
     }
 }
