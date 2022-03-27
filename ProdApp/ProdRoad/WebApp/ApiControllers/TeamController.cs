@@ -26,6 +26,7 @@ namespace WebApp.ApiControllers
                     .GetAllAsync())
                 .Select(row => new TeamDTO()
                 {
+                    Id = row.Id,
                     AppUserId = row.AppUserId,
                     Name = row.Name,
                     Code = row.Code

@@ -26,6 +26,7 @@ namespace WebApp.ApiControllers
                     .GetAllAsync())
                 .Select(row => new ItemWarehouseDTO()
                 {
+                    Id = row.Id,
                     ItemId = row.ItemId,
                     WarehouseId = row.WarehouseId,
                     Quantity = row.Quantity

@@ -26,6 +26,7 @@ namespace WebApp.ApiControllers
                     .GetAllAsync())
                 .Select(row => new CustomerPriceGroupDTO()
                 {
+                    Id = row.Id,
                     PriceGroupId = row.PriceGroupId,
                     CustomerId = row.CustomerId,
                 })

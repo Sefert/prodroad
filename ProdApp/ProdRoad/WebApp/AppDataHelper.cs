@@ -59,16 +59,17 @@ public static class AppDataHelper
     {
         var data = new Customer()
         {
+            Id = Guid.Parse("9504aaa1-ab82-4af2-9ba5-f0ffb77ae23e"),
             AppUserId = Guid.Parse("9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e"),
             Name =
             {
                 ["et"] = "AS Kapsel",
-                ["en"] = "AS Kapsel",
+                ["en"] = "AS Kapsel-en",
             },
             Registration = 
             {
                 ["et"] = "12345678",
-                ["en"] = "12345678",
+                ["en"] = "12345678-en",
             }
         };
         context.Customers.Add(data);
@@ -79,7 +80,7 @@ public static class AppDataHelper
     {
         var data = new Item()
         {
-            Id = Guid.Parse("9504bbb1-ab82-4af2-9ba5-f0ffb77ae23e"),
+            Id = Guid.Parse("9504aab1-ab82-4af2-9ba5-f0ffb77ae23e"),
             AppUserId = Guid.Parse("9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e"),
             Name =
             {
@@ -100,12 +101,13 @@ public static class AppDataHelper
         };
         
         context.Items.Add(data);
-        await context.SaveChangesAsync();
+        //await context.SaveChangesAsync();
         
         data = new Item()
         {
+            Id = Guid.Parse("9504aab2-ab82-4af2-9ba5-f0ffb77ae23e"),
             AppUserId = Guid.Parse("9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e"),
-            ItemId = Guid.Parse("9504bbb1-ab82-4af2-9ba5-f0ffb77ae23e"),
+            ItemId = Guid.Parse("9504aab1-ab82-4af2-9ba5-f0ffb77ae23e"),
             Name =
             {
                 ["et"] = "Käis",

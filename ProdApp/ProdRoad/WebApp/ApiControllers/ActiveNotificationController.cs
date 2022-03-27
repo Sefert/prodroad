@@ -26,6 +26,7 @@ namespace WebApp.ApiControllers
                 .GetAllAsync())
                 .Select(row => new ActiveNotificationDTO()
                 {
+                    Id = row.Id,
                     ProcessId = row.ProcessId,
                     UserNotificationId = row.UserNotificationId,
                     TeamId = row.TeamId,

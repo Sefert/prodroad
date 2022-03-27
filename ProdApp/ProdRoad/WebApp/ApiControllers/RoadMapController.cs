@@ -26,6 +26,7 @@ namespace WebApp.ApiControllers
                     .GetAllAsync())
                 .Select(row => new RoadMapDTO()
                 {
+                    Id = row.Id,
                     AppUserId = row.AppUserId,
                     Name = row.Name,
                     Position = row.Position,

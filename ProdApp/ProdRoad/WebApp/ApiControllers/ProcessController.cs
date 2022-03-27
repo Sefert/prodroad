@@ -26,6 +26,7 @@ namespace WebApp.ApiControllers
                     .GetAllAsync())
                 .Select(row => new ProcessDTO()
                 {
+                    Id = row.Id,
                     TeamId = row.TeamId,
                     RoadMapId = row.RoadMapId,
                     ProcedureId = row.ProcedureId,

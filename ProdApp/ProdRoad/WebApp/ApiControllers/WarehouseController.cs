@@ -26,6 +26,7 @@ namespace WebApp.ApiControllers
                     .GetAllAsync())
                 .Select(row => new WarehouseDTO()
                 {
+                    Id = row.Id,
                     AppUserId = row.AppUserId,
                     Name = row.Name,
                     Address = row.Address

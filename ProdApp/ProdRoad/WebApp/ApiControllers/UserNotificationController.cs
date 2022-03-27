@@ -26,6 +26,7 @@ namespace WebApp.ApiControllers
                     .GetAllAsync())
                 .Select(row => new UserNotificationDTO()
                 {
+                    Id = row.Id,
                     NotificationType = row.NotificationType,
                     AppUserId = row.AppUserId,
                     Name = row.Name,
