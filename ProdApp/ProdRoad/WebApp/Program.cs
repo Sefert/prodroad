@@ -1,7 +1,6 @@
 using System.Globalization;
 using DAL.App.Contracts;
 using DAL.App.EF;
-using DAL.App.EF.Repositories;
 using Domain.App.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
