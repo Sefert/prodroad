@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace DAL.App.EF.Migrations
 {
-    public partial class initial_generics : Migration
+    public partial class seed : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -693,11 +693,6 @@ namespace DAL.App.EF.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
-
-            migrationBuilder.InsertData(
-                table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PersonalCode", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { new Guid("9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e"), 0, "71673ec3-4f42-4ccc-9a5c-c294b92be53f", "admin@gmail.com", true, null, null, false, null, "ADMIN@GMAIL.COM", "ADMIN@GMAIL.COM", "AQAAAAEAACcQAAAAEASVYvRUMF7+8a2dKan7UZ8lDZ3rf7AmmIJWt+fArBinvFV9kHCoimBXqFW5m5W7+Q==", null, "1234567890", true, "9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e", false, "admin@gmail.com" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ActiveNotifications_CreatedById",

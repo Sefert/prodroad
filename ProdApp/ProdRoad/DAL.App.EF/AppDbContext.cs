@@ -45,7 +45,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
         }
         
         base.OnModelCreating(builder);
-        SeedUsers(builder); 
+        //SeedUsers(builder); 
     }
 
     public override int SaveChanges()
@@ -98,7 +98,9 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
             }
         }
     }
-    private void SeedUsers(ModelBuilder builder)  
+    
+    //no a nice way to do in AppDbContext - keep it clean as possible
+    /*private void SeedUsers(ModelBuilder builder)  
     {
         var passwordHasher = new PasswordHasher<AppUser>(); 
         
@@ -118,6 +120,6 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
         
         appUser.PasswordHash = passwordHasher.HashPassword(appUser, "1.TestWebApp");
 
-        builder.Entity<AppUser>().HasData(appUser);  
-    }
+        builder.Entity<AppUser>().HasData(appUser); 
+    }*/
 }

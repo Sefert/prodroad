@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DAL.App.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220322165916_initial_generics")]
-    partial class initial_generics
+    [Migration("20220327181908_seed")]
+    partial class seed
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -344,25 +344,6 @@ namespace DAL.App.EF.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e"),
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "71673ec3-4f42-4ccc-9a5c-c294b92be53f",
-                            Email = "admin@gmail.com",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "ADMIN@GMAIL.COM",
-                            NormalizedUserName = "ADMIN@GMAIL.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEASVYvRUMF7+8a2dKan7UZ8lDZ3rf7AmmIJWt+fArBinvFV9kHCoimBXqFW5m5W7+Q==",
-                            PhoneNumber = "1234567890",
-                            PhoneNumberConfirmed = true,
-                            SecurityStamp = "9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e",
-                            TwoFactorEnabled = false,
-                            UserName = "admin@gmail.com"
-                        });
                 });
 
             modelBuilder.Entity("Domain.App.Item", b =>
