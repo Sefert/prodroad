@@ -1,9 +1,8 @@
-import { IHttpClient } from "aurelia";
-import { CategoryRepo } from "./domain/category/CategoryRepo";
+import { AppState } from "./state/AppState";
 //import { ICategory } from "./domain/ICategory";
 
 export class MyApp {
-  constructor(private categoryRepo: CategoryRepo) {
+  constructor(private appState: AppState) {
     console.log("MyApp constructor");
   }
 
