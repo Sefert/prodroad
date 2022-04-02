@@ -1,6 +1,6 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Home</a>
+<nav class="navbar navbar-fixed-top navbar-inverse navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand active" href="#">Home</a>
     <div class="navbar-nav" repeat.for="category of appState.categories">
-      <a class="nav-item nav-link" href="/${category.name}">${category.name}</a> 
+      <a class="nav-item nav-link nav-tabs navbar-brand mb-0 h1" href="/category/${category.name}">${category.name}</a> 
     </div>
 </nav>
