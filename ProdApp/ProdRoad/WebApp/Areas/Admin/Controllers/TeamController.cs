@@ -52,13 +52,19 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Code,Id")] Team team)
+        public async Task<IActionResult> Create( /*[Bind("Name,Code")]*/ Team team)
         {
-            if (!ModelState.IsValid) return View(team);
-            team.AppUserId = User.GetUserId();
-            team.Id = Guid.NewGuid();
-            _uow.Teams.Add(team);
-            await _uow.SaveChangesAsync();
+            if (ModelState.IsValid)
+            {
+                team.AppUserId = User.GetUserId();
+                //team.Id = Guid.NewGuid();
+                team.Name.SetTranslation(team.Name);
+                team.Code.SetTranslation(team.Code);
+                _uow.Teams.Add(team);
+                await _uow.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+
             return View(team);
             //ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", team.AppUserId);
         }
@@ -66,7 +72,7 @@ namespace WebApp.Areas.Admin.Controllers
         // GET: Admin/Team/Edit/5
         public async Task<IActionResult> Edit(Guid id)
         {
-            var team = await _uow.Teams.FirstOrDefaultAsync(User.GetUserId(),id,false);
+            var team = await _uow.Teams.FirstOrDefaultAsync(User.GetUserId(),id);
             if (team == null)
             {
                 return NotFound();
@@ -80,7 +86,7 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Code,Id")] Team team)
+        public async Task<IActionResult> Edit(Guid id, /*[Bind("Name,Code")]*/ Team team)
         {
             if (id != team.Id)
             {
