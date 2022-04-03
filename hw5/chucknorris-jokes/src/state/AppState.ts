@@ -1,4 +1,4 @@
-import { bindable, inject } from "aurelia";
+import { bindable, inject} from "aurelia";
 import { CategoryService } from "../domain/category/CategoryService";
 import { ICategory } from "../domain/category/ICategory";
 
@@ -7,7 +7,6 @@ import { ICategory } from "../domain/category/ICategory";
 export class AppState {
     @bindable
     public categories : ICategory[] = [];
-    public name: string = 'aaaaaaaaaaaaaaaaaaa';
 
     constructor(private categoryService: CategoryService) {
         this.categoryService = categoryService;
