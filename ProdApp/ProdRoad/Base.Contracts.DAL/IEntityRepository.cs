@@ -25,7 +25,7 @@ public interface IEntityRepository<TEntity, TKey>
     
     //async 
     
-    Task<TEntity?> FirstOrDefaultAsync (TKey id, bool noTracking = true);
+    Task<TEntity?> FirstOrDefaultAsync(TKey id, bool noTracking = true);
     Task<IEnumerable<TEntity>> GetAllAsync (bool noTracking = true);
     Task<bool> ExistsAsync (TKey id);
     Task<TEntity> RemoveAsync (TKey id);

@@ -21,6 +21,7 @@
     <ItemGroup>
       <ProjectReference Include="..\DAL.App.EF\DAL.App.EF.csproj" />
       <ProjectReference Include="..\DAL.App\DAL.App.csproj" />
+      <ProjectReference Include="..\Extensions.Base\Extensions.Base.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace WebApp.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize]
+    [Authorize(Roles="admin,manager")]
     public class AddressController : Controller
     {
         private readonly AppDbContext _context;
@@ -22,7 +22,9 @@ namespace WebApp.Areas.Admin.Controllers
         // GET: Admin/Address
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.Addresses.Include(a => a.AppUser).Include(a => a.Customer);
+            var appDbContext = _context.Addresses
+                .Include(a => a.AppUser)
+                .Include(a => a.Customer);
             return View(await appDbContext.ToListAsync());
         }
 

@@ -1,44 +1,37 @@
-#nullable disable
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+#nullable enable
+using DAL.App.Contracts;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using DAL.App.EF;
 using Domain.App;
+using Extensions.Base;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApp.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles="admin,manager")]
     public class TeamController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IAppUnitOfWork _uow;
 
-        public TeamController(AppDbContext context)
+        public TeamController(IAppUnitOfWork uow)
         {
-            _context = context;
+            _uow = uow;
         }
 
         // GET: Admin/Team
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.Teams.Include(t => t.AppUser);
-            return View(await appDbContext.ToListAsync());
+            
+            var dataList = await _uow.Teams.GetAllAsync(User.GetUserId());
+            return View(dataList);
         }
 
         // GET: Admin/Team/Details/5
-        public async Task<IActionResult> Details(Guid? id)
+        public async Task<IActionResult> Details(Guid id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var team = await _context.Teams
-                .Include(t => t.AppUser)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var team = await _uow.Teams.FirstOrDefaultAsync(User.GetUserId(),id);
             if (team == null)
             {
                 return NotFound();
@@ -50,7 +43,7 @@ namespace WebApp.Areas.Admin.Controllers
         // GET: Admin/Team/Create
         public IActionResult Create()
         {
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id");
+            //ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
@@ -59,33 +52,26 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AppUserId,Name,Code,Id")] Team team)
+        public async Task<IActionResult> Create([Bind("Name,Code,Id")] Team team)
         {
-            if (ModelState.IsValid)
-            {
-                team.Id = Guid.NewGuid();
-                _context.Add(team);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", team.AppUserId);
+            if (!ModelState.IsValid) return View(team);
+            team.AppUserId = User.GetUserId();
+            team.Id = Guid.NewGuid();
+            _uow.Teams.Add(team);
+            await _uow.SaveChangesAsync();
             return View(team);
+            //ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", team.AppUserId);
         }
 
         // GET: Admin/Team/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
+        public async Task<IActionResult> Edit(Guid id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var team = await _context.Teams.FindAsync(id);
+            var team = await _uow.Teams.FirstOrDefaultAsync(User.GetUserId(),id,false);
             if (team == null)
             {
                 return NotFound();
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", team.AppUserId);
+            //ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", team.AppUserId);
             return View(team);
         }
 
@@ -94,48 +80,39 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("AppUserId,Name,Code,Id")] Team team)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Code,Id")] Team team)
         {
             if (id != team.Id)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(team);
+            try
             {
-                try
-                {
-                    _context.Update(team);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!TeamExists(team.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                team.AppUserId = User.GetUserId();
+                _uow.Teams.Update(team);
+                await _uow.SaveChangesAsync();
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", team.AppUserId);
-            return View(team);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await _uow.Teams.ExistsAsync(team.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Index));
+            //ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", team.AppUserId);
         }
 
         // GET: Admin/Team/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var team = await _context.Teams
-                .Include(t => t.AppUser)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var team = await _uow.Teams.FirstOrDefaultAsync(User.GetUserId(),id, false);
             if (team == null)
             {
                 return NotFound();
@@ -144,20 +121,17 @@ namespace WebApp.Areas.Admin.Controllers
             return View(team);
         }
 
+        //TODO:make more efficient
         // POST: Admin/Team/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var team = await _context.Teams.FindAsync(id);
-            _context.Teams.Remove(team);
-            await _context.SaveChangesAsync();
+            var team = await _uow.Teams.FirstOrDefaultAsync(User.GetUserId(),id);
+            if (team == null) return NotFound();
+            await _uow.Teams.RemoveAsync(id);
+            await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool TeamExists(Guid id)
-        {
-            return _context.Teams.Any(e => e.Id == id);
         }
     }
 }
