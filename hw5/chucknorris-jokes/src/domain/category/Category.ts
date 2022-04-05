@@ -1,3 +1,7 @@
+/**
+ * Category inside aurelia app
+ */
+
 export class Category {
     id : number;
     name : string;

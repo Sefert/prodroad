@@ -1,29 +1,28 @@
-import { bindable, inject} from "aurelia";
+import { bindable, inject, observable} from "aurelia";
 import { CategoryService } from "../domain/category/CategoryService";
 import { ICategory } from "../domain/category/ICategory";
 import { IJoke } from "../domain/joke/IJoke";
 
-
+/**
+ * Keeping app information
+ **/
 @inject(CategoryService)
 export class AppState {
-    @bindable
-    public categories : ICategory[] = [];
-    public category : string;
-    public newJokes : IJoke[] = [];
-    public seenJokes : IJoke[] = [];
+    
+    //keep all categories
+     public categories : readonly ICategory[] = [];
+     //saving route id
+     public category : string;
+     //keeping view jokes
+     public newJokes : IJoke[] = [];
+     //keeping all jokes
+     public seenJokes : IJoke[] = [];
 
     constructor(private categoryService: CategoryService) {
         this.categoryService = categoryService;
-        this.getCategoriesAsync(3).then(() => {
-            this.categories.concat(this.categories);
+        this.categoryService.getRandomCategoriesAsync(3).then((cat) => {
+            this.categories=[...cat];
             console.log(this.categories);
         });
     }
-
-    async getCategoriesAsync(numofCategories : number) : Promise<void> {
-        this.categories = await this.categoryService.getRandomCategoriesAsync(numofCategories);
-        console.log(this.categories);
-    }
-
-
 }

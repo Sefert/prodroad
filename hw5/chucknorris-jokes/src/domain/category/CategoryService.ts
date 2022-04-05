@@ -2,8 +2,11 @@ import { IHttpClient } from "aurelia";
 import { Category } from "./Category";
 import { ICategory } from "./ICategory";
 
+/**
+ * Class for accessing app categories
+ */
+
 export class CategoryService {
-    //public categories : ICategory[] = [];
 
     constructor(@IHttpClient private http: IHttpClient){
     }
@@ -16,7 +19,7 @@ export class CategoryService {
         let json = await result.json();
         json.forEach(elem => {
           //console.log(elem);
-            categories.push(new Category(++index, elem));//new Category(++index, elem)
+            categories.push(new Category(++index, elem));
           });
           return categories;
       } catch (error) {

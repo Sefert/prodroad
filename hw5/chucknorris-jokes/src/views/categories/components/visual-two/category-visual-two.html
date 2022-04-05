@@ -1,0 +1,16 @@
+<div class="container py-5">
+
+    <div class="row py-5">
+        <div class="col-lg-7">
+
+            <div class="card shadow mb-4">
+                <div class="card-body p-5">
+                    <ul class="list-bullets" repeat.for="joke of appState.newJokes">
+                        <li class="mb-2">${joke.value}</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -1,6 +1,5 @@
-import { inject, IRouter, route } from "aurelia";
+import { route } from "aurelia";
 import { AppState } from "./state/AppState";
-//import { ICategory } from "./domain/ICategory";
 
 
 @route({

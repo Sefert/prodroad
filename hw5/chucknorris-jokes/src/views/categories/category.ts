@@ -1,41 +1,51 @@
-import { bindable,  IHttpClient,  Params} from "aurelia";
+import { observable,  Params} from "aurelia";
 import { IJoke } from "../../domain/joke/IJoke";
+import { JokeService } from "../../domain/joke/JokeService";
 import { AppState } from "../../state/AppState";
+
+/**
+ * class for category view and state change handlig
+ */
 
 export class Category {
 
+    @observable viewNr : number = 0;
+
     constructor(private appState: AppState,
-        @IHttpClient private http: IHttpClient){
-            console.log("Category constructor");  
+        private jokeService : JokeService){
+            this.appState = appState;
+            this.jokeService = jokeService;
+            console.log("Category constructor");
     }
 
-    load(params: Params) {
-        //console.log(params.name);
+    async load(params: Params) {
+
         this.appState.category = params.name;
-        console.log(this.appState.category);
-        this.getCategoryJokesAsync(params.name,5);
+
+        let catNr = 0;
+        let counter = 0;
+
+        this.appState.categories.forEach(cat => {
+            counter++;
+            if (cat.name == params.name){
+                catNr = counter;
+                console.log(catNr);
+            }
+        });
+
+        this.viewNr = catNr;
+
+        this.appState.newJokes = await this.jokeService.getCategoryJokesAsync(params.name,5);
+        this.saveSeenJokes(this.appState.newJokes);
+
     }
 
-    async getCategoryJokesAsync(name: string, amount: number): Promise<void> {
-        try {
-            this.appState.newJokes = [];
-            for (let index = 0; index < amount; index++) {           
-                let result = await this.http.get(`https://api.chucknorris.io/jokes/random?category=${name}`);
-                let json = await result.json();
-                this.appState.newJokes.push(json);
-                this.saveSeenJokes(json);
-            }
-            //console.log(this.appState.newJokes); 
-            //console.log(this.appState.seenJokes);
-        }catch (error) {
-            console.log(error);
-            }
-    }
-
-    public saveSeenJokes(joke : IJoke){
-        if (!this.existJoke(joke)){
-            this.appState.seenJokes.push(joke);
-        }           
+    public saveSeenJokes(jokes : IJoke[]){
+       jokes.forEach(joke => {
+            if (!this.existJoke(joke)){
+                this.appState.seenJokes.push(joke);
+            } 
+        });             
     }
 
     public existJoke(joke : IJoke) : boolean{

@@ -1,4 +1,8 @@
 <!-- All components -->
 <import from="./components/visual-one/category-visual-one" />
+<import from="./components/visual-two/category-visual-two" />
+<import from="./components/visual-three/category-visual-three" />
 
-<category-visual-one></category-visual-one>
+<div if.bind="viewNr == 1"><category-visual-one></category-visual-one></div>
+<div if.bind="viewNr == 2"><category-visual-two></category-visual-two></div>
+<div if.bind="viewNr == 3"><category-visual-three></category-visual-three></div>
