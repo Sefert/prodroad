@@ -1,6 +1,5 @@
 ﻿using Domain.App;
 using Domain.App.Identity;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +7,7 @@ namespace DAL.App.EF;
 
 public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
 {
+    public DbSet<RefreshToken> RefreshTokens { get; set; } = default!;
     public DbSet<ActiveNotification> ActiveNotifications { get; set; } = default!;
     public DbSet<Address> Addresses { get; set; } = default!;
     public DbSet<Customer> Customers { get; set; } = default!;

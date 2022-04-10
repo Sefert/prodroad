@@ -41,4 +41,9 @@ public class AppUser : BaseUser
     public ICollection<PriceGroup>? PriceGroups { get; set; }
     public ICollection<Customer>? Customers { get; set; }
     public ICollection<Address>? Addresses { get; set; }
+    
+    /// <summary>
+    /// Token data for multiple instances support
+    /// </summary>
+    public ICollection<RefreshToken>? RefreshTokens { get; set; }
 }

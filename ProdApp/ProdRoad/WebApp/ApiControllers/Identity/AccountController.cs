@@ -1,8 +1,13 @@
+using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System.Security.Claims;
+using DAL.App.EF;
 using Domain.App.Identity;
 using Extensions.Base;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebApp.DTO.Error;
 using WebApp.DTO.Identity;
 
@@ -17,17 +22,20 @@ public class AccountController : ControllerBase
     private readonly UserManager<AppUser> _userManager;
     private readonly ILogger<AccountController> _logger;
     private readonly IConfiguration _configuration;
-    private readonly Random _random = new Random();
+    private readonly Random _random = new();
+    private readonly AppDbContext _context;
 
     public AccountController(SignInManager<AppUser> signInManager, 
             ILogger<AccountController> logger, 
             UserManager<AppUser> userManager, 
-            IConfiguration configuration)
+            IConfiguration configuration, 
+            AppDbContext context)
     {
         _signInManager = signInManager;
         _logger = logger;
         _userManager = userManager;
         _configuration = configuration;
+        _context = context;
     }
     
     //TODO: change error messages
@@ -69,7 +77,7 @@ public class AccountController : ControllerBase
             _configuration["JWT:Key"],
             _configuration["JWT:Issuer"],
             _configuration["JWT:Issuer"],
-            DateTime.Now.AddDays(_configuration.GetValue<int>("JWT:ExpireInDays"))
+            DateTime.Now.AddMinutes(_configuration.GetValue<int>("JWT:ExpireInMinutes"))
         );
 
         // can add additional data to jwt response
@@ -91,7 +99,7 @@ public class AccountController : ControllerBase
                 Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.1",
                 Title = "App error",
                 Status =  HttpStatusCode.BadRequest,
-                TraceId = HttpContext.TraceIdentifier,
+                TraceId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
             };
             errorResponse.Errors["email"] = new List<string>()
             {
@@ -100,11 +108,18 @@ public class AccountController : ControllerBase
             return BadRequest(errorResponse);
         }
 
+        var refreshToken = new RefreshToken();
+        
         appUser = new AppUser()
         {
             Email = registrationData.Email,
-            UserName = registrationData.Email
+            UserName = registrationData.Email,
+            RefreshTokens = new List<RefreshToken>()
+            {
+                refreshToken
+            }
         };
+
 
         //create user (system creates)
         var result = await _userManager.CreateAsync(appUser, registrationData.Password);
@@ -136,14 +151,66 @@ public class AccountController : ControllerBase
             _configuration["JWT:Key"],
             _configuration["JWT:Issuer"],
             _configuration["JWT:Issuer"],
-            DateTime.Now.AddDays(_configuration.GetValue<int>("JWT:ExpireInDays"))
+            DateTime.Now.AddMinutes(_configuration.GetValue<int>("JWT:ExpireInMinutes"))
         );
 
         // can add additional data to jwt response
         var res = new JwtResponse()
         {
-            Token = jwt
+            Token = jwt,
+            RefreshToken = refreshToken.Token
         };
         return Ok(res);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult> RefreshToken([FromBody] RefreshTokenModel refreshTokenModel)
+    {
+        //get user info from JWT
+        JwtSecurityToken jwtToken;
+        try
+        {
+            jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(refreshTokenModel.JWT);
+            if (jwtToken == null)
+            {
+                return BadRequest("No token");
+            }
+        }
+        catch (Exception e)
+        {
+            return BadRequest($"$Invalid JWT!:{e.Message}");
+        }
+        
+        //validate token signature
+        var userEmail = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+        if (userEmail == null)
+        {
+            return BadRequest("No email in JWT");
+        }
+
+        //get user and tokens
+        var appUser = await _userManager.FindByEmailAsync(userEmail);
+        if (appUser == null)
+        {
+            return NotFound("User not found!");
+        }
+        
+        await _context.Entry(appUser).Collection(u => u.RefreshTokens!)
+            .Query()
+            .Where(x => (x.Token ==refreshTokenModel.RefreshToken && x.TokenExpirationDateTime > DateTime.UtcNow) ||
+                       (x.PreviousToken == refreshTokenModel.RefreshToken || x.PreviousTokenExpirationDateTime > DateTime.UtcNow))
+            .ToListAsync();
+        if (appUser.RefreshTokens == null)
+        {
+            return Problem("Refresh Token not found");
+        }
+        
+        //compare refresh tokens
+        
+        
+        //generate new JWT
+        //generate nef refresh token
+        //save new refresh token, move old one to prev, update expiration
+        return Ok("200");
     }
 }
