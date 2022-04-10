@@ -28,6 +28,7 @@ public class AccountController : ControllerBase
         _configuration = configuration;
     }
     
+    //TODO: change error messages
     [HttpPost] //Find out why actionresult. 
     public async Task<ActionResult<JwtResponse>> LogIn([FromBody] Login loginData) //Frombody json body
     {
@@ -39,16 +40,16 @@ public class AccountController : ControllerBase
             
             //Should do random delays in between different steps on failure
             await Task.Delay(_random.Next(100,1000));
-            return NotFound("User/Password problem");
+            return NotFound("User/Password problem 1");
         }
         
         //verify username and password
         var result = await _signInManager.CheckPasswordSignInAsync(appUser, loginData.Password, false);
-        if (result.Succeeded)
+        if (!result.Succeeded)
         {
             _logger.LogWarning("Login failed, password problem for user {}", loginData.Email);
             await Task.Delay(_random.Next(100,1000));
-            return NotFound("User/Password problem");
+            return NotFound("User/Password problem 2");
         }
         
         //get claims based user
@@ -57,7 +58,7 @@ public class AccountController : ControllerBase
         {
             _logger.LogWarning("Could not get ClaimsPrincipal for user {}", loginData.Email);
             await Task.Delay(_random.Next(100,1000));
-            return NotFound("User/Password problem");
+            return NotFound("User/Password problem 3");
         }
 
         //generate jwt
@@ -69,9 +70,10 @@ public class AccountController : ControllerBase
             DateTime.Now.AddDays(_configuration.GetValue<int>("JWT:ExpireInDays"))
         );
 
+        // can add additional data to jwt response
         var res = new JwtResponse()
         {
-
+            Token = jwt
         };
         return Ok(res);
     }
