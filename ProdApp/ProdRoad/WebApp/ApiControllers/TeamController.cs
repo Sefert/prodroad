@@ -3,12 +3,15 @@ using DAL.App.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.App;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using WebApp.DTO;
 
 namespace WebApp.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles="admin,user",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class TeamController : ControllerBase
     {
         private readonly IAppUnitOfWork _uow;
