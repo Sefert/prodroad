@@ -1,7 +1,9 @@
+using System.Net;
 using Domain.App.Identity;
 using Extensions.Base;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using WebApp.DTO.Error;
 using WebApp.DTO.Identity;
 
 namespace WebApp.ApiControllers.Identity;
@@ -85,7 +87,17 @@ public class AccountController : ControllerBase
         if (appUser != null)
         {
             _logger.LogWarning("User with email {} is already registered", registrationData.Email);
-            return BadRequest("Cant create user!");
+            var errorResponse = new RestApiErrorResponse(){
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.1",
+                Title = "App error",
+                Status =  HttpStatusCode.BadRequest,
+                TraceId = HttpContext.TraceIdentifier,
+            };
+            errorResponse.Errors["email"] = new List<string>()
+            {
+                "Email already registered"
+            };
+            return BadRequest(errorResponse);
         }
 
         appUser = new AppUser()
