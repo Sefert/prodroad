@@ -77,6 +77,61 @@ public class AccountController : ControllerBase
         };
         return Ok(res);
     }
-    
-    
+
+    public async Task<ActionResult<JwtResponse>> Register(Register registrationData)
+    {
+        //verify user
+        var appUser = await _userManager.FindByEmailAsync(registrationData.Email);
+        if (appUser != null)
+        {
+            _logger.LogWarning("User with email {} is already registered", registrationData.Email);
+            return BadRequest("Cant create user!");
+        }
+
+        appUser = new AppUser()
+        {
+            Email = registrationData.Email,
+            UserName = registrationData.Email
+        };
+
+        //create user (system creates)
+        var result = await _userManager.CreateAsync(appUser, registrationData.Password);
+
+        if (!result.Succeeded)
+        {
+            return BadRequest(result);
+        }
+        
+        //get full user (get from system created)
+        appUser = await _userManager.FindByEmailAsync(appUser.Email);
+        if (appUser == null)
+        {
+            _logger.LogWarning("Useer {} not found after registration", registrationData.Email);
+            return BadRequest("Cant create user!");
+        }
+        
+        //get claims based user
+        var claimsPrincipal = await _signInManager.CreateUserPrincipalAsync(appUser);
+        if (claimsPrincipal == null)
+        {
+            _logger.LogWarning("Could not get ClaimsPrincipal for user {}", registrationData.Email);
+            return NotFound("User/Password problem 3");
+        }
+
+        //generate jwt
+        var jwt = IdentityExtensions.GenerateJwt(
+            claimsPrincipal.Claims,
+            _configuration["JWT:Key"],
+            _configuration["JWT:Issuer"],
+            _configuration["JWT:Issuer"],
+            DateTime.Now.AddDays(_configuration.GetValue<int>("JWT:ExpireInDays"))
+        );
+
+        // can add additional data to jwt response
+        var res = new JwtResponse()
+        {
+            Token = jwt
+        };
+        return Ok(res);
+    }
 }
