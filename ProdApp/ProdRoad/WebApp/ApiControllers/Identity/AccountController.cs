@@ -195,22 +195,62 @@ public class AccountController : ControllerBase
             return NotFound("User not found!");
         }
         
+        //compare refresh tokens
+        
         await _context.Entry(appUser).Collection(u => u.RefreshTokens!)
             .Query()
             .Where(x => (x.Token ==refreshTokenModel.RefreshToken && x.TokenExpirationDateTime > DateTime.UtcNow) ||
                        (x.PreviousToken == refreshTokenModel.RefreshToken || x.PreviousTokenExpirationDateTime > DateTime.UtcNow))
             .ToListAsync();
+        
         if (appUser.RefreshTokens == null)
         {
             return Problem("Refresh Token not found");
         }
         
-        //compare refresh tokens
-        
+        if (appUser.RefreshTokens == null)
+        {
+            return Problem("More then one refresh tokens found");
+        }
         
         //generate new JWT
-        //generate nef refresh token
+        //get claims based user
+        var claimsPrincipal = await _signInManager.CreateUserPrincipalAsync(appUser);
+        if (claimsPrincipal == null)
+        {
+            _logger.LogWarning("Could not get ClaimsPrincipal for user {}", userEmail);
+            return NotFound("User/Password problem 3");
+        }
+
+        //generate jwt
+        var jwt = IdentityExtensions.GenerateJwt(
+            claimsPrincipal.Claims,
+            _configuration["JWT:Key"],
+            _configuration["JWT:Issuer"],
+            _configuration["JWT:Issuer"],
+            DateTime.Now.AddMinutes(_configuration.GetValue<int>("JWT:ExpireInMinutes"))
+        );
+
+        //generate new refresh token
         //save new refresh token, move old one to prev, update expiration
-        return Ok("200");
+        var refreshToken = appUser.RefreshTokens.First();
+        if (refreshToken.Token == refreshTokenModel.RefreshToken)
+        {
+            refreshToken.PreviousToken = refreshToken.Token;
+            refreshToken.PreviousTokenExpirationDateTime= DateTime.UtcNow.AddMinutes(1);
+
+            refreshToken.Token = Guid.NewGuid().ToString();
+            refreshToken.TokenExpirationDateTime = DateTime.UtcNow.AddDays(7);
+
+            await _context.SaveChangesAsync();
+        }
+        
+        var res = new JwtResponse()
+        {
+            Token = jwt,
+            RefreshToken = refreshToken.Token
+        };
+
+        return Ok(res);
     }
 }
