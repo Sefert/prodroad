@@ -3,6 +3,7 @@ using DAL.App.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.App;
+using Extensions.Base;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using WebApp.DTO;
@@ -11,7 +12,7 @@ namespace WebApp.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles="admin,user",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Roles="admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AddressController : ControllerBase
     {
         //is now in IAppUnitOfWOrk
@@ -29,7 +30,7 @@ namespace WebApp.ApiControllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AddressDTO>>> GetAddresses()
         {
-            var address = (await _uow.Addresses.GetAllAsync())
+            var address = (await _uow.Addresses.GetAllAsync(User.GetUserId()))
                     .Select(ad => new AddressDTO()
                     {
                         Id = ad.Id,
@@ -50,7 +51,7 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<AddressDTO>> GetAddress(Guid id)
         {
-            var dbAddress = await _uow.Addresses.FirstOrDefaultAsync(id);
+            var dbAddress = await _uow.Addresses.FirstOrDefaultAsync(User.GetUserId(),id);
             
             if (dbAddress == null)
             {
@@ -83,7 +84,7 @@ namespace WebApp.ApiControllers
                 return BadRequest();
             }
 
-            var dbAddress = await _uow.Addresses.FirstOrDefaultAsync(id);
+            var dbAddress = await _uow.Addresses.FirstOrDefaultAsync(User.GetUserId(),id);
             
             if (dbAddress == null) {return NotFound();}
 
@@ -123,7 +124,7 @@ namespace WebApp.ApiControllers
 
             var dbAddress = new Address()
             {
-                AppUserId = address.AppUserId,
+                AppUserId = User.GetUserId(),
                 CustomerId = address.CustomerId
             };
             
@@ -146,7 +147,7 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAddress(Guid id)
         {
-            var address = await _uow.Addresses.FirstOrDefaultAsync(id);
+            var address = await _uow.Addresses.FirstOrDefaultAsync(User.GetUserId(),id);
             if (address == null)
             {
                 return NotFound();

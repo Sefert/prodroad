@@ -3,6 +3,7 @@ using DAL.App.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.App;
+using Extensions.Base;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using WebApp.DTO;
@@ -11,7 +12,7 @@ namespace WebApp.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles="admin,user",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Roles="admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class TeamController : ControllerBase
     {
         private readonly IAppUnitOfWork _uow;
@@ -26,7 +27,7 @@ namespace WebApp.ApiControllers
         public async Task<ActionResult<IEnumerable<TeamDTO>>> GetTeams()
         {
             var dataList = (await _uow.Teams
-                    .GetAllAsync())
+                    .GetAllAsync(User.GetUserId()))
                 .Select(row => new TeamDTO()
                 {
                     Id = row.Id,
@@ -42,19 +43,19 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<TeamDTO>> GetTeam(Guid id)
         {
-            var dbRow = await _uow.Teams.FirstOrDefaultAsync(id);
-            
-            if (dbRow == null)
+            var dbTeam = await _uow.Teams.FirstOrDefaultAsync(User.GetUserId(), id);
+                
+            if (dbTeam == null)
             {
                 return NotFound();
             }
             
             var team = new TeamDTO()
             {
-                Id = dbRow.Id,
-                AppUserId = dbRow.AppUserId,
-                Name = dbRow.Name,
-                Code = dbRow.Code
+                Id = dbTeam.Id,
+                AppUserId = User.GetUserId(),
+                Name = dbTeam.Name,
+                Code = dbTeam.Code
             };
 
             return team;
@@ -70,7 +71,7 @@ namespace WebApp.ApiControllers
                 return BadRequest();
             }
 
-            var dbRow = await _uow.Teams.FirstOrDefaultAsync(id);
+            var dbRow = await _uow.Teams.FirstOrDefaultAsync(User.GetUserId(),id);
             
             if (dbRow == null) {return NotFound();}
 
@@ -105,7 +106,8 @@ namespace WebApp.ApiControllers
         {
             var dbRow = new Team()
             {
-                AppUserId = team.AppUserId,
+                Id = team.Id,
+                AppUserId = User.GetUserId()
             };
             
             dbRow.Name!.SetTranslation(team.Name!);
@@ -121,7 +123,7 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTeam(Guid id)
         {
-            var team = await _uow.Teams.FirstOrDefaultAsync(id);
+            var team = await _uow.Teams.FirstOrDefaultAsync(User.GetUserId(),id);
             if (team == null)
             {
                 return NotFound();
@@ -132,7 +134,7 @@ namespace WebApp.ApiControllers
 
             return NoContent();
         }
-
+        
         private bool TeamExists(Guid id)
         {
             return _uow.Teams.Exists(id);
