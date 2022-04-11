@@ -95,16 +95,14 @@ public class AccountController : ControllerBase
         if (appUser != null)
         {
             _logger.LogWarning("User with email {} is already registered", registrationData.Email);
-            var errorResponse = new RestApiErrorResponse(){
-                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.1",
-                Title = "App error",
-                Status =  HttpStatusCode.BadRequest,
-                TraceId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
-            };
+
+            var errorResponse = RequestResponse(HttpStatusCode.BadRequest);
+            
             errorResponse.Errors["email"] = new List<string>()
             {
-                "Email already registered"
+                "Email already registered!"
             };
+            
             return BadRequest(errorResponse);
         }
 
@@ -133,8 +131,14 @@ public class AccountController : ControllerBase
         appUser = await _userManager.FindByEmailAsync(appUser.Email);
         if (appUser == null)
         {
-            _logger.LogWarning("Useer {} not found after registration", registrationData.Email);
-            return BadRequest("Cant create user!");
+            _logger.LogWarning("User {} not found after registration!", registrationData.Email);
+            var errorResponse = RequestResponse(HttpStatusCode.BadRequest);
+            
+            errorResponse.Errors["user"] = new List<string>()
+            {
+                "Cant create user!"
+            };
+            return BadRequest(errorResponse);
         }
         
         //get claims based user
@@ -142,7 +146,13 @@ public class AccountController : ControllerBase
         if (claimsPrincipal == null)
         {
             _logger.LogWarning("Could not get ClaimsPrincipal for user {}", registrationData.Email);
-            return NotFound("User/Password problem 3");
+            var errorResponse = RequestResponse(HttpStatusCode.NotFound);
+            
+            errorResponse.Errors["user"] = new List<string>()
+            {
+                "Claims problem!"
+            };
+            return NotFound(errorResponse);
         }
 
         //generate jwt
@@ -173,25 +183,49 @@ public class AccountController : ControllerBase
             jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(refreshTokenModel.JWT);
             if (jwtToken == null)
             {
-                return BadRequest("No token");
+                var errorResponse = RequestResponse(HttpStatusCode.BadRequest);
+            
+                errorResponse.Errors["token"] = new List<string>()
+                {
+                    "No token!"
+                };
+                return BadRequest(errorResponse);
             }
         }
         catch (Exception e)
         {
-            return BadRequest($"$Invalid JWT!:{e.Message}");
+            var errorResponse = RequestResponse(HttpStatusCode.BadRequest);
+            
+            errorResponse.Errors["token"] = new List<string>()
+            {
+                $"Invalid JWT!:{e.Message}"
+            };
+            return BadRequest(errorResponse);
         }
         
         //validate token signature
         var userEmail = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
         if (userEmail == null)
         {
-            return BadRequest("No email in JWT");
+            var errorResponse = RequestResponse(HttpStatusCode.BadRequest);
+            
+            errorResponse.Errors["token"] = new List<string>()
+            {
+                "No email in JWT"
+            };
+            return BadRequest(errorResponse);
         }
 
         //get user and tokens
         var appUser = await _userManager.FindByEmailAsync(userEmail);
         if (appUser == null)
         {
+            var errorResponse = RequestResponse(HttpStatusCode.NotFound);
+            
+            errorResponse.Errors["user"] = new List<string>()
+            {
+                "User not found!"
+            };
             return NotFound("User not found!");
         }
         
@@ -205,12 +239,12 @@ public class AccountController : ControllerBase
         
         if (appUser.RefreshTokens == null)
         {
-            return Problem("Refresh Token not found");
+            return Problem("Refresh Token not found","",500);
         }
         
         if (appUser.RefreshTokens == null)
         {
-            return Problem("More then one refresh tokens found");
+            return Problem("More then one refresh tokens found","",500);
         }
         
         //generate new JWT
@@ -219,7 +253,13 @@ public class AccountController : ControllerBase
         if (claimsPrincipal == null)
         {
             _logger.LogWarning("Could not get ClaimsPrincipal for user {}", userEmail);
-            return NotFound("User/Password problem 3");
+            var errorResponse = RequestResponse(HttpStatusCode.NotFound);
+            
+            errorResponse.Errors["user"] = new List<string>()
+            {
+                "User not found!"
+            };
+            return NotFound(errorResponse);
         }
 
         //generate jwt
@@ -252,5 +292,33 @@ public class AccountController : ControllerBase
         };
 
         return Ok(res);
+    }
+
+    private RestApiErrorResponse RequestResponse(HttpStatusCode code)
+    {
+        string type;
+
+        switch(code) 
+        {
+            case HttpStatusCode.BadRequest:
+                type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.1";
+                break;
+            case HttpStatusCode.NotFound:
+                type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4";
+                break;
+            default:
+                code = HttpStatusCode.InternalServerError;
+                type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.6.1";
+                break;
+        };
+        
+        var errorResponse = new RestApiErrorResponse(){
+            Type = type,
+            Title = "APP error",
+            Status =  code,
+            TraceId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
+        };
+
+        return errorResponse;
     }
 }
