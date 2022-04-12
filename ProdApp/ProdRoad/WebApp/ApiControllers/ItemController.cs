@@ -3,12 +3,16 @@ using DAL.App.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.App;
+using Extensions.Base;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using WebApp.DTO;
 
 namespace WebApp.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles="admin,manager,user",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ItemController : ControllerBase
     {
         private readonly IAppUnitOfWork _uow;
@@ -23,7 +27,7 @@ namespace WebApp.ApiControllers
         public async Task<ActionResult<IEnumerable<ItemDTO>>> GetItems()
         {
             var dataList = (await _uow.Items
-                    .GetAllAsync())
+                    .GetAllAsync(User.GetUserId()))
                 .Select(row => new ItemDTO()
                 {
                     Id = row.Id,
@@ -42,7 +46,7 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ItemDTO>> GetItem(Guid id)
         {
-            var dbRow = await _uow.Items.FirstOrDefaultAsync(id);
+            var dbRow = await _uow.Items.FirstOrDefaultAsync(User.GetUserId(),id);
             
             if (dbRow == null)
             {
@@ -72,7 +76,7 @@ namespace WebApp.ApiControllers
                 return BadRequest();
             }
 
-            var dbRow = await _uow.Items.FirstOrDefaultAsync(id);
+            var dbRow = await _uow.Items.FirstOrDefaultAsync(User.GetUserId(),id);
             
             if (dbRow == null) {return NotFound();}
 
@@ -126,7 +130,7 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteItem(Guid id)
         {
-            var item = await _uow.Items.FirstOrDefaultAsync(id);
+            var item = await _uow.Items.FirstOrDefaultAsync(User.GetUserId(),id);
             if (item == null)
             {
                 return NotFound();

@@ -3,12 +3,16 @@ using DAL.App.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.App;
+using Extensions.Base;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using WebApp.DTO;
 
 namespace WebApp.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles="admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CustomerController : ControllerBase
     {
         private readonly IAppUnitOfWork _uow;
@@ -23,7 +27,7 @@ namespace WebApp.ApiControllers
         public async Task<ActionResult<IEnumerable<CustomerDTO>>> GetCustomers()
         {
             var dataList = (await _uow.Customers
-                    .GetAllAsync())
+                    .GetAllAsync(User.GetUserId()))
                     .Select(row => new CustomerDTO()
                     {
                         Id = row.Id,
@@ -67,7 +71,7 @@ namespace WebApp.ApiControllers
                 return BadRequest();
             }
 
-            var dbRow = await _uow.Customers.FirstOrDefaultAsync(id);
+            var dbRow = await _uow.Customers.FirstOrDefaultAsync(User.GetUserId(),id);
             
             if (dbRow == null) {return NotFound();}
 
@@ -118,7 +122,7 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomer(Guid id)
         {
-            var customer = await _uow.Customers.FirstOrDefaultAsync(id);
+            var customer = await _uow.Customers.FirstOrDefaultAsync(User.GetUserId(),id);
             if (customer == null)
             {
                 return NotFound();
