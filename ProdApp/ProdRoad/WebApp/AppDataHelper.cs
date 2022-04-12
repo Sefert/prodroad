@@ -1,6 +1,7 @@
 using DAL.App.EF;
 using Domain.App;
 using Domain.App.Identity;
+using Domain.Base;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +21,9 @@ public static class AppDataHelper
         using var context = serviceScope.
             ServiceProvider.
             GetService<AppDbContext>();
+        
+        using var userManager = serviceScope.ServiceProvider.GetService<UserManager<AppUser>>();
+        using var roleManager = serviceScope.ServiceProvider.GetService<RoleManager<AppRole>>();
 
         if (context == null)
         {
@@ -38,8 +42,7 @@ public static class AppDataHelper
         
         if (conf.GetValue<bool>("DataInitialization:SeedIdentity"))
         {
-            using var userManager = serviceScope.ServiceProvider.GetService<UserManager<AppUser>>();
-            using var roleManager = serviceScope.ServiceProvider.GetService<RoleManager<AppRole>>();
+
 
             if (userManager == null || roleManager == null)
             {
@@ -103,20 +106,26 @@ public static class AppDataHelper
                 }
             }
         }
+        
         if (conf.GetValue<bool>("DataInitialization:SeedData"))
         {
-            //await SeedAddresses(context);
-            //await SeedCustomers(context);
-            //await SeedItems(context);
+            if (userManager == null)
+            {
+                throw new NullReferenceException("user or role manager can not be null!");
+            }
+            var user = userManager.FindByEmailAsync("manager@manager.com").Result;
+            await SeedAddresses(user, context);
+            await SeedCustomers(user, context);
+            await SeedItems(user, context);
         }
     }
 
-    private static async Task SeedAddresses(AppDbContext context)
+    private static async Task SeedAddresses(AppUser user, AppDbContext context)
     {
         var data = new Address()
         {
-            AppUserId = Guid.Parse("9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e"),
-            Country =
+            AppUserId = user.Id,
+            Country = new LangStr()
             {
                 ["et"] = "Eesti",
                 ["en"] = "Estonia",
@@ -126,18 +135,17 @@ public static class AppDataHelper
         await context.SaveChangesAsync();
     }
     
-    private static async Task SeedCustomers(AppDbContext context)
+    private static async Task SeedCustomers(AppUser user, AppDbContext context)
     {
         var data = new Customer()
         {
-            Id = Guid.Parse("9504aaa1-ab82-4af2-9ba5-f0ffb77ae23e"),
-            AppUserId = Guid.Parse("9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e"),
-            Name =
+            AppUserId = user.Id,
+            Name = new LangStr()
             {
                 ["et"] = "AS Kapsel",
                 ["en"] = "AS Kapsel-en",
             },
-            Registration = 
+            Registration =  new LangStr()
             {
                 ["et"] = "12345678",
                 ["en"] = "12345678-en",
@@ -147,23 +155,22 @@ public static class AppDataHelper
         await context.SaveChangesAsync();
     }
     
-    private static async Task SeedItems(AppDbContext context)
+    private static async Task SeedItems(AppUser user, AppDbContext context)
     {
         var data = new Item()
         {
-            Id = Guid.Parse("9504aab1-ab82-4af2-9ba5-f0ffb77ae23e"),
-            AppUserId = Guid.Parse("9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e"),
-            Name =
+            AppUserId = user.Id,
+            Name = new LangStr()
             {
                 ["et"] = "T-särk",
                 ["en"] = "T-shirt",
             },
-            Type = 
+            Type = new LangStr()
             {
                 ["et"] = "M4345",
                 ["en"] = "M4345",
             },
-            Unit = 
+            Unit = new LangStr()
             {
                 ["et"] = "tk",
                 ["en"] = "piece",
@@ -173,23 +180,26 @@ public static class AppDataHelper
         
         context.Items.Add(data);
         //await context.SaveChangesAsync();
+        /*await context.Entry(user)
+            .Collection(u => u.Items!)
+            .Query()
+            .ToListAsync();*/
         
         data = new Item()
         {
-            Id = Guid.Parse("9504aab2-ab82-4af2-9ba5-f0ffb77ae23e"),
-            AppUserId = Guid.Parse("9504bbb0-ab82-4af2-9ba5-f0ffb77ae23e"),
-            ItemId = Guid.Parse("9504aab1-ab82-4af2-9ba5-f0ffb77ae23e"),
-            Name =
+            AppUserId = user.Id,
+            ItemId = user.Items!.FirstOrDefault()!.ItemId,
+            Name = new LangStr()
             {
                 ["et"] = "Käis",
                 ["en"] = "Sleeve",
             },
-            Type = 
+            Type = new LangStr()
             {
                 ["et"] = "M4345-1",
                 ["en"] = "M4345-1",
             },
-            Unit = 
+            Unit = new LangStr()
             {
                 ["et"] = "tk",
                 ["en"] = "piece",

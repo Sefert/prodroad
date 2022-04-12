@@ -199,7 +199,7 @@ public class AccountController : ControllerBase
         JwtSecurityToken jwtToken;
         try
         {
-            jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(refreshTokenModel.JWT);
+            jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(refreshTokenModel.Token);
             if (jwtToken == null)
             {
                 var errorResponse = RequestResponse(HttpStatusCode.BadRequest);
