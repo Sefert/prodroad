@@ -44,6 +44,7 @@ public class AccountController : ControllerBase
     {
         //verify username
         var appUser = await _userManager.FindByEmailAsync(loginData.Email);
+        RefreshToken refreshToken;
         if (appUser == null)
         {
             _logger.LogWarning("Login failed, email {} not found", loginData.Email);
@@ -55,7 +56,24 @@ public class AccountController : ControllerBase
         
         //verify username and password
         var result = await _signInManager.CheckPasswordSignInAsync(appUser, loginData.Password, false);
-        if (!result.Succeeded)
+        if (result.Succeeded)
+        {
+            //add RefreshToken to user
+            refreshToken = new RefreshToken();
+            if (appUser.RefreshTokens == null)
+            {
+                appUser.RefreshTokens = new List<RefreshToken>()
+                {
+                    refreshToken
+                }; 
+            }
+            else
+            {
+                appUser.RefreshTokens.Add(refreshToken); 
+            }
+            await _context.SaveChangesAsync();
+        }
+        else
         {
             _logger.LogWarning("Login failed, password problem for user {}", loginData.Email);
             await Task.Delay(_random.Next(100,1000));
@@ -83,7 +101,8 @@ public class AccountController : ControllerBase
         // can add additional data to jwt response
         var res = new JwtResponse()
         {
-            Token = jwt
+            Token = jwt,
+            RefreshToken = refreshToken.Token
         };
         return Ok(res);
     }
