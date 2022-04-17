@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from '@/components/HelloWorld.vue'
-import NavBar from '@/components/NavBar.vue'
+//import HelloWorld from '@/components/HelloWorld.vue'
+import TopNavBar from '@/components/TopNavBar.vue'
+import RightBar from '@/components/RightBar.vue'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.min.js'
 
@@ -9,21 +10,22 @@ import 'bootstrap/dist/js/bootstrap.min.js'
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-    <!--<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">-->
-    <div class="wrapper">
+    <!--<img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">-->
+    <!--<div class="wrapper">
       <HelloWorld msg="You did it!" />
-      <!--<nav>
+      <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
-      </nav>-->
-    </div>
+      </nav>
+    </div>-->
   </header>
-        <nav>
-          <NavBar/>
-        <!--<RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>-->
-        </nav>  
+      <TopNavBar />
+      <nav class="wrapper">
+        <RightBar />
+      </nav>
+    <!--<RouterLink to="/">Home</RouterLink>
+    <RouterLink to="/about">About</RouterLink>-->
   <RouterView />
 </template>
 
@@ -33,8 +35,7 @@ import 'bootstrap/dist/js/bootstrap.min.js'
 #app {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
-
+  padding: 0rem;
   font-weight: normal;
 }
 
@@ -62,10 +63,9 @@ a,
 }
 
 nav {
-  width: 100%;
   font-size: 12px;
   text-align: center;
-  margin-top: 2rem;
+  margin-top: 0rem;
 }
 
 nav a.router-link-exact-active {
@@ -87,42 +87,6 @@ nav a:first-of-type {
 }
 
 @media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
-
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-
-  
+ 
 }
 </style>
