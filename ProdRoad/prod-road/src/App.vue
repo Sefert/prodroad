@@ -3,11 +3,13 @@ import { RouterLink, RouterView } from 'vue-router'
 //import HelloWorld from '@/components/HelloWorld.vue'
 import TopNavBar from '@/components/TopNavBar.vue'
 import RightBar from '@/components/RightBar.vue'
+import Login from '@/components/Login.vue'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.min.js'
 
 </script>
 
+<!-- TODO: change to better login data -->
 <template>
   <header>
     <!--<img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
@@ -20,14 +22,20 @@ import 'bootstrap/dist/js/bootstrap.min.js'
       </nav>
     </div>-->
   </header>
+    <div class="wrapper" v-if="email === 'true'">
       <TopNavBar />
       <nav class="wrapper">
         <RightBar />
       </nav>
     <!--<RouterLink to="/">Home</RouterLink>
-    <RouterLink to="/about">About</RouterLink>-->
+    <RouterLink to="/about">About</RouterLink>-->  
+    </div>
+    <div class="wrapper" v-else>
+      <Login />
+    </div>
   <RouterView />
 </template>
+
 
 <style>
 @import '@/assets/base.css';
