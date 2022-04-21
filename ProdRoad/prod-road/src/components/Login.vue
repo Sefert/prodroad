@@ -1,9 +1,9 @@
-<script setup lang="ts">
+<script lang="ts">
     import { Options, Vue } from "vue-class-component";
-    import { useStore } from "@/stores/user";
+    import { userStore } from "../stores/user";
 
     export default class App extends Vue {
-        userStore = useStore();
+        user = userStore();
     }
 </script>
 
@@ -15,7 +15,7 @@
                 <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
                 <div class="form-floating">
-                <input v-model="email" type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+                <input v-model="user.email" type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
                 <label for="floatingInput">Email address</label>
                 </div>
                 <div class="form-floating">
