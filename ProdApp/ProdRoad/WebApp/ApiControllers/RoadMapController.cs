@@ -1,12 +1,11 @@
 #nullable enable
 using DAL.App.Contracts;
+using DTO.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Domain.App;
 using Extensions.Base;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using WebApp.DTO;
 
 namespace WebApp.ApiControllers
 {
@@ -24,41 +23,24 @@ namespace WebApp.ApiControllers
 
         // GET: api/RoadMap
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RoadMapDTO>>> GetRoadMaps()
+        public async Task<ActionResult<IEnumerable<RoadMap>>> GetRoadMaps()
         {
             var dataList = (await _uow.RoadMaps
                     .GetAllAsync(User.GetUserId()))
-                .Select(row => new RoadMapDTO()
-                {
-                    Id = row.Id,
-                    AppUserId = row.AppUserId,
-                    Name = row.Name,
-                    Position = row.Position,
-                    Line = row.Line
-                })
                 .ToList();
             return dataList;
         }
 
         // GET: api/RoadMap/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<RoadMapDTO>> GetRoadMap(Guid id)
+        public async Task<ActionResult<RoadMap>> GetRoadMap(Guid id)
         {
-            var dbRow = await _uow.RoadMaps.FirstOrDefaultAsync(User.GetUserId(),id);
+            var roadMap = await _uow.RoadMaps.FirstOrDefaultAsync(User.GetUserId(),id);
             
-            if (dbRow == null)
+            if (roadMap == null)
             {
                 return NotFound();
             }
-            
-            var roadMap = new RoadMapDTO()
-            {
-                Id = dbRow.Id,
-                AppUserId = dbRow.AppUserId,
-                Name = dbRow.Name,
-                Position = dbRow.Position,
-                Line = dbRow.Line
-            };
 
             return roadMap;
         }
@@ -66,7 +48,7 @@ namespace WebApp.ApiControllers
         // PUT: api/RoadMap/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRoadMap(Guid id, RoadMapDTO roadMap)
+        public async Task<IActionResult> PutRoadMap(Guid id, RoadMap roadMap)
         {
             if (id != roadMap.Id)
             {
@@ -105,7 +87,7 @@ namespace WebApp.ApiControllers
         // POST: api/RoadMap
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<RoadMapDTO>> PostRoadMap(RoadMapDTO roadMap)
+        public async Task<ActionResult<RoadMap>> PostRoadMap(RoadMap roadMap)
         {
             var dbRow = new RoadMap()
             {

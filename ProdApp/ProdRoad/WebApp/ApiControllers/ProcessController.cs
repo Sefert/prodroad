@@ -1,9 +1,8 @@
 #nullable enable
 using DAL.App.Contracts;
+using DTO.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Domain.App;
-using WebApp.DTO;
 
 namespace WebApp.ApiControllers
 {
@@ -20,41 +19,24 @@ namespace WebApp.ApiControllers
 
         // GET: api/Process
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProcessDTO>>> GetProcesses()
+        public async Task<ActionResult<IEnumerable<Process>>> GetProcesses()
         {
             var dataList = (await _uow.Processes
                     .GetAllAsync())
-                .Select(row => new ProcessDTO()
-                {
-                    Id = row.Id,
-                    TeamId = row.TeamId,
-                    RoadMapId = row.RoadMapId,
-                    ProcedureId = row.ProcedureId,
-                    CreatedAmount = row.CreatedAmount
-                })
                 .ToList();
             return dataList;
         }
 
         // GET: api/Process/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProcessDTO>> GetProcess(Guid id)
+        public async Task<ActionResult<Process>> GetProcess(Guid id)
         {
-            var dbRow = await _uow.Processes.FirstOrDefaultAsync(id);
+            var process = await _uow.Processes.FirstOrDefaultAsync(id);
             
-            if (dbRow == null)
+            if (process == null)
             {
                 return NotFound();
             }
-            
-            var process = new ProcessDTO()
-            {
-                Id = dbRow.Id,
-                TeamId = dbRow.TeamId,
-                RoadMapId = dbRow.RoadMapId,
-                ProcedureId = dbRow.ProcedureId,
-                CreatedAmount = dbRow.CreatedAmount
-            };
 
             return process;
         }
@@ -62,7 +44,7 @@ namespace WebApp.ApiControllers
         // PUT: api/Process/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProcess(Guid id, ProcessDTO process)
+        public async Task<IActionResult> PutProcess(Guid id, Process process)
         {
             if (id != process.Id)
             {
@@ -97,7 +79,7 @@ namespace WebApp.ApiControllers
         // POST: api/Process
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ProcessDTO>> PostProcess(ProcessDTO process)
+        public async Task<ActionResult<Process>> PostProcess(Process process)
         {
             var dbRow = new Process()
             {

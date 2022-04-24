@@ -3,15 +3,17 @@ using DAL.App.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.App;
+using DTO.App;
 using WebApp.DTO;
 
+//TODO: needs future implementation (removed for scope narrowing)
 namespace WebApp.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class ActiveNotificationController : ControllerBase
     {
-        private readonly IAppUnitOfWork _uow;
+        /*private readonly IAppUnitOfWork _uow;
 
         public ActiveNotificationController(IAppUnitOfWork uow)
         {
@@ -20,7 +22,7 @@ namespace WebApp.ApiControllers
         
         // GET: api/ActiveNotification
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ActiveNotificationDTO>>> GetActiveNotifications()
+        public async Task<ActionResult<IEnumerable<ActiveNotification>>> GetActiveNotifications()
         {
             var dataList = (await _uow.ActiveNotifications
                 .GetAllAsync())
@@ -142,6 +144,6 @@ namespace WebApp.ApiControllers
         private bool ActiveNotificationExists(Guid id)
         {
             return _uow.ActiveNotifications.Exists(id);
-        }
+        }*/
     }
 }

@@ -1,9 +1,8 @@
 #nullable enable
 using DAL.App.Contracts;
+using DTO.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Domain.App;
-using WebApp.DTO;
 
 namespace WebApp.ApiControllers
 {
@@ -20,39 +19,24 @@ namespace WebApp.ApiControllers
 
         // GET: api/Price
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PriceDTO>>> GetPrices()
+        public async Task<ActionResult<IEnumerable<Price>>> GetPrices()
         {
             var dataList = (await _uow.Prices
                     .GetAllAsync())
-                .Select(row => new PriceDTO()
-                {
-                    Id = row.Id,
-                    ItemId = row.ItemId,
-                    ItemWarehouseId = row.ItemWarehouseId,
-                    PureCost = row.PureCost
-                })
                 .ToList();
             return dataList;
         }
 
         // GET: api/Price/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<PriceDTO>> GetPrice(Guid id)
+        public async Task<ActionResult<Price>> GetPrice(Guid id)
         {
-            var dbRow = await _uow.Prices.FirstOrDefaultAsync(id);
+            var price = await _uow.Prices.FirstOrDefaultAsync(id);
             
-            if (dbRow == null)
+            if (price == null)
             {
                 return NotFound();
             }
-            
-            var price = new PriceDTO()
-            {
-                Id = dbRow.Id,
-                ItemId = dbRow.ItemId,
-                ItemWarehouseId = dbRow.ItemWarehouseId,
-                PureCost = dbRow.PureCost
-            };
 
             return price;
         }
@@ -60,7 +44,7 @@ namespace WebApp.ApiControllers
         // PUT: api/Price/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPrice(Guid id, PriceDTO price)
+        public async Task<IActionResult> PutPrice(Guid id, Price price)
         {
             if (id != price.Id)
             {
@@ -95,7 +79,7 @@ namespace WebApp.ApiControllers
         // POST: api/Price
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<PriceDTO>> PostPrice(PriceDTO price)
+        public async Task<ActionResult<Price>> PostPrice(Price price)
         {
             var dbRow = new Price()
             {

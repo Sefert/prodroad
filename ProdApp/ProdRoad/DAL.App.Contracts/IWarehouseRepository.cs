@@ -1,8 +1,7 @@
 using Base.Contracts.DAL;
-using Domain.App;
 
 namespace DAL.App.Contracts;
 
-public interface IWarehouseRepository : IEntityRepository<Warehouse>
+public interface IWarehouseRepository : IEntityRepository<DTO.App.Warehouse>
 {
 }

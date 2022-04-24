@@ -4,9 +4,7 @@ using Domain.App;
 
 namespace DAL.App.EF.Repositories;
 
-public class UserNotificationRepository : BaseEntityRepository<UserNotification, AppDbContext>, IUserNotificationRepository
+public class UserNotificationRepository 
 {
-    public UserNotificationRepository(AppDbContext dbContext) : base(dbContext)
-    {
-    }
+
 }

@@ -1,9 +1,8 @@
 #nullable enable
 using DAL.App.Contracts;
+using DTO.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Domain.App;
-using WebApp.DTO;
 
 namespace WebApp.ApiControllers
 {
@@ -20,39 +19,24 @@ namespace WebApp.ApiControllers
 
         // GET: api/Procedure
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProcedureDTO>>> GetProcedures()
+        public async Task<ActionResult<IEnumerable<Procedure>>> GetProcedures()
         {
             var dataList = (await _uow.Procedures
                     .GetAllAsync())
-                .Select(row => new ProcedureDTO()
-                {
-                    Id = row.Id,
-                    AppUserId = row.AppUserId,
-                    Name = row.Name,
-                    Code = row.Code
-                })
                 .ToList();
             return dataList;
         }
 
         // GET: api/Procedure/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProcedureDTO>> GetProcedure(Guid id)
+        public async Task<ActionResult<Procedure>> GetProcedure(Guid id)
         {
-            var dbRow = await _uow.Procedures.FirstOrDefaultAsync(id);
+            var procedure  = await _uow.Procedures.FirstOrDefaultAsync(id);
             
-            if (dbRow == null)
+            if (procedure == null)
             {
                 return NotFound();
             }
-            
-            var procedure = new ProcedureDTO()
-            {
-                Id = dbRow.Id,
-                AppUserId = dbRow.AppUserId,
-                Name = dbRow.Name,
-                Code = dbRow.Code
-            };
 
             return procedure;
         }
@@ -60,7 +44,7 @@ namespace WebApp.ApiControllers
         // PUT: api/Procedure/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProcedure(Guid id, ProcedureDTO procedure)
+        public async Task<IActionResult> PutProcedure(Guid id, Procedure procedure)
         {
             if (id != procedure.Id)
             {
@@ -98,7 +82,7 @@ namespace WebApp.ApiControllers
         // POST: api/Procedure
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ProcedureDTO>> PostProcedure(ProcedureDTO procedure)
+        public async Task<ActionResult<Procedure>> PostProcedure(Procedure procedure)
         {
             var dbRow = new Procedure()
             {

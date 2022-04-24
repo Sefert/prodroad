@@ -1,11 +1,10 @@
 ﻿using Base.Contracts.DAL;
-using Domain.App;
 
 namespace DAL.App.Contracts;
 
-public interface IAddressRepository : IEntityRepository<Address>
+public interface IAddressRepository : IEntityRepository<DTO.App.Address>
 {
     //custom methods here (search, so on)
-    Task<IEnumerable<Address>> GetAllAsync(Guid userId, bool noTracking = true);
-    Task<Address?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = true);
+    Task<IEnumerable<DTO.App.Address>> GetAllAsync(Guid userId, bool noTracking = true);
+    Task<DTO.App.Address?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = true);
 }

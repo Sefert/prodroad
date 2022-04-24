@@ -1,9 +1,8 @@
 #nullable enable
 using DAL.App.Contracts;
+using DTO.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Domain.App;
-using WebApp.DTO;
 
 namespace WebApp.ApiControllers
 {
@@ -20,49 +19,32 @@ namespace WebApp.ApiControllers
 
         // GET: api/ItemProcedure
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ItemProcedureDTO>>> GetItemProcedures()
+        public async Task<ActionResult<IEnumerable<ItemProcedure>>> GetItemProcedures()
         {
             var dataList = (await _uow.ItemProcedures
                     .GetAllAsync())
-                .Select(row => new ItemProcedureDTO()
-                {
-                    Id = row.Id,
-                    ProcedureId = row.ProcedureId,
-                    ItemId = row.ItemId,
-                    CreatedUsed= row.CreatedUsed,
-                    Quantity = row.Quantity
-                })
                 .ToList();
             return dataList;
         }
 
         // GET: api/ItemProcedure/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ItemProcedureDTO>> GetItemProcedure(Guid id)
+        public async Task<ActionResult<ItemProcedure>> GetItemProcedure(Guid id)
         {
-            var dbRow = await _uow.ItemProcedures.FirstOrDefaultAsync(id);
+            var itemProcedure = await _uow.ItemProcedures.FirstOrDefaultAsync(id);
             
-            if (dbRow == null)
+            if (itemProcedure == null)
             {
                 return NotFound();
             }
-            
-            var itemProcedure = new ItemProcedureDTO()
-            {
-                Id = dbRow.Id,
-                ProcedureId = dbRow.ProcedureId,
-                ItemId = dbRow.ItemId,
-                CreatedUsed= dbRow.CreatedUsed,
-                Quantity = dbRow.Quantity
-            };
-            
+
             return itemProcedure;
         }
 
         // PUT: api/ItemProcedure/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutItemProcedure(Guid id, ItemProcedureDTO itemProcedure)
+        public async Task<IActionResult> PutItemProcedure(Guid id, ItemProcedure itemProcedure)
         {
             if (id != itemProcedure.Id)
             {
@@ -97,7 +79,7 @@ namespace WebApp.ApiControllers
         // POST: api/ItemProcedure
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ItemProcedureDTO>> PostItemProcedure(ItemProcedureDTO itemProcedure)
+        public async Task<ActionResult<ItemProcedure>> PostItemProcedure(ItemProcedure itemProcedure)
         {
             var dbRow = new ItemProcedure()
             {

@@ -1,9 +1,8 @@
 #nullable enable
 using DAL.App.Contracts;
+using DTO.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Domain.App;
-using WebApp.DTO;
 
 namespace WebApp.ApiControllers
 {
@@ -20,45 +19,24 @@ namespace WebApp.ApiControllers
 
         // GET: api/PriceGroup
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PriceGroupDTO>>> GetPriceGroups()
+        public async Task<ActionResult<IEnumerable<PriceGroup>>> GetPriceGroups()
         {
             var dataList = (await _uow.PriceGroups
                     .GetAllAsync())
-                .Select(row => new PriceGroupDTO()
-                {
-                    Id = row.Id,
-                    AppUserId = row.AppUserId,
-                    Name = row.Name,
-                    PriceGroupId = row.PriceGroupId,
-                    Tax = row.Tax,
-                    Margin = row.Margin,
-                    Discount = row.Discount
-                })
                 .ToList();
             return dataList;
         }
 
         // GET: api/PriceGroup/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<PriceGroupDTO>> GetPriceGroup(Guid id)
+        public async Task<ActionResult<PriceGroup>> GetPriceGroup(Guid id)
         {
-            var dbRow = await _uow.PriceGroups.FirstOrDefaultAsync(id);
+            var priceGroup = await _uow.PriceGroups.FirstOrDefaultAsync(id);
             
-            if (dbRow == null)
+            if (priceGroup== null)
             {
                 return NotFound();
             }
-            
-            var priceGroup = new PriceGroupDTO()
-            {
-                Id = dbRow.Id,
-                AppUserId = dbRow.AppUserId,
-                Name = dbRow.Name,
-                PriceGroupId = dbRow.PriceGroupId,
-                Tax = dbRow.Tax,
-                Margin = dbRow.Margin,
-                Discount = dbRow.Discount
-            };
 
             return priceGroup;
         }
@@ -66,7 +44,7 @@ namespace WebApp.ApiControllers
         // PUT: api/PriceGroup/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPriceGroup(Guid id, PriceGroupDTO priceGroup)
+        public async Task<IActionResult> PutPriceGroup(Guid id, PriceGroup priceGroup)
         {
             if (id != priceGroup.Id)
             {
@@ -103,7 +81,7 @@ namespace WebApp.ApiControllers
         // POST: api/PriceGroup
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<PriceGroupDTO>> PostPriceGroup(PriceGroupDTO priceGroup)
+        public async Task<ActionResult<PriceGroup>> PostPriceGroup(PriceGroup priceGroup)
         {
             var dbRow = new PriceGroup()
             {

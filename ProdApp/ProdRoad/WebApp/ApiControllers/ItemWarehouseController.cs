@@ -1,9 +1,8 @@
 #nullable enable
 using DAL.App.Contracts;
+using DTO.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Domain.App;
-using WebApp.DTO;
 
 namespace WebApp.ApiControllers
 {
@@ -20,39 +19,24 @@ namespace WebApp.ApiControllers
 
         // GET: api/ItemWarehouse
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ItemWarehouseDTO>>> GetItemWarehouses()
+        public async Task<ActionResult<IEnumerable<ItemWarehouse>>> GetItemWarehouses()
         {
             var dataList = (await _uow.ItemWarehouses
                     .GetAllAsync())
-                .Select(row => new ItemWarehouseDTO()
-                {
-                    Id = row.Id,
-                    ItemId = row.ItemId,
-                    WarehouseId = row.WarehouseId,
-                    Quantity = row.Quantity
-                })
                 .ToList();
             return dataList;
         }
 
         // GET: api/ItemWarehouse/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ItemWarehouseDTO>> GetItemWarehouse(Guid id)
+        public async Task<ActionResult<ItemWarehouse>> GetItemWarehouse(Guid id)
         {
-            var dbRow = await _uow.ItemWarehouses.FirstOrDefaultAsync(id);
+            var itemWarehouse = await _uow.ItemWarehouses.FirstOrDefaultAsync(id);
             
-            if (dbRow == null)
+            if (itemWarehouse == null)
             {
                 return NotFound();
             }
-            
-            var itemWarehouse = new ItemWarehouseDTO()
-            {
-                Id = dbRow.Id,
-                ItemId = dbRow.ItemId,
-                WarehouseId = dbRow.WarehouseId,
-                Quantity = dbRow.Quantity
-            };
 
             return itemWarehouse;
         }
@@ -60,7 +44,7 @@ namespace WebApp.ApiControllers
         // PUT: api/ItemWarehouse/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutItemWarehouse(Guid id, ItemWarehouseDTO itemWarehouse)
+        public async Task<IActionResult> PutItemWarehouse(Guid id, ItemWarehouse itemWarehouse)
         {
             if (id != itemWarehouse.Id)
             {
@@ -95,7 +79,7 @@ namespace WebApp.ApiControllers
         // POST: api/ItemWarehouse
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ItemWarehouseDTO>> PostItemWarehouse(ItemWarehouseDTO itemWarehouse)
+        public async Task<ActionResult<ItemWarehouse>> PostItemWarehouse(ItemWarehouse itemWarehouse)
         {
             var dbRow = new ItemWarehouse()
             {

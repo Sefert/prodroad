@@ -1,9 +1,9 @@
 #nullable enable
 using DAL.App.Contracts;
+using DTO.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Domain.App;
-using WebApp.DTO;
+
 
 namespace WebApp.ApiControllers
 {
@@ -20,37 +20,24 @@ namespace WebApp.ApiControllers
 
         // GET: api/CustomerPrice
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CustomerPriceDTO>>> GetCustomerPrices()
+        public async Task<ActionResult<IEnumerable<CustomerPrice>>> GetCustomerPrices()
         {
             var dataList = (await _uow.CustomerPrices
                     .GetAllAsync())
-                .Select(row => new CustomerPriceDTO()
-                {
-                    Id = row.Id,
-                    CustomerPriceGroupId = row.CustomerPriceGroupId,
-                    PriceId = row.PriceId
-                })
                 .ToList();
             return dataList;
         }
 
         // GET: api/CustomerPrice/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CustomerPriceDTO>> GetCustomerPrice(Guid id)
+        public async Task<ActionResult<CustomerPrice>> GetCustomerPrice(Guid id)
         {
-            var dbRow = await _uow.CustomerPrices.FirstOrDefaultAsync(id);
+            var customerPrice = await _uow.CustomerPrices.FirstOrDefaultAsync(id);
             
-            if (dbRow == null)
+            if (customerPrice == null)
             {
                 return NotFound();
             }
-            
-            var customerPrice = new CustomerPriceDTO()
-            {
-                Id = dbRow.Id,
-                CustomerPriceGroupId = dbRow.CustomerPriceGroupId,
-                PriceId = dbRow.PriceId
-            };
 
             return customerPrice;
         }
@@ -58,7 +45,7 @@ namespace WebApp.ApiControllers
         // PUT: api/CustomerPrice/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCustomerPrice(Guid id, CustomerPriceDTO customerPrice)
+        public async Task<IActionResult> PutCustomerPrice(Guid id, CustomerPrice customerPrice)
         {
             if (id != customerPrice.Id)
             {

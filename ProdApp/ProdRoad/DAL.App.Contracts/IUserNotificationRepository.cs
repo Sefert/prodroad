@@ -1,9 +1,7 @@
-using Base.Contracts.DAL;
-using Domain.App;
 
 namespace DAL.App.Contracts;
 
-public interface IUserNotificationRepository : IEntityRepository<UserNotification>
+public interface IUserNotificationRepository
 {
     
 }

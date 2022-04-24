@@ -1,12 +1,12 @@
+using Base.Contracts;
 using DAL.App.Contracts;
 using DAL.Base.EF;
-using Domain.App;
 
 namespace DAL.App.EF.Repositories;
 
-public class UserTeamRepository : BaseEntityRepository<UserTeam, AppDbContext>, IUserTeamRepository
+public class UserTeamRepository : BaseEntityRepository<DTO.App.UserTeam, Domain.App.UserTeam, AppDbContext>, IUserTeamRepository
 {
-    public UserTeamRepository(AppDbContext dbContext) : base(dbContext)
+    public UserTeamRepository(AppDbContext dbContext, IMapper<DTO.App.UserTeam, Domain.App.UserTeam> mapper) : base(dbContext, mapper)
     {
     }
 }

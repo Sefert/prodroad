@@ -1,9 +1,8 @@
 using Base.Contracts.DAL;
-using Domain.App;
 
 namespace DAL.App.Contracts;
 
-public interface IProcedureRepository : IEntityRepository<Procedure>
+public interface IProcedureRepository : IEntityRepository<DTO.App.Procedure>
 {
     
 }

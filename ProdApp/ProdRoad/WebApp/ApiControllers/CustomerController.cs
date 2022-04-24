@@ -1,12 +1,11 @@
 #nullable enable
 using DAL.App.Contracts;
+using DTO.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Domain.App;
 using Extensions.Base;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using WebApp.DTO;
 
 namespace WebApp.ApiControllers
 {
@@ -24,39 +23,24 @@ namespace WebApp.ApiControllers
 
         // GET: api/Customer
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CustomerDTO>>> GetCustomers()
+        public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
         {
             var dataList = (await _uow.Customers
                     .GetAllAsync(User.GetUserId()))
-                    .Select(row => new CustomerDTO()
-                    {
-                        Id = row.Id,
-                        AppUserId = row.AppUserId,
-                        Name = row.Name,
-                        Registration = row.Registration
-                    })
-                    .ToList();
+                .ToList();
             return dataList;
         }
 
         // GET: api/Customer/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CustomerDTO>> GetCustomer(Guid id)
+        public async Task<ActionResult<Customer>> GetCustomer(Guid id)
         {
-            var dbRow = await _uow.Customers.FirstOrDefaultAsync(id);
+            var customer = await _uow.Customers.FirstOrDefaultAsync(id);
             
-            if (dbRow == null)
+            if (customer == null)
             {
                 return NotFound();
             }
-            
-            var customer = new CustomerDTO()
-            {
-                Id = dbRow.Id,
-                AppUserId = dbRow.AppUserId,
-                Name = dbRow.Name,
-                Registration = dbRow.Registration
-            };
 
             return customer;
         }
@@ -64,7 +48,7 @@ namespace WebApp.ApiControllers
         // PUT: api/Customer/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCustomer(Guid id, CustomerDTO customer)
+        public async Task<IActionResult> PutCustomer(Guid id, Customer customer)
         {
             if (id != customer.Id)
             {
@@ -102,7 +86,7 @@ namespace WebApp.ApiControllers
         // POST: api/Customer
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<CustomerDTO>> PostCustomer(CustomerDTO customer)
+        public async Task<ActionResult<Customer>> PostCustomer(Customer customer)
         {
             var dbRow = new Customer()
             {

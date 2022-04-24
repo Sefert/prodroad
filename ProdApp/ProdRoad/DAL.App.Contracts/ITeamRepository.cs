@@ -1,10 +1,9 @@
 using Base.Contracts.DAL;
-using Domain.App;
 
 namespace DAL.App.Contracts;
 
-public interface ITeamRepository : IEntityRepository<Team>
+public interface ITeamRepository : IEntityRepository<DTO.App.Team>
 {
-    Task<IEnumerable<Team>> GetAllAsync(Guid userId, bool noTracking = true);
-    Task<Team?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = true);
+    Task<IEnumerable<DTO.App.Team>> GetAllAsync(Guid userId, bool noTracking = true);
+    Task<DTO.App.Team?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = true);
 }

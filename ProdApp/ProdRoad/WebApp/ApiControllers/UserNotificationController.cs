@@ -5,13 +5,14 @@ using Microsoft.EntityFrameworkCore;
 using Domain.App;
 using WebApp.DTO;
 
+//TODO: needs future implementation (removed for scope narrowing)
 namespace WebApp.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class UserNotificationController : ControllerBase
     {
-        private readonly IAppUnitOfWork _uow;
+        /*private readonly IAppUnitOfWork _uow;
 
         public UserNotificationController(IAppUnitOfWork uow)
         {
@@ -138,6 +139,6 @@ namespace WebApp.ApiControllers
         private bool UserNotificationExists(Guid id)
         {
             return _uow.UserNotifications.Exists(id);
-        }
+        }*/
     }
 }

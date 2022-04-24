@@ -1,9 +1,8 @@
 using Base.Contracts.DAL;
-using Domain.App;
 
 namespace DAL.App.Contracts;
 
-public interface IUserTeamRepository : IEntityRepository<UserTeam>
+public interface IUserTeamRepository : IEntityRepository<DTO.App.UserTeam>
 {
     
 }

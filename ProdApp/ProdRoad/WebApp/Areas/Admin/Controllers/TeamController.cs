@@ -1,11 +1,10 @@
 #nullable enable
 using DAL.App.Contracts;
+using DTO.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Domain.App;
 using Extensions.Base;
 using Microsoft.AspNetCore.Authorization;
-using WebApp.DTO;
 
 namespace WebApp.Areas.Admin.Controllers
 {
@@ -25,13 +24,6 @@ namespace WebApp.Areas.Admin.Controllers
         {
             var dataList = (await _uow.Teams
                     .GetAllAsync(User.GetUserId()))
-                .Select(row => new TeamDTO()
-                {
-                    Id = row.Id,
-                    AppUserId = row.AppUserId,
-                    Name = row.Name,
-                    Code = row.Code
-                })
                 .ToList();
             return View(dataList);
         }
@@ -39,20 +31,12 @@ namespace WebApp.Areas.Admin.Controllers
         // GET: Admin/Team/Details/5
         public async Task<IActionResult> Details(Guid id)
         {
-            var dbTeam = await _uow.Teams.FirstOrDefaultAsync(User.GetUserId(), id);
+            var team  = await _uow.Teams.FirstOrDefaultAsync(User.GetUserId(), id);
                 
-            if (dbTeam == null)
+            if (team  == null)
             {
                 return NotFound();
             }
-            
-            var team = new TeamDTO()
-            {
-                Id = dbTeam.Id,
-                AppUserId = User.GetUserId(),
-                Name = dbTeam.Name,
-                Code = dbTeam.Code
-            };
 
             return View(team);
         }
@@ -69,7 +53,7 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create( [Bind("Name,Code")] TeamDTO team)
+        public async Task<IActionResult> Create( [Bind("Name,Code")] Team team)
         {
             var dbTeam = new Team()
             {
@@ -93,19 +77,11 @@ namespace WebApp.Areas.Admin.Controllers
         // GET: Admin/Team/Edit/5
         public async Task<IActionResult> Edit(Guid id)
         {
-            var dbTeam = await _uow.Teams.FirstOrDefaultAsync(User.GetUserId(),id);
-            if (dbTeam == null)
+            var team = await _uow.Teams.FirstOrDefaultAsync(User.GetUserId(),id);
+            if (team == null)
             {
                 return NotFound();
             }
-            
-            var team = new TeamDTO()
-            {
-                Id = dbTeam.Id,
-                AppUserId = User.GetUserId(),
-                Name = dbTeam.Name,
-                Code = dbTeam.Code
-            };
             //ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", team.AppUserId);
             return View(team);
         }
@@ -115,7 +91,7 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Code")] TeamDTO team)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Code")] Team team)
         {
             if (id != team.Id)
             {
@@ -153,19 +129,11 @@ namespace WebApp.Areas.Admin.Controllers
         // GET: Admin/Team/Delete/5
         public async Task<IActionResult> Delete(Guid id)
         {
-            var dbTeam = await _uow.Teams.FirstOrDefaultAsync(User.GetUserId(),id, false);
-            if (dbTeam == null)
+            var team = await _uow.Teams.FirstOrDefaultAsync(User.GetUserId(),id, false);
+            if (team == null)
             {
                 return NotFound();
             }
-
-            var team = new TeamDTO()
-            {
-                Id = dbTeam.Id,
-                AppUserId = User.GetUserId(),
-                Name = dbTeam.Name,
-                Code = dbTeam.Code
-            };
             return View(team);
         }
 

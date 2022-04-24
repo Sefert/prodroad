@@ -1,9 +1,8 @@
 #nullable enable
 using DAL.App.Contracts;
+using DTO.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Domain.App;
-using WebApp.DTO;
 
 namespace WebApp.ApiControllers
 {
@@ -20,39 +19,24 @@ namespace WebApp.ApiControllers
 
         // GET: api/Warehouse
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<WarehouseDTO>>> GetWarehouses()
+        public async Task<ActionResult<IEnumerable<Warehouse>>> GetWarehouses()
         {
             var dataList = (await _uow.Warehouses
                     .GetAllAsync())
-                .Select(row => new WarehouseDTO()
-                {
-                    Id = row.Id,
-                    AppUserId = row.AppUserId,
-                    Name = row.Name,
-                    Address = row.Address
-                })
                 .ToList();
             return dataList;
         }
 
         // GET: api/Warehouse/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<WarehouseDTO>> GetWarehouse(Guid id)
+        public async Task<ActionResult<Warehouse>> GetWarehouse(Guid id)
         {
-            var dbRow = await _uow.Warehouses.FirstOrDefaultAsync(id);
+            var warehouse = await _uow.Warehouses.FirstOrDefaultAsync(id);
             
-            if (dbRow == null)
+            if (warehouse == null)
             {
                 return NotFound();
             }
-            
-            var warehouse = new WarehouseDTO()
-            {
-                Id = dbRow.Id,
-                AppUserId = dbRow.AppUserId,
-                Name = dbRow.Name,
-                Address = dbRow.Address
-            };
 
             return warehouse;
         }
@@ -60,7 +44,7 @@ namespace WebApp.ApiControllers
         // PUT: api/Warehouse/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutWarehouse(Guid id, WarehouseDTO warehouse)
+        public async Task<IActionResult> PutWarehouse(Guid id, Warehouse warehouse)
         {
             if (id != warehouse.Id)
             {
@@ -98,7 +82,7 @@ namespace WebApp.ApiControllers
         // POST: api/Warehouse
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Warehouse>> PostWarehouse(WarehouseDTO warehouse)
+        public async Task<ActionResult<Warehouse>> PostWarehouse(Warehouse warehouse)
         {
             var dbRow = new Warehouse()
             {

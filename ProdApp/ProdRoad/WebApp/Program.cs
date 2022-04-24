@@ -58,6 +58,8 @@ builder.Services.AddAuthentication()
     
 builder.Services.AddScoped<IAppUnitOfWork, AppUOW>();
 
+builder.Services.AddAutoMapper(typeof(DAL.App.EF.AutomapperConfig));
+
 builder.Services.AddControllersWithViews();
 
 //########################culture management##########################

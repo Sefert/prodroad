@@ -1,10 +1,9 @@
 using Base.Contracts.DAL;
-using Domain.App;
 
 namespace DAL.App.Contracts;
 
-public interface IRoadMapRepository : IEntityRepository<RoadMap>
+public interface IRoadMapRepository : IEntityRepository<DTO.App.RoadMap>
 {
-    Task<IEnumerable<RoadMap>> GetAllAsync(Guid userId, bool noTracking = true);
-    Task<RoadMap?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = true);
+    Task<IEnumerable<DTO.App.RoadMap>> GetAllAsync(Guid userId, bool noTracking = true);
+    Task<DTO.App.RoadMap?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = true);
 }

@@ -1,12 +1,11 @@
 #nullable enable
 using DAL.App.Contracts;
+using DTO.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Domain.App;
 using Extensions.Base;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using WebApp.DTO;
 
 namespace WebApp.ApiControllers
 {
@@ -24,39 +23,24 @@ namespace WebApp.ApiControllers
 
         // GET: api/Team
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TeamDTO>>> GetTeams()
+        public async Task<ActionResult<IEnumerable<Team>>> GetTeams()
         {
             var dataList = (await _uow.Teams
                     .GetAllAsync(User.GetUserId()))
-                .Select(row => new TeamDTO()
-                {
-                    Id = row.Id,
-                    AppUserId = row.AppUserId,
-                    Name = row.Name,
-                    Code = row.Code
-                })
                 .ToList();
             return dataList;
         }
 
         // GET: api/Team/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<TeamDTO>> GetTeam(Guid id)
+        public async Task<ActionResult<Team>> GetTeam(Guid id)
         {
-            var dbTeam = await _uow.Teams.FirstOrDefaultAsync(User.GetUserId(), id);
+            var team = await _uow.Teams.FirstOrDefaultAsync(User.GetUserId(), id);
                 
-            if (dbTeam == null)
+            if (team == null)
             {
                 return NotFound();
             }
-            
-            var team = new TeamDTO()
-            {
-                Id = dbTeam.Id,
-                AppUserId = User.GetUserId(),
-                Name = dbTeam.Name,
-                Code = dbTeam.Code
-            };
 
             return team;
         }
@@ -64,7 +48,7 @@ namespace WebApp.ApiControllers
         // PUT: api/Team/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTeam(Guid id, TeamDTO team)
+        public async Task<IActionResult> PutTeam(Guid id, Team team)
         {
             if (id != team.Id)
             {
@@ -102,7 +86,7 @@ namespace WebApp.ApiControllers
         // POST: api/Team
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<TeamDTO>> PostTeam(TeamDTO team)
+        public async Task<ActionResult<Team>> PostTeam(Team team)
         {
             var dbRow = new Team()
             {

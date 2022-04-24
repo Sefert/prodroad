@@ -1,12 +1,12 @@
+using Base.Contracts;
 using DAL.App.Contracts;
 using DAL.Base.EF;
-using Domain.App;
 
 namespace DAL.App.EF.Repositories;
 
-public class WarehouseRepository : BaseEntityRepository<Warehouse, AppDbContext>, IWarehouseRepository
+public class WarehouseRepository : BaseEntityRepository<DTO.App.Warehouse, Domain.App.Warehouse, AppDbContext>, IWarehouseRepository
 {
-    public WarehouseRepository(AppDbContext dbContext) : base(dbContext)
+    public WarehouseRepository(AppDbContext dbContext, IMapper<DTO.App.Warehouse, Domain.App.Warehouse> mapper) : base(dbContext, mapper)
     {
     }
 }

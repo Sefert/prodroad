@@ -6,7 +6,7 @@ namespace DAL.App.Contracts;
 public interface IAppUnitOfWork : IUnitOfWork
 {
     IAddressRepository Addresses { get; }
-    IActiveNotificationRepository ActiveNotifications { get; }
+    /*IActiveNotificationRepository ActiveNotifications { get; }*/
     ICustomerRepository Customers { get; }
     ICustomerPriceRepository CustomerPrices { get; }
     ICustomerPriceGroupRepository CustomerPriceGroups { get; }
@@ -19,7 +19,7 @@ public interface IAppUnitOfWork : IUnitOfWork
     IProcessRepository Processes { get; }
     IRoadMapRepository RoadMaps { get; }
     ITeamRepository Teams { get; }
-    IUserNotificationRepository UserNotifications { get; }
+    /*IUserNotificationRepository UserNotifications { get; }*/
     IUserTeamRepository UserTeams { get; }
     IWarehouseRepository Warehouses { get; }
 }

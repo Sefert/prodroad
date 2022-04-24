@@ -1,12 +1,12 @@
+using Base.Contracts;
 using DAL.App.Contracts;
 using DAL.Base.EF;
-using Domain.App;
 
 namespace DAL.App.EF.Repositories;
 
-public class ItemProcedureRepository : BaseEntityRepository<ItemProcedure, AppDbContext>, IItemProcedureRepository
+public class ItemProcedureRepository : BaseEntityRepository<DTO.App.ItemProcedure, Domain.App.ItemProcedure, AppDbContext>, IItemProcedureRepository
 {
-    public ItemProcedureRepository(AppDbContext dbContext) : base(dbContext)
+    public ItemProcedureRepository(AppDbContext dbContext, IMapper<DTO.App.ItemProcedure, Domain.App.ItemProcedure> mapper) : base(dbContext, mapper)
     {
     }
 }

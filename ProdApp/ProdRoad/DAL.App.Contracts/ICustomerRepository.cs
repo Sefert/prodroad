@@ -1,10 +1,9 @@
 using Base.Contracts.DAL;
-using Domain.App;
 
 namespace DAL.App.Contracts;
 
-public interface ICustomerRepository : IEntityRepository<Customer>
+public interface ICustomerRepository : IEntityRepository<DTO.App.Customer>
 {
-    Task<IEnumerable<Customer>> GetAllAsync(Guid userId, bool noTracking = true);
-    Task<Customer?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = true);
+    Task<IEnumerable<DTO.App.Customer>> GetAllAsync(Guid userId, bool noTracking = true);
+    Task<DTO.App.Customer?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = true);
 }
