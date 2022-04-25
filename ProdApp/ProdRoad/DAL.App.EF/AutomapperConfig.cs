@@ -6,20 +6,20 @@ public class AutomapperConfig : Profile
 {
     public AutomapperConfig()
     {
-        CreateMap<DTO.App.Address, Domain.App.Address>().ReverseMap();
-        CreateMap<DTO.App.Customer, Domain.App.Customer>().ReverseMap();
-        CreateMap<DTO.App.CustomerPriceGroup, Domain.App.CustomerPriceGroup>().ReverseMap();
-        CreateMap<DTO.App.CustomerPrice, Domain.App.CustomerPrice>().ReverseMap();
-        CreateMap<DTO.App.Item, Domain.App.Item>().ReverseMap();
-        CreateMap<DTO.App.ItemProcedure, Domain.App.ItemProcedure>().ReverseMap();
-        CreateMap<DTO.App.ItemWarehouse, Domain.App.ItemWarehouse>().ReverseMap();
-        CreateMap<DTO.App.PriceGroup, Domain.App.PriceGroup>().ReverseMap();
-        CreateMap<DTO.App.Price, Domain.App.Price>().ReverseMap();
-        CreateMap<DTO.App.Procedure, Domain.App.Procedure>().ReverseMap();
-        CreateMap<DTO.App.Process, Domain.App.Process>().ReverseMap();
-        CreateMap<DTO.App.RoadMap, Domain.App.RoadMap>().ReverseMap();
-        CreateMap<DTO.App.Team, Domain.App.Team>().ReverseMap();
-        CreateMap<DTO.App.UserTeam, Domain.App.UserTeam>().ReverseMap();
-        CreateMap<DTO.App.Warehouse, Domain.App.Warehouse>().ReverseMap();
+        CreateMap<DAL.App.DTO.Address, Domain.App.Address>().ReverseMap();
+        CreateMap<DAL.App.DTO.Customer, Domain.App.Customer>().ReverseMap();
+        CreateMap<DAL.App.DTO.CustomerPriceGroup, Domain.App.CustomerPriceGroup>().ReverseMap();
+        CreateMap<DAL.App.DTO.CustomerPrice, Domain.App.CustomerPrice>().ReverseMap();
+        CreateMap<DAL.App.DTO.Item, Domain.App.Item>().ReverseMap();
+        CreateMap<DAL.App.DTO.ItemProcedure, Domain.App.ItemProcedure>().ReverseMap();
+        CreateMap<DAL.App.DTO.ItemWarehouse, Domain.App.ItemWarehouse>().ReverseMap();
+        CreateMap<DAL.App.DTO.PriceGroup, Domain.App.PriceGroup>().ReverseMap();
+        CreateMap<DAL.App.DTO.Price, Domain.App.Price>().ReverseMap();
+        CreateMap<DAL.App.DTO.Procedure, Domain.App.Procedure>().ReverseMap();
+        CreateMap<DAL.App.DTO.Process, Domain.App.Process>().ReverseMap();
+        CreateMap<DAL.App.DTO.RoadMap, Domain.App.RoadMap>().ReverseMap();
+        CreateMap<DAL.App.DTO.Team, Domain.App.Team>().ReverseMap();
+        CreateMap<DAL.App.DTO.UserTeam, Domain.App.UserTeam>().ReverseMap();
+        CreateMap<DAL.App.DTO.Warehouse, Domain.App.Warehouse>().ReverseMap();
     }
 }

@@ -1,23 +1,23 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Domain.Base;
-using DTO.App.Identity;
+using DAL.App.DTO.Identity;
 
-namespace DTO.App;
+namespace DAL.App.DTO;
 
-public class Customer : BaseEntity
+public class Procedure : BaseEntity
 {
     public Guid AppUserId { get; set; }
     public AppUser? AppUser { get; set; }
 
-    [MaxLength(50)]
+    [MaxLength(32)] 
     [Column(TypeName = "jsonb")] 
     public LangStr Name { get; set; } = new();
     
-    [MaxLength(50)] 
+    [MaxLength(32)]
     [Column(TypeName = "jsonb")] 
-    public LangStr? Registration { get; set; } = new();
+    public LangStr Code { get; set; } = new();
 
-    public ICollection<Address>? Addresses { get; set; }
-    public ICollection<CustomerPriceGroup>? CustomerPriceGroups { get; set; }
+    public ICollection<Process>? Processes { get; set; }
+    public ICollection<ItemProcedure>? ItemProcedures { get; set; }
 }

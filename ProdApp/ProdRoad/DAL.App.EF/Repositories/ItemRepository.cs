@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF.Repositories;
 
-public class ItemRepository : BaseEntityRepository<DTO.App.Item,Domain.App.Item,AppDbContext>, IItemRepository
+public class ItemRepository : BaseEntityRepository<DAL.App.DTO.Item,Domain.App.Item,AppDbContext>, IItemRepository
 {
-    public ItemRepository(AppDbContext dbContext, IMapper<DTO.App.Item, Domain.App.Item> mapper) : base(dbContext, mapper)
+    public ItemRepository(AppDbContext dbContext, IMapper<DAL.App.DTO.Item, Domain.App.Item> mapper) : base(dbContext, mapper)
     {
     }
-    public async Task<IEnumerable<DTO.App.Item>> GetAllAsync(Guid userId, bool noTracking = true)
+    public async Task<IEnumerable<DAL.App.DTO.Item>> GetAllAsync(Guid userId, bool noTracking = true)
     {
         var query = CreateQuery(noTracking);
         query = query
@@ -20,7 +20,7 @@ public class ItemRepository : BaseEntityRepository<DTO.App.Item,Domain.App.Item,
         return (await query.ToListAsync()).Select(x => Mapper.Map(x)!);
     }
     
-    public async Task<DTO.App.Item?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = true)
+    public async Task<DAL.App.DTO.Item?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = true)
     {
         var query = CreateQuery(noTracking);
         query = query.Where(m => m.AppUserId.Equals(userId) && m.Id.Equals(id))

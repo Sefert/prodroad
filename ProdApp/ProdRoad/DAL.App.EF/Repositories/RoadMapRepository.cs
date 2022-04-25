@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF.Repositories;
 
-public class RoadMapRepository : BaseEntityRepository<DTO.App.RoadMap, Domain.App.RoadMap, AppDbContext>, IRoadMapRepository
+public class RoadMapRepository : BaseEntityRepository<DAL.App.DTO.RoadMap, Domain.App.RoadMap, AppDbContext>, IRoadMapRepository
 {
-    public RoadMapRepository(AppDbContext dbContext, IMapper<DTO.App.RoadMap, Domain.App.RoadMap> mapper) : base(dbContext, mapper)
+    public RoadMapRepository(AppDbContext dbContext, IMapper<DAL.App.DTO.RoadMap, Domain.App.RoadMap> mapper) : base(dbContext, mapper)
     {
     }
     
-    public async Task<IEnumerable<DTO.App.RoadMap>> GetAllAsync(Guid userId, bool noTracking = true)
+    public async Task<IEnumerable<DAL.App.DTO.RoadMap>> GetAllAsync(Guid userId, bool noTracking = true)
     {
         var query = CreateQuery(noTracking);
         query = query
@@ -21,7 +21,7 @@ public class RoadMapRepository : BaseEntityRepository<DTO.App.RoadMap, Domain.Ap
         return (await query.ToListAsync()).Select(x => Mapper.Map(x)!);
     }
     
-    public async Task<DTO.App.RoadMap?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = true)
+    public async Task<DAL.App.DTO.RoadMap?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = true)
     {
         var query = CreateQuery(noTracking);
         query = query.Where(m => m.AppUserId.Equals(userId) && m.Id.Equals(id))

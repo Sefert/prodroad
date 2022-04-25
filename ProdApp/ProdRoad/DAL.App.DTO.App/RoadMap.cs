@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Domain.Base;
-using DTO.App.Identity;
+using DAL.App.DTO.Identity;
 
-namespace DTO.App;
+namespace DAL.App.DTO;
 
 public class RoadMap : BaseEntity
 {

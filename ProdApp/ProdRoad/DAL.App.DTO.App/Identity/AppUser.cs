@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Domain.Base.Identity;
 
-namespace DTO.App.Identity;
+namespace DAL.App.DTO.Identity;
 
 /*TODO: fix firstname and lastname*/
 public class AppUser : BaseUser

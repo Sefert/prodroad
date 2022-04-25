@@ -4,9 +4,9 @@ using DAL.Base.EF;
 
 namespace DAL.App.EF.Repositories;
 
-public class ProcessRepository : BaseEntityRepository<DTO.App.Process, Domain.App.Process, AppDbContext>, IProcessRepository
+public class ProcessRepository : BaseEntityRepository<DAL.App.DTO.Process, Domain.App.Process, AppDbContext>, IProcessRepository
 {
-    public ProcessRepository(AppDbContext dbContext, IMapper<DTO.App.Process, Domain.App.Process> mapper) : base(dbContext, mapper)
+    public ProcessRepository(AppDbContext dbContext, IMapper<DAL.App.DTO.Process, Domain.App.Process> mapper) : base(dbContext, mapper)
     {
     }
 }

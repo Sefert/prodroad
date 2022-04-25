@@ -1,7 +1,7 @@
 using Domain.Base;
-using DTO.App.Identity;
+using DAL.App.DTO.Identity;
 
-namespace DTO.App;
+namespace DAL.App.DTO;
 
 public class UserTeam : BaseEntity
 {

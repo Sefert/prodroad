@@ -1,6 +1,6 @@
 using Domain.Base;
 
-namespace DTO.App;
+namespace DAL.App.DTO;
 
 public class CustomerPrice  : BaseEntity
 {

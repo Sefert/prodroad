@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Domain.Base;
-using DTO.App.Identity;
+using DAL.App.DTO.Identity;
 
-namespace DTO.App;
+namespace DAL.App.DTO;
 
-public class Warehouse : BaseEntity
+public class Team : BaseEntity
 {
     public Guid AppUserId { get; set; }
     public AppUser? AppUser { get; set; }
@@ -14,9 +14,10 @@ public class Warehouse : BaseEntity
     [Column(TypeName = "jsonb")] 
     public LangStr Name { get; set; } = new();
     
-    [MaxLength(50)] 
+    [MaxLength(20)] 
     [Column(TypeName = "jsonb")] 
-    public LangStr Address { get; set; } = new();
-    
-    public ICollection<ItemWarehouse>? ItemWarehouses { get; set; }
+    public LangStr Code { get; set; } = new();
+
+    public ICollection<Process>? Processes { get; set; } 
+    public ICollection<UserTeam>? UserTeams { get; set; }
 }

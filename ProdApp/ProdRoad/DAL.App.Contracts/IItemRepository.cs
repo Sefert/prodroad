@@ -2,8 +2,8 @@ using Base.Contracts.DAL;
 
 namespace DAL.App.Contracts;
 
-public interface IItemRepository : IEntityRepository<DTO.App.Item>
+public interface IItemRepository : IEntityRepository<DAL.App.DTO.Item>
 {
-    Task<IEnumerable<DTO.App.Item>> GetAllAsync(Guid userId, bool noTracking = true);
-    Task<DTO.App.Item?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = true);
+    Task<IEnumerable<DAL.App.DTO.Item>> GetAllAsync(Guid userId, bool noTracking = true);
+    Task<DAL.App.DTO.Item?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = true);
 }

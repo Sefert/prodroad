@@ -1,6 +1,6 @@
 #nullable enable
 using DAL.App.Contracts;
-using DTO.App;
+using DAL.App.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

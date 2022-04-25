@@ -4,9 +4,9 @@ using DAL.Base.EF;
 
 namespace DAL.App.EF.Repositories;
 
-public class ItemProcedureRepository : BaseEntityRepository<DTO.App.ItemProcedure, Domain.App.ItemProcedure, AppDbContext>, IItemProcedureRepository
+public class ItemProcedureRepository : BaseEntityRepository<DAL.App.DTO.ItemProcedure, Domain.App.ItemProcedure, AppDbContext>, IItemProcedureRepository
 {
-    public ItemProcedureRepository(AppDbContext dbContext, IMapper<DTO.App.ItemProcedure, Domain.App.ItemProcedure> mapper) : base(dbContext, mapper)
+    public ItemProcedureRepository(AppDbContext dbContext, IMapper<DAL.App.DTO.ItemProcedure, Domain.App.ItemProcedure> mapper) : base(dbContext, mapper)
     {
     }
 }

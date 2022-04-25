@@ -3,7 +3,7 @@ using DAL.App.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Domain.App;
-using DTO.App;
+using DAL.App.DTO;
 using WebApp.DTO;
 
 //TODO: needs future implementation (removed for scope narrowing)

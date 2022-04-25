@@ -2,9 +2,9 @@
 
 namespace DAL.App.Contracts;
 
-public interface IAddressRepository : IEntityRepository<DTO.App.Address>
+public interface IAddressRepository : IEntityRepository<DAL.App.DTO.Address>
 {
     //custom methods here (search, so on)
-    Task<IEnumerable<DTO.App.Address>> GetAllAsync(Guid userId, bool noTracking = true);
-    Task<DTO.App.Address?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = true);
+    Task<IEnumerable<DAL.App.DTO.Address>> GetAllAsync(Guid userId, bool noTracking = true);
+    Task<DAL.App.DTO.Address?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = true);
 }

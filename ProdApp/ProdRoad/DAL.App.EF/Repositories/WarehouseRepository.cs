@@ -4,9 +4,9 @@ using DAL.Base.EF;
 
 namespace DAL.App.EF.Repositories;
 
-public class WarehouseRepository : BaseEntityRepository<DTO.App.Warehouse, Domain.App.Warehouse, AppDbContext>, IWarehouseRepository
+public class WarehouseRepository : BaseEntityRepository<DAL.App.DTO.Warehouse, Domain.App.Warehouse, AppDbContext>, IWarehouseRepository
 {
-    public WarehouseRepository(AppDbContext dbContext, IMapper<DTO.App.Warehouse, Domain.App.Warehouse> mapper) : base(dbContext, mapper)
+    public WarehouseRepository(AppDbContext dbContext, IMapper<DAL.App.DTO.Warehouse, Domain.App.Warehouse> mapper) : base(dbContext, mapper)
     {
     }
 }

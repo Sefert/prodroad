@@ -1,6 +1,6 @@
 using Domain.Base.Identity;
 
-namespace DTO.App.Identity;
+namespace DAL.App.DTO.Identity;
 
 public class AppRole : BaseRole
 {

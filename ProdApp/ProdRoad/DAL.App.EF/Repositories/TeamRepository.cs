@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF.Repositories;
 
-public class TeamRepository : BaseEntityRepository<DTO.App.Team, Domain.App.Team, AppDbContext>, ITeamRepository
+public class TeamRepository : BaseEntityRepository<DAL.App.DTO.Team, Domain.App.Team, AppDbContext>, ITeamRepository
 {
-    public TeamRepository(AppDbContext dbContext, IMapper<DTO.App.Team, Domain.App.Team> mapper) : base(dbContext, mapper)
+    public TeamRepository(AppDbContext dbContext, IMapper<DAL.App.DTO.Team, Domain.App.Team> mapper) : base(dbContext, mapper)
     {
     }
     
-    public async Task<IEnumerable<DTO.App.Team>> GetAllAsync(Guid userId, bool noTracking = true)
+    public async Task<IEnumerable<DAL.App.DTO.Team>> GetAllAsync(Guid userId, bool noTracking = true)
     {
         var query = CreateQuery(noTracking);
         query = query
@@ -21,7 +21,7 @@ public class TeamRepository : BaseEntityRepository<DTO.App.Team, Domain.App.Team
         return (await query.ToListAsync()).Select(x => Mapper.Map(x)!);
     }
     
-    public async Task<DTO.App.Team?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = true)
+    public async Task<DAL.App.DTO.Team?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = true)
     {
         var query = CreateQuery(noTracking);
         query = query.Where(m => m.AppUserId.Equals(userId) && m.Id.Equals(id))
