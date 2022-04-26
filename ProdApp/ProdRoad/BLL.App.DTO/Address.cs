@@ -10,7 +10,9 @@ public class Address : BaseEntity
 {
     public Guid AppUserId { get; set; }
     public AppUser? AppUser { get; set; }
+    
     public Guid? CustomerId { get; set; }
+    public Customer? Customer { get; set; } 
 
     [MaxLength(30)]
     [Column(TypeName = "jsonb")] 
