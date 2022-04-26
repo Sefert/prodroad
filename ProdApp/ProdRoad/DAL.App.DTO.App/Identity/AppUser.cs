@@ -11,7 +11,7 @@ public class AppUser : BaseUser
     [MaxLength(30)] public string? LastName { get; set; }
     [MaxLength(30)] public string? PersonalCode { get; set; }
     
-    [InverseProperty("CreatedBy")]
+    /*[InverseProperty("CreatedBy")]
     public ICollection<CustomerPriceGroup>? CustomerPriceGroupCreatedBys { get; set; }
     [InverseProperty("UpdatedBy")]
     public ICollection<CustomerPriceGroup>? CustomerPriceGroupUpdatedBys { get; set; }
@@ -23,7 +23,7 @@ public class AppUser : BaseUser
     public ICollection<Price>? PriceUpdatedBys { get; set; }
     
     [InverseProperty("UpdatedBy")]
-    public ICollection<Process>? ProcessUpdatedBys { get; set; }
+    public ICollection<Process>? ProcessUpdatedBys { get; set; }*/
     
     public ICollection<Team>? Teams { get; set; }
     public ICollection<RoadMap>? RoadMapItems { get; set; }

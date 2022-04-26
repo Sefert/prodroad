@@ -1,6 +1,6 @@
 #nullable enable
-using DAL.App.Contracts;
-using DAL.App.DTO;
+using BLL.App.Contracts;
+using BLL.App.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Extensions.Base;
@@ -17,18 +17,18 @@ namespace WebApp.ApiControllers
         //is now in IAppUnitOfWOrk
         //private readonly IAddressRepository _repo;
         
-        private readonly IAppUnitOfWork _uow;
+        private readonly IAppBLL _bll;
         
-        public AddressController(IAppUnitOfWork uow)
+        public AddressController(IAppBLL bll)
         {
-            _uow = uow;
+            _bll = bll;
         }
 
         // GET: api/Address
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Address>>> GetAddresses()
         {
-            var address = (await _uow.Addresses.GetAllAsync(User.GetUserId()))
+            var address = (await _bll.Addresses.GetAllAsync(User.GetUserId()))
                 .ToList();
             return address;
         }
@@ -37,7 +37,7 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Address>> GetAddress(Guid id)
         {
-            var dbAddress = await _uow.Addresses.FirstOrDefaultAsync(User.GetUserId(),id);
+            var dbAddress = await _bll.Addresses.FirstOrDefaultAsync(User.GetUserId(),id);
             
             if (dbAddress == null)
             {
@@ -56,7 +56,7 @@ namespace WebApp.ApiControllers
                 return BadRequest();
             }
 
-            var dbAddress = await _uow.Addresses.FirstOrDefaultAsync(User.GetUserId(),id);
+            var dbAddress = await _bll.Addresses.FirstOrDefaultAsync(User.GetUserId(),id);
             
             if (dbAddress == null) {return NotFound();}
 
@@ -67,11 +67,11 @@ namespace WebApp.ApiControllers
             dbAddress.Phone!.SetTranslation(address.Phone!);
             dbAddress.Email!.SetTranslation(address.Email!);
 
-            _uow.Addresses.ModifyState(dbAddress);
+            _bll.Addresses.ModifyState(dbAddress);
 
             try
             {
-                await _uow.SaveChangesAsync();
+                await _bll.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -107,9 +107,9 @@ namespace WebApp.ApiControllers
             dbAddress.Phone!.SetTranslation(address.Phone!);
             dbAddress.Email!.SetTranslation(address.Email!);
             
-            _uow.Addresses.Add(dbAddress);
+            _bll.Addresses.Add(dbAddress);
             
-            await _uow.SaveChangesAsync();
+            await _bll.SaveChangesAsync();
 
             return CreatedAtAction("GetAddress", new { id = address.Id }, address);
         }
@@ -119,21 +119,21 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAddress(Guid id)
         {
-            var address = await _uow.Addresses.FirstOrDefaultAsync(User.GetUserId(),id);
+            var address = await _bll.Addresses.FirstOrDefaultAsync(User.GetUserId(),id);
             if (address == null)
             {
                 return NotFound();
             }
 
-            _uow.Addresses.Remove(address);
-            await _uow.SaveChangesAsync();
+            _bll.Addresses.Remove(address);
+            await _bll.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool AddressExists(Guid id)
         {
-            return _uow.Addresses.Exists(id);
+            return _bll.Addresses.Exists(id);
         }
     }
 }

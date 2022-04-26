@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text;
+using BLL.App.Contracts;
 using DAL.App.Contracts;
 using DAL.App.EF;
 using Domain.App.Identity;
@@ -57,8 +58,12 @@ builder.Services.AddAuthentication()
     });
     
 builder.Services.AddScoped<IAppUnitOfWork, AppUOW>();
+builder.Services.AddScoped<IAppBLL, BLL.App.BLL>();
 
-builder.Services.AddAutoMapper(typeof(DAL.App.EF.AutomapperConfig));
+builder.Services.AddAutoMapper(
+    typeof(DAL.App.EF.AutomapperConfig),
+    typeof(BLL.App.AutomapperConfig)
+    );
 
 builder.Services.AddControllersWithViews();
 

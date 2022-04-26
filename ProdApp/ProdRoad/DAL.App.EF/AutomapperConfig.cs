@@ -1,4 +1,5 @@
 using AutoMapper;
+using DAL.App.DTO.Identity;
 
 namespace DAL.App.EF;
 
@@ -6,6 +7,7 @@ public class AutomapperConfig : Profile
 {
     public AutomapperConfig()
     {
+        CreateMap<DAL.App.DTO.Identity.AppUser, Domain.App.Identity.AppUser>().ReverseMap();
         CreateMap<DAL.App.DTO.Address, Domain.App.Address>().ReverseMap();
         CreateMap<DAL.App.DTO.Customer, Domain.App.Customer>().ReverseMap();
         CreateMap<DAL.App.DTO.CustomerPriceGroup, Domain.App.CustomerPriceGroup>().ReverseMap();
