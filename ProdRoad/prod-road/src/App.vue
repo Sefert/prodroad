@@ -1,12 +1,13 @@
 <script setup lang="ts">
+import { Options, Vue } from "vue-class-component";
 import { RouterLink, RouterView } from 'vue-router'
-//import HelloWorld from '@/components/HelloWorld.vue'
 import TopNavBar from '@/components/TopNavBar.vue'
 import RightBar from '@/components/RightBar.vue'
 import Login from '@/components/Login.vue'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.min.js'
 
+import { userStore } from "./stores/identity";
 </script>
 
 <!-- TODO: change to better login data -->
@@ -22,7 +23,7 @@ import 'bootstrap/dist/js/bootstrap.min.js'
       </nav>
     </div>-->
   </header>
-    <div class="wrapper" v-if="email === 'true'">
+    <div class="wrapper" v-if="userStore.id === 'true@true'">
       <TopNavBar />
       <nav class="wrapper">
         <RightBar />
