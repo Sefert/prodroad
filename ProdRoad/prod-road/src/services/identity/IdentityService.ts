@@ -4,6 +4,7 @@ import { userStore } from "@/stores/identity";
 import type { AxiosError } from "axios";
 import type { IServiceResult } from "../contracts/IServiceResult";
 
+//TODO: Refactor login and register
 export class IdentityService {
     identityStore = userStore();
 
@@ -36,9 +37,37 @@ export class IdentityService {
 
             return response;
         }
+    }
 
+    async register(email: string, password: string): Promise<IServiceResult<IJWTResponse>> {
+        try {
+            let loginInfo = {
+                email,
+                password
+            };
+            let response = await httpCLient.post("/Identity/Account/Register", loginInfo);
 
+            console.log(response.status);
+            console.log(response.data);
 
+            return {
+                status: response.status,
+                data: response.data as IJWTResponse
+            };
+
+        } catch (e) {
+            
+            let response = {
+                status: (e as AxiosError).response!.status,
+                //errorMsg: (e as AxiosError).response!.data.error,
+            }
+
+            console.log(response);
+
+            console.log((e as AxiosError).response);
+
+            return response;
+        }
     }
 
     async refreshIdentity(): Promise<IServiceResult<IJWTResponse>> {
