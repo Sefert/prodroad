@@ -1,22 +1,29 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import Login from '@/components/Login.vue'
+import { userStore } from "../stores/identity";
+import TopNavBar from '@/components/TopNavBar.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    /*{
-      path: '/',
-      name: 'home',
-      component: () => import('') //HomeView
+    {
+      path: "/login",
+      name: "Login",
+      component: Login,
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('') //HomeView
-    }*/
+      path: "/home",
+      name: "Home",
+      component: TopNavBar,
+    },
   ]
+})
+
+//TODO: make auth and direction guards better
+router.beforeEach(async (to, from) => {
+  var identityStore = userStore();
+  console.log(identityStore.getJWT);
+  if (identityStore.$state.jwt == null && to.name !== 'Login') return { name: 'Login' }
 })
 
 export default router

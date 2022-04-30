@@ -29,7 +29,7 @@ export class BaseService<TEntity> {
                 let refreshResponse = await identityService.refreshIdentity();
                 this.identityStore.$state.jwt = refreshResponse.data!;
 
-                if ( !this.identityStore.$state.jwt) return [];
+                if (!this.identityStore.$state.jwt) return [];
                 
 
                 let response = await httpCLient.get(`/${this.path}`, {

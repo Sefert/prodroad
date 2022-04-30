@@ -1,40 +1,16 @@
-<script setup lang="ts">
-import { Options, Vue } from "vue-class-component";
-import { RouterLink, RouterView } from 'vue-router'
-import TopNavBar from '@/components/TopNavBar.vue'
-import RightBar from '@/components/RightBar.vue'
-import Login from '@/components/Login.vue'
-import 'bootstrap/dist/css/bootstrap.min.css'
-import 'bootstrap/dist/js/bootstrap.min.js'
-
-import { userStore } from "./stores/identity";
+<script lang="ts">
+  import { Options, Vue } from "vue-class-component";
+  import { RouterLink, RouterView } from 'vue-router';
+  import { userStore } from "@/stores/identity";
+  export default class App extends Vue {
+    identityStore = userStore();
+  }
 </script>
 
-<!-- TODO: change to better login data -->
 <template>
-  <header>
-    <!--<img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">-->
-    <!--<div class="wrapper">
-      <HelloWorld msg="You did it!" />
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>-->
-  </header>
-    <div class="wrapper" v-if="userStore.id === 'true@true'">
-      <TopNavBar />
-      <nav class="wrapper">
-        <RightBar />
-      </nav>
-    <!--<RouterLink to="/">Home</RouterLink>
-    <RouterLink to="/about">About</RouterLink>-->  
+    <div class="wrapper" >
+      <RouterView />
     </div>
-    <div class="wrapper" v-else>
-      <Login />
-    </div>
-  <RouterView />
 </template>
 
 

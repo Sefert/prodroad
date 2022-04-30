@@ -3,11 +3,15 @@ import { defineStore } from "pinia"
 
 
 export const userStore = defineStore({
-  id: "some ",
+  id: "",
   state: () => ({
-    jwt: null as IJWTResponse | null
+    jwt: null as IJWTResponse | null,
+    email: null as string | null,
   }),
   getters: {
+    getJWT(): IJWTResponse | null {
+      return this.jwt;
+    }
   },
   actions: {
   },

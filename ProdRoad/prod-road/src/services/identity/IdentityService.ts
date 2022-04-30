@@ -12,8 +12,11 @@ export class IdentityService {
             let loginInfo = {
                 email,
                 password
-            }
-            let response = await httpCLient.post("/identity/account/login", loginInfo);
+            };
+            let response = await httpCLient.post("/Identity/Account/Login", loginInfo);
+
+            console.log(response.status);
+            console.log(response.data);
 
             return {
                 status: response.status,
