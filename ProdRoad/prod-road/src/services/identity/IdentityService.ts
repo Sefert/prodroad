@@ -72,11 +72,12 @@ export class IdentityService {
 
     async refreshIdentity(): Promise<IServiceResult<IJWTResponse>> {
         try {
+            console.log('Here');
             console.log(this.identityStore.$state.jwt);
 
             let response = await httpCLient.post("/identity/account/refreshtoken",
                 {
-                    jwt: this.identityStore.$state.jwt?.token,
+                    token: this.identityStore.$state.jwt?.token,
                     refreshToken: this.identityStore.$state.jwt?.refreshToken
                 }
             );

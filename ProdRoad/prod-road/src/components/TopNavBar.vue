@@ -9,9 +9,14 @@
       logOutClicked(): void {
         console.log('logOutClicked');
         
-        this.identityStore.$state.jwt = null;
+        window.localStorage.removeItem("prodRoad-r");
+        window.localStorage.removeItem("prodRoad-j");
 
-        console.log(this.identityStore.$state.jwt);
+        this.identityStore.$state.jwt = null;
+        this.identityStore.$id = '';
+        this.identityStore.$state.email = null;
+        this.identityStore.$state.role = [];
+        this.identityStore.$state.jwtExp = null;
       }
     }
 </script>

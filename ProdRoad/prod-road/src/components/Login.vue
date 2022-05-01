@@ -4,6 +4,7 @@
     import {IdentityService } from "../services/identity/IdentityService"
     import type { IJWTResponse } from "../domain/IJWTResponse";
     import jwt_decode from "jwt-decode";
+    import type { IServiceResult } from "../services/contracts/IServiceResult";
 
     //TODO: add culture support
     export default class Login extends Vue {
@@ -21,33 +22,16 @@
 
       //TODO: move magic strings to properties
       async loginClicked(): Promise<void> {
-        console.log('submitClicked');
-        console.log(this.email);
+        //console.log('submitClicked');
+        //console.log(this.email);
         
         var res = await this.identityService.login(this.email, this.password);
-        console.log(res);
-
-        this.identityStore.$state.jwt = res.data!;
+        //console.log(res);       
         
-        var decoded = jwt_decode(res.data.token);
-
-        this.identityStore.$id = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
-        this.identityStore.$state.email = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
-        this.identityStore.$state.role = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-        this.identityStore.$state.jwtExp = decoded["exp"];
-
-        console.log(this.identityStore.$id);
-        console.log(this.identityStore.$state.email);
-        console.log(this.identityStore.$state.role);
-        console.log(this.identityStore.$state.jwtExp);
-
-        var current_time = new Date().getTime() / 1000;
-        console.log(current_time);
-        
-
         //TODO: route if login succeeded and inform user       
         if (res.status == 200) {
-          this.$router.push({name:'Home'})
+          this.saveStateData(res);
+          this.$router.push({name:'Home'})      
         };
       };
 
@@ -60,12 +44,11 @@
             this.errorMsg = "Entered passwords do not match!"
         } else {
           var res = await this.identityService.register(this.email, this.password);
-          console.log(res);
-
-          this.identityStore.$state.jwt = res.data!;
+          //console.log(res);       
 
           //TODO: route if register succeeded and inform user     
           if (res.status == 200) {
+            this.saveStateData(res);
             this.$router.push({name:'Home'})
           };
         };
@@ -75,6 +58,27 @@
 
       mounted(){
         console.log(this.identityStore.$state.jwt);
+      }
+
+      saveStateData(result: IServiceResult<IJWTResponse>){
+        this.identityStore.$state.jwt = result.data!;
+        
+        var decoded = jwt_decode(result.data.token);
+
+        this.identityStore.$id = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+        this.identityStore.$state.email = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
+        this.identityStore.$state.role = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+        this.identityStore.$state.jwtExp = decoded["exp"];
+
+        console.log(this.identityStore.$state.jwt);
+        console.log(this.identityStore.$id);
+        console.log(this.identityStore.$state.email);
+        console.log(this.identityStore.$state.role);
+        console.log(this.identityStore.$state.jwtExp);
+
+        //TODO: make more secure!!!!
+        window.localStorage.setItem("prodRoad-r", result.data.refreshToken);
+        window.localStorage.setItem("prodRoad-j", result.data.token);
       }
     }
 
