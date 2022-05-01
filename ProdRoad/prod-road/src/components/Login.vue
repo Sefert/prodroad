@@ -2,7 +2,8 @@
     import { Options, Vue } from "vue-class-component";
     import { userStore } from "../stores/identity";
     import {IdentityService } from "../services/identity/IdentityService"
-    import { RouterLink } from "vue-router";
+    import type { IJWTResponse } from "../domain/IJWTResponse";
+    import jwt_decode from "jwt-decode";
 
     //TODO: add culture support
     export default class Login extends Vue {
@@ -13,10 +14,12 @@
         repeatedPassword: string = '';
         errorMsg: string | null = null;
         isRegister: boolean = false;
+        //jwtResp: IJWTResponse = null;
 
 
         identityService = new IdentityService();
 
+      //TODO: move magic strings to properties
       async loginClicked(): Promise<void> {
         console.log('submitClicked');
         console.log(this.email);
@@ -25,6 +28,22 @@
         console.log(res);
 
         this.identityStore.$state.jwt = res.data!;
+        
+        var decoded = jwt_decode(res.data.token);
+
+        this.identityStore.$id = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+        this.identityStore.$state.email = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
+        this.identityStore.$state.role = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+        this.identityStore.$state.jwtExp = decoded["exp"];
+
+        console.log(this.identityStore.$id);
+        console.log(this.identityStore.$state.email);
+        console.log(this.identityStore.$state.role);
+        console.log(this.identityStore.$state.jwtExp);
+
+        var current_time = new Date().getTime() / 1000;
+        console.log(current_time);
+        
 
         //TODO: route if login succeeded and inform user       
         if (res.status == 200) {

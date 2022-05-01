@@ -7,6 +7,8 @@ export const userStore = defineStore({
   state: () => ({
     jwt: null as IJWTResponse | null,
     email: null as string | null,
+    role: [] as string[],
+    jwtExp: null as number | null,
   }),
   getters: {
     getJWT(): IJWTResponse | null {
