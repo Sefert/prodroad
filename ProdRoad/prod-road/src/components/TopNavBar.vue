@@ -24,10 +24,10 @@
 <template v-if="identityStore.$state.jwt != null">
     <nav class="navbar topnav navbar navbar-default navbar-fixed-top navbar-light bg-light">
         <div class="d-flex">
-            <a class="nav-link" href="#">Home</a>
-            <a  class="nav-link" href="/user">Profile</a>
-            <a @click="logOutClicked()" class="nav-link" href="#">Logout</a>
+            <RouterLink class="nav-link" to="/home">Home</RouterLink>
+            <RouterLink class="nav-link" to="/user">Profile</RouterLink>
 
+            <a @click="logOutClicked()" class="nav-link" href="#">Logout</a>
         </div>
     </nav>
 </template>

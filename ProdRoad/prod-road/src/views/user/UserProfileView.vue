@@ -10,7 +10,7 @@ import { userStore } from "../../stores/identity";
     props: {},
     emits: [],
 })
-export default class UserProfile extends Vue {
+export default class UserProfileView extends Vue {
   identity = userStore();
 }
 </script>
@@ -114,7 +114,7 @@ export default class UserProfile extends Vue {
                   <hr>
                   <div class="row">
                     <div class="col-sm-12">
-                      <a class="btn btn-info " target="__blank" href="https://www.bootdey.com/snippets/view/profile-edit-data-and-skills">Edit</a>
+                      <a class="btn btn-info " target="__blank" href=""><RouterLink to="/user/edit-profile">Edit</RouterLink></a>
                     </div>
                   </div>
                 </div>

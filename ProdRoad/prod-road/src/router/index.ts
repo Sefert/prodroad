@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import LoginView from '@/views/LoginView.vue';
 import UserProfileView from '@/views/user/UserProfileView.vue';
+import UserProfileEditView from '@/views/user/UserProfileEditView.vue';
 import { userStore } from "../stores/identity";
 import TopNavBar from '@/components/TopNavBar.vue';
 import {IdentityService } from "../services/identity/IdentityService";
@@ -11,8 +12,10 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {path: "/login", name: "Login", component: LoginView},
-    {path: "/home", name: "Home", component: TopNavBar},
+    {path: "/home", name: "Home", component: TopNavBar, alias: ""},
+
     {path: "/user", name: "Profile", component: UserProfileView},
+    {path: "/user/edit-profile", name: "EditProfile", component: UserProfileEditView},
   ]
 })
 
