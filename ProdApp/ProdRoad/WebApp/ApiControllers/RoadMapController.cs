@@ -1,6 +1,6 @@
 #nullable enable
-using DAL.App.Contracts;
-using DAL.App.DTO;
+using BLL.App.Contracts;
+using BLL.App.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Extensions.Base;
@@ -14,18 +14,18 @@ namespace WebApp.ApiControllers
     [Authorize(Roles="admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class RoadMapController : ControllerBase
     {
-        private readonly IAppUnitOfWork _uow;
+        private readonly IAppBLL _bll;
 
-        public RoadMapController(IAppUnitOfWork uow)
+        public RoadMapController(IAppBLL bll)
         {
-            _uow = uow;
+            _bll = bll;
         }
 
         // GET: api/RoadMap
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RoadMap>>> GetRoadMaps()
         {
-            var dataList = (await _uow.RoadMaps
+            var dataList = (await _bll.RoadMaps
                     .GetAllAsync(User.GetUserId()))
                 .ToList();
             return dataList;
@@ -35,7 +35,7 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<RoadMap>> GetRoadMap(Guid id)
         {
-            var roadMap = await _uow.RoadMaps.FirstOrDefaultAsync(User.GetUserId(),id);
+            var roadMap = await _bll.RoadMaps.FirstOrDefaultAsync(User.GetUserId(),id);
             
             if (roadMap == null)
             {
@@ -55,7 +55,7 @@ namespace WebApp.ApiControllers
                 return BadRequest();
             }
 
-            var dbRow = await _uow.RoadMaps.FirstOrDefaultAsync(User.GetUserId(),id);
+            var dbRow = await _bll.RoadMaps.FirstOrDefaultAsync(User.GetUserId(),id);
             
             if (dbRow == null) {return NotFound();}
 
@@ -63,11 +63,11 @@ namespace WebApp.ApiControllers
             dbRow.Position!.SetTranslation(roadMap.Position!);
             dbRow.Line!.SetTranslation(roadMap.Line!);
 
-            _uow.RoadMaps.ModifyState(dbRow);
+            _bll.RoadMaps.ModifyState(dbRow);
 
             try
             {
-                await _uow.SaveChangesAsync();
+                await _bll.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -98,9 +98,9 @@ namespace WebApp.ApiControllers
             dbRow.Position!.SetTranslation(roadMap.Position!);
             dbRow.Line!.SetTranslation(roadMap.Line!);
             
-            _uow.RoadMaps.Add(dbRow);
+            _bll.RoadMaps.Add(dbRow);
             
-            await _uow.SaveChangesAsync();
+            await _bll.SaveChangesAsync();
 
             return CreatedAtAction("GetRoadMap", new { id = roadMap.Id }, roadMap);
         }
@@ -109,21 +109,21 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRoadMap(Guid id)
         {
-            var roadMap = await _uow.RoadMaps.FirstOrDefaultAsync(User.GetUserId(),id);
+            var roadMap = await _bll.RoadMaps.FirstOrDefaultAsync(User.GetUserId(),id);
             if (roadMap == null)
             {
                 return NotFound();
             }
 
-            _uow.RoadMaps.Remove(roadMap);
-            await _uow.SaveChangesAsync();
+            _bll.RoadMaps.Remove(roadMap);
+            await _bll.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool RoadMapExists(Guid id)
         {
-            return _uow.RoadMaps.Exists(id);
+            return _bll.RoadMaps.Exists(id);
         }
     }
 }

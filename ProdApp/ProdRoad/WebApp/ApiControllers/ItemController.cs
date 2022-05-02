@@ -1,6 +1,6 @@
 #nullable enable
-using DAL.App.Contracts;
-using DAL.App.DTO;
+using BLL.App.Contracts;
+using BLL.App.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Extensions.Base;
@@ -15,18 +15,18 @@ namespace WebApp.ApiControllers
     [Authorize(Roles="admin,manager,user",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ItemController : ControllerBase
     {
-        private readonly IAppUnitOfWork _uow;
+        private readonly IAppBLL _bll;
 
-        public ItemController(IAppUnitOfWork uow)
+        public ItemController(IAppBLL bll)
         {
-            _uow = uow;
+            _bll = bll;
         }
 
         // GET: api/Item
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Item>>> GetItems()
         {
-            var dataList = (await _uow.Items
+            var dataList = (await _bll.Items
                     .GetAllAsync(User.GetUserId()))
                 .ToList();
             return dataList;
@@ -36,7 +36,7 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Item>> GetItem(Guid id)
         {
-            var item = await _uow.Items.FirstOrDefaultAsync(User.GetUserId(),id);
+            var item = await _bll.Items.FirstOrDefaultAsync(User.GetUserId(),id);
             
             if (item== null)
             {
@@ -56,7 +56,7 @@ namespace WebApp.ApiControllers
                 return BadRequest();
             }
 
-            var dbRow = await _uow.Items.FirstOrDefaultAsync(User.GetUserId(),id);
+            var dbRow = await _bll.Items.FirstOrDefaultAsync(User.GetUserId(),id);
             
             if (dbRow == null) {return NotFound();}
 
@@ -64,11 +64,11 @@ namespace WebApp.ApiControllers
             dbRow.Type!.SetTranslation(item.Type!);
             dbRow.Unit!.SetTranslation(item.Unit!);
 
-            _uow.Items.ModifyState(dbRow);
+            _bll.Items.ModifyState(dbRow);
 
             try
             {
-                await _uow.SaveChangesAsync();
+                await _bll.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -100,8 +100,8 @@ namespace WebApp.ApiControllers
             dbRow.Type!.SetTranslation(item.Type!);
             dbRow.Unit!.SetTranslation(item.Unit!);
             
-            _uow.Items.Add(dbRow);
-            await _uow.SaveChangesAsync();
+            _bll.Items.Add(dbRow);
+            await _bll.SaveChangesAsync();
 
             return CreatedAtAction("GetItem", new { id = item.Id }, item);
         }
@@ -110,21 +110,21 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteItem(Guid id)
         {
-            var item = await _uow.Items.FirstOrDefaultAsync(User.GetUserId(),id);
+            var item = await _bll.Items.FirstOrDefaultAsync(User.GetUserId(),id);
             if (item == null)
             {
                 return NotFound();
             }
 
-            _uow.Items.Remove(item);
-            await _uow.SaveChangesAsync();
+            _bll.Items.Remove(item);
+            await _bll.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool ItemExists(Guid id)
         {
-            return _uow.Items.Exists(id);
+            return _bll.Items.Exists(id);
         }
     }
 }

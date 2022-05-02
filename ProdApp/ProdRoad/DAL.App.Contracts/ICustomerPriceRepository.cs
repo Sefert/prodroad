@@ -3,7 +3,7 @@ using Base.Contracts.DAL;
 namespace DAL.App.Contracts;
 
 public interface ICustomerPriceRepository : IEntityRepository<DAL.App.DTO.CustomerPrice>, 
-    ICustomerPriceGroupRepositoryCustom<DAL.App.DTO.CustomerPrice>
+    ICustomerPriceRepositoryCustom<DAL.App.DTO.CustomerPrice>
 {
     
 }

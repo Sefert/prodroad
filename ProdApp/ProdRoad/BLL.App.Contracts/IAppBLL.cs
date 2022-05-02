@@ -7,6 +7,7 @@ public interface IAppBLL : IBLL
 {
     IAddressService Addresses { get; }
     ICustomerPriceGroupService CustomerPriceGroups { get; }
+    ICustomerPriceService CustomerPrices { get; }
     ICustomerService Customers{ get; }
     IItemService Items { get; }
     IItemProcedureService ItemProcedures { get; }

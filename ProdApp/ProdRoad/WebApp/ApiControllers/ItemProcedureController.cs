@@ -1,6 +1,6 @@
 #nullable enable
-using DAL.App.Contracts;
-using DAL.App.DTO;
+using BLL.App.Contracts;
+using BLL.App.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,18 +10,18 @@ namespace WebApp.ApiControllers
     [ApiController]
     public class ItemProcedureController : ControllerBase
     {
-        private readonly IAppUnitOfWork _uow;
+        private readonly IAppBLL _bll;
 
-        public ItemProcedureController(IAppUnitOfWork uow)
+        public ItemProcedureController(IAppBLL bll)
         {
-            _uow = uow;
+            _bll = bll;
         }
 
         // GET: api/ItemProcedure
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ItemProcedure>>> GetItemProcedures()
         {
-            var dataList = (await _uow.ItemProcedures
+            var dataList = (await _bll.ItemProcedures
                     .GetAllAsync())
                 .ToList();
             return dataList;
@@ -31,7 +31,7 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ItemProcedure>> GetItemProcedure(Guid id)
         {
-            var itemProcedure = await _uow.ItemProcedures.FirstOrDefaultAsync(id);
+            var itemProcedure = await _bll.ItemProcedures.FirstOrDefaultAsync(id);
             
             if (itemProcedure == null)
             {
@@ -51,15 +51,15 @@ namespace WebApp.ApiControllers
                 return BadRequest();
             }
 
-            var dbRow = await _uow.ItemProcedures.FirstOrDefaultAsync(id);
+            var dbRow = await _bll.ItemProcedures.FirstOrDefaultAsync(id);
             
             if (dbRow == null) {return NotFound();}
 
-            _uow.ItemProcedures.ModifyState(dbRow);
+            _bll.ItemProcedures.ModifyState(dbRow);
 
             try
             {
-                await _uow.SaveChangesAsync();
+                await _bll.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -89,9 +89,9 @@ namespace WebApp.ApiControllers
                 Quantity = itemProcedure.Quantity
             };     
             
-            _uow.ItemProcedures.Add(dbRow);
+            _bll.ItemProcedures.Add(dbRow);
             
-            await _uow.SaveChangesAsync();
+            await _bll.SaveChangesAsync();
 
             return CreatedAtAction("GetItemProcedure", new { id = itemProcedure.Id }, itemProcedure);
         }
@@ -100,21 +100,21 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteItemProcedure(Guid id)
         {
-            var itemProcedure = await _uow.ItemProcedures.FirstOrDefaultAsync(id);
+            var itemProcedure = await _bll.ItemProcedures.FirstOrDefaultAsync(id);
             if (itemProcedure == null)
             {
                 return NotFound();
             }
 
-            _uow.ItemProcedures.Remove(itemProcedure);
-            await _uow.SaveChangesAsync();
+            _bll.ItemProcedures.Remove(itemProcedure);
+            await _bll.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool ItemProcedureExists(Guid id)
         {
-            return _uow.ItemProcedures.Exists(id);
+            return _bll.ItemProcedures.Exists(id);
         }
     }
 }

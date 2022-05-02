@@ -1,6 +1,6 @@
 #nullable enable
-using DAL.App.Contracts;
-using DAL.App.DTO;
+using BLL.App.Contracts;
+using BLL.App.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,18 +10,18 @@ namespace WebApp.ApiControllers
     [ApiController]
     public class ProcedureController : ControllerBase
     {
-        private readonly IAppUnitOfWork _uow;
+        private readonly IAppBLL _bll;
 
-        public ProcedureController(IAppUnitOfWork uow)
+        public ProcedureController(IAppBLL bll)
         {
-            _uow = uow;
+            _bll = bll;
         }
 
         // GET: api/Procedure
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Procedure>>> GetProcedures()
         {
-            var dataList = (await _uow.Procedures
+            var dataList = (await _bll.Procedures
                     .GetAllAsync())
                 .ToList();
             return dataList;
@@ -31,7 +31,7 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Procedure>> GetProcedure(Guid id)
         {
-            var procedure  = await _uow.Procedures.FirstOrDefaultAsync(id);
+            var procedure  = await _bll.Procedures.FirstOrDefaultAsync(id);
             
             if (procedure == null)
             {
@@ -51,18 +51,18 @@ namespace WebApp.ApiControllers
                 return BadRequest();
             }
 
-            var dbRow = await _uow.Procedures.FirstOrDefaultAsync(id);
+            var dbRow = await _bll.Procedures.FirstOrDefaultAsync(id);
             
             if (dbRow == null) {return NotFound();}
 
             dbRow.Name!.SetTranslation(procedure.Name!);
             dbRow.Code!.SetTranslation(procedure.Code!);
             
-            _uow.Procedures.ModifyState(dbRow);
+            _bll.Procedures.ModifyState(dbRow);
 
             try
             {
-                await _uow.SaveChangesAsync();
+                await _bll.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -92,8 +92,8 @@ namespace WebApp.ApiControllers
             dbRow.Name!.SetTranslation(procedure.Name!);
             dbRow.Code!.SetTranslation(procedure.Code!);
             
-            _uow.Procedures.Add(dbRow);
-            await _uow.SaveChangesAsync();
+            _bll.Procedures.Add(dbRow);
+            await _bll.SaveChangesAsync();
 
             return CreatedAtAction("GetProcedure", new { id = procedure.Id }, procedure);
         }
@@ -102,21 +102,21 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProcedure(Guid id)
         {
-            var procedure = await _uow.Procedures.FirstOrDefaultAsync(id);
+            var procedure = await _bll.Procedures.FirstOrDefaultAsync(id);
             if (procedure == null)
             {
                 return NotFound();
             }
 
-            _uow.Procedures.Remove(procedure);
-            await _uow.SaveChangesAsync();
+            _bll.Procedures.Remove(procedure);
+            await _bll.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool ProcedureExists(Guid id)
         {
-            return _uow.Procedures.Exists(id);
+            return _bll.Procedures.Exists(id);
         }
     }
 }

@@ -1,11 +1,12 @@
 #nullable enable
-using DAL.App.Contracts;
-using DAL.App.DTO;
+using BLL.App.Contracts;
+using BLL.App.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Extensions.Base;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+
 
 namespace WebApp.ApiControllers
 {
@@ -14,18 +15,18 @@ namespace WebApp.ApiControllers
     [Authorize(Roles="admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CustomerController : ControllerBase
     {
-        private readonly IAppUnitOfWork _uow;
+        private readonly IAppBLL _bll;
 
-        public CustomerController(IAppUnitOfWork uow)
+        public CustomerController(IAppBLL bll)
         {
-            _uow = uow;
+            _bll = bll;
         }
 
         // GET: api/Customer
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
         {
-            var dataList = (await _uow.Customers
+            var dataList = (await _bll.Customers
                     .GetAllAsync(User.GetUserId()))
                 .ToList();
             return dataList;
@@ -35,7 +36,7 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Customer>> GetCustomer(Guid id)
         {
-            var customer = await _uow.Customers.FirstOrDefaultAsync(id);
+            var customer = await _bll.Customers.FirstOrDefaultAsync(id);
             
             if (customer == null)
             {
@@ -55,18 +56,18 @@ namespace WebApp.ApiControllers
                 return BadRequest();
             }
 
-            var dbRow = await _uow.Customers.FirstOrDefaultAsync(User.GetUserId(),id);
+            var dbRow = await _bll.Customers.FirstOrDefaultAsync(User.GetUserId(),id);
             
             if (dbRow == null) {return NotFound();}
 
             dbRow.Name!.SetTranslation(customer.Name!);
             dbRow.Registration!.SetTranslation(customer.Registration!);
 
-            _uow.Customers.ModifyState(dbRow);
+            _bll.Customers.ModifyState(dbRow);
 
             try
             {
-                await _uow.SaveChangesAsync();
+                await _bll.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -96,8 +97,8 @@ namespace WebApp.ApiControllers
             dbRow.Name!.SetTranslation(customer.Name!);
             dbRow.Registration!.SetTranslation(customer.Registration!);
             
-            _uow.Customers.Add(dbRow);
-            await _uow.SaveChangesAsync();
+            _bll.Customers.Add(dbRow);
+            await _bll.SaveChangesAsync();
 
             return CreatedAtAction("GetCustomer", new { id = customer.Id }, customer);
         }
@@ -106,21 +107,21 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomer(Guid id)
         {
-            var customer = await _uow.Customers.FirstOrDefaultAsync(User.GetUserId(),id);
+            var customer = await _bll.Customers.FirstOrDefaultAsync(User.GetUserId(),id);
             if (customer == null)
             {
                 return NotFound();
             }
 
-            _uow.Customers.Remove(customer);
-            await _uow.SaveChangesAsync();
+            _bll.Customers.Remove(customer);
+            await _bll.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool CustomerExists(Guid id)
         {
-            return _uow.Customers.Exists(id);
+            return _bll.Customers.Exists(id);
         }
     }
 }

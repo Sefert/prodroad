@@ -11,8 +11,8 @@ public class AutomapperConfig : Profile
         CreateMap<AppUser, DAL.App.DTO.Identity.AppUser>().ReverseMap();
         CreateMap<Address, DAL.App.DTO.Address>().ReverseMap();
         CreateMap<Customer, DAL.App.DTO.Customer>().ReverseMap();
-        CreateMap<CustomerPriceGroup, DAL.App.DTO.CustomerPriceGroup>().ReverseMap();
         CreateMap<CustomerPrice, DAL.App.DTO.CustomerPrice>().ReverseMap();
+        CreateMap<CustomerPriceGroup, DAL.App.DTO.CustomerPriceGroup>().ReverseMap();
         CreateMap<Item, DAL.App.DTO.Item>().ReverseMap();
         CreateMap<ItemProcedure, DAL.App.DTO.ItemProcedure>().ReverseMap();
         CreateMap<ItemWarehouse, DAL.App.DTO.ItemWarehouse>().ReverseMap();

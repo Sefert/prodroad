@@ -1,6 +1,6 @@
 #nullable enable
-using DAL.App.Contracts;
-using DAL.App.DTO;
+using BLL.App.Contracts;
+using BLL.App.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,18 +10,18 @@ namespace WebApp.ApiControllers
     [ApiController]
     public class PriceController : ControllerBase
     {
-        private readonly IAppUnitOfWork _uow;
+        private readonly IAppBLL _bll;
 
-        public PriceController(IAppUnitOfWork uow)
+        public PriceController(IAppBLL bll)
         {
-            _uow = uow;
+            _bll = bll;
         }
 
         // GET: api/Price
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Price>>> GetPrices()
         {
-            var dataList = (await _uow.Prices
+            var dataList = (await _bll.Prices
                     .GetAllAsync())
                 .ToList();
             return dataList;
@@ -31,7 +31,7 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Price>> GetPrice(Guid id)
         {
-            var price = await _uow.Prices.FirstOrDefaultAsync(id);
+            var price = await _bll.Prices.FirstOrDefaultAsync(id);
             
             if (price == null)
             {
@@ -51,15 +51,15 @@ namespace WebApp.ApiControllers
                 return BadRequest();
             }
 
-            var dbRow = await _uow.Prices.FirstOrDefaultAsync(id);
+            var dbRow = await _bll.Prices.FirstOrDefaultAsync(id);
             
             if (dbRow == null) {return NotFound();}
 
-            _uow.Prices.ModifyState(dbRow);
+            _bll.Prices.ModifyState(dbRow);
 
             try
             {
-                await _uow.SaveChangesAsync();
+                await _bll.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -87,8 +87,8 @@ namespace WebApp.ApiControllers
                 ItemWarehouseId = price.ItemWarehouseId,
                 PureCost = price.PureCost
             };
-            _uow.Prices.Add(dbRow);
-            await _uow.SaveChangesAsync();
+            _bll.Prices.Add(dbRow);
+            await _bll.SaveChangesAsync();
 
             return CreatedAtAction("GetPrice", new { id = price.Id }, price);
         }
@@ -97,21 +97,21 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePrice(Guid id)
         {
-            var price = await _uow.Prices.FirstOrDefaultAsync(id);
+            var price = await _bll.Prices.FirstOrDefaultAsync(id);
             if (price == null)
             {
                 return NotFound();
             }
 
-            _uow.Prices.Remove(price);
-            await _uow.SaveChangesAsync();
+            _bll.Prices.Remove(price);
+            await _bll.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool PriceExists(Guid id)
         {
-            return _uow.Prices.Exists(id);
+            return _bll.Prices.Exists(id);
         }
     }
 }

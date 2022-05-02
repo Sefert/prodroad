@@ -1,6 +1,6 @@
 #nullable enable
-using DAL.App.Contracts;
-using DAL.App.DTO;
+using BLL.App.Contracts;
+using BLL.App.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Extensions.Base;
@@ -14,18 +14,18 @@ namespace WebApp.ApiControllers
     [Authorize(Roles="admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class TeamController : ControllerBase
     {
-        private readonly IAppUnitOfWork _uow;
+        private readonly IAppBLL _bll;
 
-        public TeamController(IAppUnitOfWork uow)
+        public TeamController(IAppBLL bll)
         {
-            _uow = uow;
+            _bll = bll;
         }
 
         // GET: api/Team
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Team>>> GetTeams()
         {
-            var dataList = (await _uow.Teams
+            var dataList = (await _bll.Teams
                     .GetAllAsync(User.GetUserId()))
                 .ToList();
             return dataList;
@@ -35,7 +35,7 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Team>> GetTeam(Guid id)
         {
-            var team = await _uow.Teams.FirstOrDefaultAsync(User.GetUserId(), id);
+            var team = await _bll.Teams.FirstOrDefaultAsync(User.GetUserId(), id);
                 
             if (team == null)
             {
@@ -55,18 +55,18 @@ namespace WebApp.ApiControllers
                 return BadRequest();
             }
 
-            var dbRow = await _uow.Teams.FirstOrDefaultAsync(User.GetUserId(),id);
+            var dbRow = await _bll.Teams.FirstOrDefaultAsync(User.GetUserId(),id);
             
             if (dbRow == null) {return NotFound();}
 
             dbRow.Name!.SetTranslation(team.Name!);
             dbRow.Code!.SetTranslation(team.Code!);
 
-            _uow.Teams.ModifyState(dbRow);
+            _bll.Teams.ModifyState(dbRow);
 
             try
             {
-                await _uow.SaveChangesAsync();
+                await _bll.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -97,8 +97,8 @@ namespace WebApp.ApiControllers
             dbRow.Name!.SetTranslation(team.Name!);
             dbRow.Code!.SetTranslation(team.Code!);
             
-            _uow.Teams.Add(dbRow);
-            await _uow.SaveChangesAsync();
+            _bll.Teams.Add(dbRow);
+            await _bll.SaveChangesAsync();
 
             return CreatedAtAction("GetTeam", new { id = team.Id }, team);
         }
@@ -107,21 +107,21 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTeam(Guid id)
         {
-            var team = await _uow.Teams.FirstOrDefaultAsync(User.GetUserId(),id);
+            var team = await _bll.Teams.FirstOrDefaultAsync(User.GetUserId(),id);
             if (team == null)
             {
                 return NotFound();
             }
 
-            _uow.Teams.Remove(team);
-            await _uow.SaveChangesAsync();
+            _bll.Teams.Remove(team);
+            await _bll.SaveChangesAsync();
 
             return NoContent();
         }
         
         private bool TeamExists(Guid id)
         {
-            return _uow.Teams.Exists(id);
+            return _bll.Teams.Exists(id);
         }
     }
 }

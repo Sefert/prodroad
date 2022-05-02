@@ -1,6 +1,8 @@
 #nullable enable
+
+using BLL.App.Contracts;
+using BLL.App.DTO;
 using DAL.App.Contracts;
-using DAL.App.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,18 +12,18 @@ namespace WebApp.ApiControllers
     [ApiController]
     public class ProcessController : ControllerBase
     {
-        private readonly IAppUnitOfWork _uow;
+        private readonly IAppBLL _bll;
 
-        public ProcessController(IAppUnitOfWork uow)
+        public ProcessController(IAppBLL bll)
         {
-            _uow = uow;
+            _bll = bll;
         }
 
         // GET: api/Process
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Process>>> GetProcesses()
         {
-            var dataList = (await _uow.Processes
+            var dataList = (await _bll.Processes
                     .GetAllAsync())
                 .ToList();
             return dataList;
@@ -31,7 +33,7 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Process>> GetProcess(Guid id)
         {
-            var process = await _uow.Processes.FirstOrDefaultAsync(id);
+            var process = await _bll.Processes.FirstOrDefaultAsync(id);
             
             if (process == null)
             {
@@ -51,15 +53,15 @@ namespace WebApp.ApiControllers
                 return BadRequest();
             }
 
-            var dbRow = await _uow.Processes.FirstOrDefaultAsync(id);
+            var dbRow = await _bll.Processes.FirstOrDefaultAsync(id);
             
             if (dbRow == null) {return NotFound();}
 
-            _uow.Processes.ModifyState(dbRow);
+            _bll.Processes.ModifyState(dbRow);
 
             try
             {
-                await _uow.SaveChangesAsync();
+                await _bll.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -89,8 +91,8 @@ namespace WebApp.ApiControllers
                 CreatedAmount = process.CreatedAmount
             };
             
-            _uow.Processes.Add(dbRow);
-            await _uow.SaveChangesAsync();
+            _bll.Processes.Add(dbRow);
+            await _bll.SaveChangesAsync();
 
             return CreatedAtAction("GetProcess", new { id = process.Id }, process);
         }
@@ -99,21 +101,21 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProcess(Guid id)
         {
-            var process = await _uow.Processes.FirstOrDefaultAsync(id);
+            var process = await _bll.Processes.FirstOrDefaultAsync(id);
             if (process == null)
             {
                 return NotFound();
             }
 
-            _uow.Processes.Remove(process);
-            await _uow.SaveChangesAsync();
+            _bll.Processes.Remove(process);
+            await _bll.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool ProcessExists(Guid id)
         {
-            return _uow.Procedures.Exists(id);
+            return _bll.Procedures.Exists(id);
         }
     }
 }

@@ -1,6 +1,6 @@
 #nullable enable
-using DAL.App.Contracts;
-using DAL.App.DTO;
+using BLL.App.Contracts;
+using BLL.App.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,18 +10,18 @@ namespace WebApp.ApiControllers
     [ApiController]
     public class WarehouseController : ControllerBase
     {
-        private readonly IAppUnitOfWork _uow;
+        private readonly IAppBLL _bll;
 
-        public WarehouseController(IAppUnitOfWork uow)
+        public WarehouseController(IAppBLL bll)
         {
-            _uow = uow;
+            _bll = bll;
         }
 
         // GET: api/Warehouse
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Warehouse>>> GetWarehouses()
         {
-            var dataList = (await _uow.Warehouses
+            var dataList = (await _bll.Warehouses
                     .GetAllAsync())
                 .ToList();
             return dataList;
@@ -31,7 +31,7 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Warehouse>> GetWarehouse(Guid id)
         {
-            var warehouse = await _uow.Warehouses.FirstOrDefaultAsync(id);
+            var warehouse = await _bll.Warehouses.FirstOrDefaultAsync(id);
             
             if (warehouse == null)
             {
@@ -51,18 +51,18 @@ namespace WebApp.ApiControllers
                 return BadRequest();
             }
 
-            var dbRow = await _uow.Warehouses.FirstOrDefaultAsync(id);
+            var dbRow = await _bll.Warehouses.FirstOrDefaultAsync(id);
             
             if (dbRow == null) {return NotFound();}
 
             dbRow.Name!.SetTranslation(warehouse.Name!);
             dbRow.Address!.SetTranslation(warehouse.Address!);
 
-            _uow.Warehouses.ModifyState(dbRow);
+            _bll.Warehouses.ModifyState(dbRow);
 
             try
             {
-                await _uow.SaveChangesAsync();
+                await _bll.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -92,8 +92,8 @@ namespace WebApp.ApiControllers
             dbRow.Name!.SetTranslation(warehouse.Name!);
             dbRow.Address!.SetTranslation(warehouse.Address!);
             
-            _uow.Warehouses.Add(dbRow);
-            await _uow.SaveChangesAsync();
+            _bll.Warehouses.Add(dbRow);
+            await _bll.SaveChangesAsync();
 
             return CreatedAtAction("GetWarehouse", new { id = warehouse.Id }, warehouse);
         }
@@ -102,21 +102,21 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteWarehouse(Guid id)
         {
-            var warehouse = await _uow.Warehouses.FirstOrDefaultAsync(id);
+            var warehouse = await _bll.Warehouses.FirstOrDefaultAsync(id);
             if (warehouse == null)
             {
                 return NotFound();
             }
 
-            _uow.Warehouses.Remove(warehouse);
-            await _uow.SaveChangesAsync();
+            _bll.Warehouses.Remove(warehouse);
+            await _bll.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool WarehouseExists(Guid id)
         {
-            return _uow.Warehouses.Exists(id);
+            return _bll.Warehouses.Exists(id);
         }
     }
 }
