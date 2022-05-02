@@ -25,7 +25,9 @@
     <nav class="navbar topnav navbar navbar-default navbar-fixed-top navbar-light bg-light">
         <div class="d-flex">
             <a class="nav-link" href="#">Home</a>
+            <a  class="nav-link" href="/user">Profile</a>
             <a @click="logOutClicked()" class="nav-link" href="#">Logout</a>
+
         </div>
     </nav>
 </template>

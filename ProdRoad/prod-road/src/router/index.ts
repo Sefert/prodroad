@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Login from '@/components/Login.vue';
+import LoginView from '@/views/LoginView.vue';
+import UserProfileView from '@/views/user/UserProfileView.vue';
 import { userStore } from "../stores/identity";
 import TopNavBar from '@/components/TopNavBar.vue';
 import {IdentityService } from "../services/identity/IdentityService";
@@ -9,22 +10,15 @@ import type { IJWTResponse } from '@/domain/IJWTResponse';
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {
-      path: "/login",
-      name: "Login",
-      component: Login,
-    },
-    {
-      path: "/home",
-      name: "Home",
-      component: TopNavBar,
-    },
+    {path: "/login", name: "Login", component: LoginView},
+    {path: "/home", name: "Home", component: TopNavBar},
+    {path: "/user", name: "Profile", component: UserProfileView},
   ]
 })
 
 //TODO: make auth and direction guards better
 router.beforeEach(async (to, from) => {
-
+ 
   var identityStore = userStore();
   var refreshToken : string | null = null;
   var jwToken : string | null = null;
