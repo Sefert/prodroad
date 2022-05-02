@@ -1,5 +1,3 @@
-
-
 using AutoMapper;
 using DAL.App.DTO.Identity;
 using DAL.Base;

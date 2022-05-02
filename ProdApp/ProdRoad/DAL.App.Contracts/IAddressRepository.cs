@@ -2,7 +2,8 @@
 
 namespace DAL.App.Contracts;
 
-public interface IAddressRepository : IEntityRepository<DAL.App.DTO.Address>, IAddressRepositoryCustom<DAL.App.DTO.Address>
+public interface IAddressRepository : IEntityRepository<DAL.App.DTO.Address>, 
+    IAddressRepositoryCustom<DAL.App.DTO.Address>
 {
 }
 
