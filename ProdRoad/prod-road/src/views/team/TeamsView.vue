@@ -2,7 +2,9 @@
 import TopNavBar from "@/components/TopNavBar.vue";
 import { Options, Vue } from "vue-class-component";
 import { userStore } from "../../stores/identity";
+import { teamStore } from "../../stores/team";
 import type { ITeam } from "../../domain/ITeam";
+
 
 @Options({
     components: {
@@ -11,29 +13,42 @@ import type { ITeam } from "../../domain/ITeam";
     props: {},
     emits: [],
 })
+
 export default class TeamsView extends Vue {
     identity = userStore();
-    teams: ITeam[] = [];
+    teamStore = teamStore();
+    editTeamId : string | null = null;
 
     addNewRow(){
-        var team: ITeam = {
-            id : "teamInEdit",
-            name: null,
-            code: null,
+        console.log(this.editTeamId);
+        if (this.editTeamId == null){
+            
+            var team: ITeam = {
+                id : null,
+                name: null,
+                code: null,
+            }
+            this.editTeamId = "newTeam";
+            this.teamStore.add(team);
         }
-        this.teams.push(team);
     }
 
-    deleteRow(id : string){
-        var index : number = this.teams.map(function(team) {
-            return team.id;
-        }).indexOf(id);
+    saveRow(team : ITeam){
+        if (this.editTeamId != null){
+            this.editTeamId = null;
 
-        this.teams.splice(index, 1);
+            if (team.id == null){
+                team.id = "newTeam";
+            }
+        }
     }
 
-    saveRow(){
+    editRow(id : string){
+        this.editTeamId = id;
+    }
 
+    deleteRow(team : ITeam){
+        this.teamStore.delete(team);
     }
 }
 </script>
@@ -47,7 +62,7 @@ export default class TeamsView extends Vue {
                 <i class="material-icons">ADD NEW</i>
             </button>
         </div>
-        <div class="table-responsive ">
+        <div class="table-responsive">
             <table class="table">
                 <thead>
                     <tr>
@@ -55,27 +70,27 @@ export default class TeamsView extends Vue {
                         <th>Code</th>
                     </tr>
                 </thead>
-                <tbody v-for="team in teams">
-                    <tr v-if="team.id == 'teamInEdit'">
+                <tbody v-for="team in teamStore.getTeams">
+                    <tr v-if="team.id == null || team.id == editTeamId">
                         <td><input v-model="team.name"  class="form-control" placeholder="Add new name"></td>
                         <td><input v-model="team.code"  class="form-control" placeholder="Add new code"></td>
                         <td>
-                            <button @click="saveRow()" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm" data-original-title="" title="">
+                            <button @click="saveRow(team)" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm" data-original-title="" title="">
                                 <i class="material-icons">SAVE</i>
                             </button>
-                            <button @click="deleteRow()" type="button" rel="tooltip" class="btn btn-danger btn-just-icon btn-sm" data-original-title="" title="">
+                            <button @click="deleteRow(team)" type="button" rel="tooltip" class="btn btn-danger btn-just-icon btn-sm" data-original-title="" title="">
                                 <i class="material-icons">CANCEL</i>
                             </button>
                         </td>
                     </tr>
                     <tr v-else>
-                        <td>{team.name}</td>
-                        <td>{team.code}</td>
+                        <td>{{team.name}}</td>
+                        <td>{{team.code}}</td>
                         <td>
-                            <button @click="editRow()" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm" data-original-title="" title="">
+                            <button @click="editRow(team.id)" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm" data-original-title="" title="">
                                 <i class="material-icons">EDIT</i>
                             </button>
-                            <button @click="deleteRow()" type="button" rel="tooltip" class="btn btn-danger btn-just-icon btn-sm" data-original-title="" title="">
+                            <button @click="deleteRow(team)" type="button" rel="tooltip" class="btn btn-danger btn-just-icon btn-sm" data-original-title="" title="">
                                 <i class="material-icons">DELETE</i>
                             </button>
                         </td>
