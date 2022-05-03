@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import LoginView from '@/views/LoginView.vue';
 import UserProfileView from '@/views/user/UserProfileView.vue';
 import UserProfileEditView from '@/views/user/UserProfileEditView.vue';
+import TeamsView from '@/views/team/TeamsView.vue';
 import { userStore } from "../stores/identity";
 import TopNavBar from '@/components/TopNavBar.vue';
 import {IdentityService } from "../services/identity/IdentityService";
@@ -16,6 +17,8 @@ const router = createRouter({
 
     {path: "/user", name: "Profile", component: UserProfileView},
     {path: "/user/edit-profile", name: "EditProfile", component: UserProfileEditView},
+
+    {path: "/teams", name: "Teams", component: TeamsView},
   ]
 })
 
