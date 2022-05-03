@@ -1,9 +1,15 @@
 <script lang="ts">
-import TopNavBar from "@/components/TopNavBar.vue";
+import TopNavBar from "../../components/TopNavBar.vue";
 import { Options, Vue } from "vue-class-component";
+
 import { userStore } from "../../stores/identity";
 import { teamStore } from "../../stores/team";
+
 import type { ITeam } from "../../domain/ITeam";
+import type { IServiceResult } from "../../services/contracts/IServiceResult";
+
+import { TeamService } from "../../services/TeamService";
+
 
 
 @Options({
@@ -17,7 +23,9 @@ import type { ITeam } from "../../domain/ITeam";
 export default class TeamsView extends Vue {
     identity = userStore();
     teamStore = teamStore();
+    teamService = new TeamService();
     editTeamId : string | null = null;
+    errorMsg: string | null = null;
 
     addNewRow(){
         console.log(this.editTeamId);
@@ -33,12 +41,25 @@ export default class TeamsView extends Vue {
         }
     }
 
-    saveRow(team : ITeam){
+    async saveRow(team : ITeam){
         if (this.editTeamId != null){
             this.editTeamId = null;
 
             if (team.id == null){
                 team.id = "newTeam";
+            }
+
+        var res : IServiceResult<void> = await this.teamService.add(team);
+
+        console.log(res);
+
+        if (res.status >= 300) {
+                this.errorMsg = res.status + ' ' + res.errorMsg;
+                console.log(this.errorMsg);
+            } else {
+                var data = res.data;
+                console.log(data);
+                this.teamStore.$state.teams = await this.getTeams();
             }
         }
     }
@@ -49,6 +70,24 @@ export default class TeamsView extends Vue {
 
     deleteRow(team : ITeam){
         this.teamStore.delete(team);
+    }
+
+    async mounted(): Promise<void> {
+        console.log('Team mounted');
+        this.teamStore.$state.teams = await this.getTeams();
+    }
+
+    private async getTeams() : Promise<ITeam[]> {
+        var res : IServiceResult<ITeam[]> = await this.teamService.getAll();
+        console.log(res);
+        if (res.status >= 300) {
+            this.errorMsg = res.status + ' ' + res.errorMsg;
+            console.log(this.errorMsg);
+            } else {
+                var data = res.data;
+                console.log(data);
+            }
+        return res.data;
     }
 }
 </script>

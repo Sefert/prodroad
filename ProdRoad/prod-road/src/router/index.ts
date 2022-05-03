@@ -18,7 +18,7 @@ const router = createRouter({
     {path: "/user", name: "Profile", component: UserProfileView},
     {path: "/user/edit-profile", name: "EditProfile", component: UserProfileEditView},
 
-    {path: "/teams", name: "Teams", component: TeamsView},
+    {path: "/Team", name: "Teams", component: TeamsView},
   ]
 })
 
