@@ -1,20 +1,19 @@
 #nullable enable
+
 using BLL.App.Contracts;
-using BLL.App.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Extensions.Base;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Public.App.DTO.v1;
 
 namespace WebApp.ApiControllers
 {
-    
+    [ApiController]
     [ApiVersion( "1.0" )]
     [Route("api/v{version:apiVersion}/[controller]")]
-    [ApiController]
     [Authorize(Roles="admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    
     public class TeamController : ControllerBase
     {
         private readonly IAppBLL _bll;
@@ -29,8 +28,12 @@ namespace WebApp.ApiControllers
         public async Task<ActionResult<IEnumerable<Team>>> GetTeams()
         {
             var dataList = (await _bll.Teams
-                    .GetAllAsync(User.GetUserId()))
-                .ToList();
+                    .GetAllAsync(User.GetUserId())).Select(x => new Public.App.DTO.v1.Team()
+                        {
+                            Id = x.Id,
+                            Name = x.Name,
+                            Code = x.Code,
+                        }).ToList();
             return dataList;
         }
 
@@ -38,34 +41,43 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Team>> GetTeam(Guid id)
         {
-            var team = await _bll.Teams.FirstOrDefaultAsync(User.GetUserId(), id);
-                
-            if (team == null)
+            var bllTeam = await _bll.Teams.FirstOrDefaultAsync(User.GetUserId(), id);
+            
+            if (bllTeam == null)
             {
                 return NotFound();
             }
+            
+            var publicTeam = new Public.App.DTO.v1.Team()
+            {
+                Id = bllTeam.Id,
+                AppUserId = User.GetUserId(),
+                Name = bllTeam.Name,
+                Code = bllTeam.Code
+            };
+            
 
-            return team;
+            return publicTeam;
         }
 
         // PUT: api/Team/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTeam(Guid id, Team team)
+        public async Task<IActionResult> PutTeam(Guid id, Public.App.DTO.v1.Team team)
         {
             if (id != team.Id)
             {
                 return BadRequest();
             }
 
-            var dbRow = await _bll.Teams.FirstOrDefaultAsync(User.GetUserId(),id);
+            var bllTeam = await _bll.Teams.FirstOrDefaultAsync(User.GetUserId(),id);
             
-            if (dbRow == null) {return NotFound();}
+            if (bllTeam == null) {return NotFound();}
 
-            dbRow.Name!.SetTranslation(team.Name!);
-            dbRow.Code!.SetTranslation(team.Code!);
+            bllTeam.Name!.SetTranslation(team.Name!);
+            bllTeam.Code!.SetTranslation(team.Code!);
 
-            _bll.Teams.ModifyState(dbRow);
+            _bll.Teams.ModifyState(bllTeam);
 
             try
             {
@@ -89,19 +101,17 @@ namespace WebApp.ApiControllers
         // POST: api/Team
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Team>> PostTeam([FromBody] Team team)
+        public async Task<ActionResult<Team>> PostTeam(Public.App.DTO.v1.Team team)
         {
-            var dbRow = new Team()
+            var bllTeam = new BLL.App.DTO.Team()
             {
-                Id = team.Id,
                 AppUserId = User.GetUserId()
             };
             
-            dbRow.Name!.SetTranslation(team.Name!);
-            dbRow.Code!.SetTranslation(team.Code!);
+            bllTeam.Name!.SetTranslation(team.Name!);
+            bllTeam.Code!.SetTranslation(team.Code!);
             
-            // needs a mapper here to create the data correctly!!
-            _bll.Teams.Add(dbRow);
+            _bll.Teams.Add(bllTeam);
             await _bll.SaveChangesAsync();
 
             return CreatedAtAction("GetTeam", 
