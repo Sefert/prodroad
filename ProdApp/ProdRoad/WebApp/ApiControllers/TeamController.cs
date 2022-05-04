@@ -9,9 +9,12 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace WebApp.ApiControllers
 {
-    [Route("api/[controller]")]
+    
+    [ApiVersion( "1.0" )]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [Authorize(Roles="admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    
     public class TeamController : ControllerBase
     {
         private readonly IAppBLL _bll;
@@ -86,7 +89,7 @@ namespace WebApp.ApiControllers
         // POST: api/Team
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Team>> PostTeam(Team team)
+        public async Task<ActionResult<Team>> PostTeam([FromBody] Team team)
         {
             var dbRow = new Team()
             {
@@ -97,10 +100,17 @@ namespace WebApp.ApiControllers
             dbRow.Name!.SetTranslation(team.Name!);
             dbRow.Code!.SetTranslation(team.Code!);
             
+            // needs a mapper here to create the data correctly!!
             _bll.Teams.Add(dbRow);
             await _bll.SaveChangesAsync();
 
-            return CreatedAtAction("GetTeam", new { id = team.Id }, team);
+            return CreatedAtAction("GetTeam", 
+                new
+                {
+                    version = HttpContext.GetRequestedApiVersion()!.ToString(),
+                    id = team.Id
+                }, 
+                team);
         }
 
         // DELETE: api/Team/5

@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using BLL.App.DTO.Identity;
 using Domain.Base;
 
 namespace BLL.App.DTO;
@@ -8,7 +7,7 @@ namespace BLL.App.DTO;
 public class Team : BaseEntity
 {
     public Guid AppUserId { get; set; }
-    public AppUser? AppUser { get; set; }
+    /*public AppUser? AppUser { get; set; }*/
     
     [MaxLength(50)] 
     [Column(TypeName = "jsonb")] 

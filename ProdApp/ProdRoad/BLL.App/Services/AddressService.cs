@@ -6,7 +6,9 @@ using DAL.App.Contracts;
 
 namespace BLL.App.Services;
 
-public class AddressService : BaseEntityService<Address, DAL.App.DTO.Address, IAddressRepository>, IAddressService
+public class AddressService : 
+    BaseEntityService<Address, DAL.App.DTO.Address, IAddressRepository>, 
+    IAddressService
 {
     public AddressService(IAddressRepository repo, IMapper<Address, DAL.App.DTO.Address> mapper) : base(repo, mapper)
     {

@@ -1,10 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Domain.Base;
-//using Domain.Base.Identity;
 
-
-namespace BLL.App.DTO.Identity;
+namespace Public.App.DTO.v1.Identity;
 
 /*TODO: fix firstname and lastname*/
 public class AppUser : BaseEntity //BaseUser

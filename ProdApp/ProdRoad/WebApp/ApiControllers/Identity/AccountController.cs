@@ -13,8 +13,11 @@ using WebApp.DTO.Identity;
 
 namespace WebApp.ApiControllers.Identity;
 
-[Route("api/identity/[controller]/[action]")]
 [ApiController]
+[ApiVersion( "1.0" )]
+[Produces( "application/json" )]
+[Consumes( "application/json" )]
+[Route("api/v{version:apiVersion}/identity/[controller]/[action]")]
 public class AccountController : ControllerBase
 {
 
@@ -37,9 +40,15 @@ public class AccountController : ControllerBase
         _configuration = configuration;
         _context = context;
     }
-    
+    /// <summary>
+    /// TODO: needs stuff here
+    /// </summary>
+    /// <param name="loginData"></param>
+    /// <returns></returns>
     //TODO: change error messages
     [HttpPost] //Find out why actionresult. 
+    [ProducesResponseType( typeof(JwtResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType( StatusCodes.Status404NotFound)]
     public async Task<ActionResult<JwtResponse>> LogIn([FromBody] Login loginData) //Frombody json body
     {
         //verify username
@@ -107,6 +116,7 @@ public class AccountController : ControllerBase
         return Ok(res);
     }
 
+    [HttpPost]
     public async Task<ActionResult<JwtResponse>> Register(Register registrationData)
     {
         //verify user

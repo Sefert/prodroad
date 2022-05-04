@@ -75,12 +75,12 @@ public class BaseEntityService<TBllEntity, TDalEntity, TRepository, TKey> : IEnt
 
     public async Task<TBllEntity?> FirstOrDefaultAsync(TKey id, bool noTracking = true)
     {
-        return Mapper.Map(await Repo.FirstOrDefaultAsync(id,noTracking)!);
+        return Mapper.Map(await Repo.FirstOrDefaultAsync(id,noTracking));
     }
 
     public async Task<IEnumerable<TBllEntity>> GetAllAsync(bool noTracking = true)
     {
-        return (await Repo.GetAllAsync(noTracking)).Select(x => Mapper.Map(x))!;
+        return (await Repo.GetAllAsync(noTracking)).Select(x => Mapper.Map(x)!);
     }
 
     public async Task<bool> ExistsAsync(TKey id)

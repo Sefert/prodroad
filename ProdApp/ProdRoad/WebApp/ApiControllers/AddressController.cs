@@ -9,8 +9,11 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace WebApp.ApiControllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
+    
+    [ApiVersion( "1.0" )]
+    [Produces( "application/json" )]
+    [Consumes( "application/json" )]
+    [Route("api/v{version:apiVersion}/identity/[controller]/[action]")]
     [Authorize(Roles="admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AddressController : ControllerBase
     {

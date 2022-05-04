@@ -88,6 +88,4 @@ public class BLL : BaseBll<IAppUnitOfWork>, IAppBLL
     private IWarehouseService? _warehouses;
     public IWarehouseService Warehouses =>
         _warehouses ??= new WarehouseService(UOW.Warehouses,new WarehouseMapper(_mapper));
-
-    
 }
