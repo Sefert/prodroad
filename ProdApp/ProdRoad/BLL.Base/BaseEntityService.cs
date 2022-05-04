@@ -67,9 +67,10 @@ public class BaseEntityService<TBllEntity, TDalEntity, TRepository, TKey> : IEnt
         return Repo.Exists(id);
     }
     
-    //TODO fix put STATEMENT FOR ALL
+   
     public void ModifyState(TBllEntity entity)
     {
+        var data = Mapper.Map(entity)!;
         Repo.ModifyState(Mapper.Map(entity)!);
     }
 

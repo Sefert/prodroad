@@ -95,7 +95,8 @@ public class BaseEntityRepository<TAppEntity, TDomainEntity, TKey, TDbContext> :
     //custom Method for Modifying state
     public void ModifyState(TAppEntity entity)
     {
-        RepoDbContext.Entry(entity).State = EntityState.Modified;
+        var data = Mapper.Map(entity);
+        RepoDbContext.Entry(Mapper.Map(entity)!).State = EntityState.Modified;
     }
 
     public virtual async Task<TAppEntity?> FirstOrDefaultAsync(TKey id, bool noTracking = true)
