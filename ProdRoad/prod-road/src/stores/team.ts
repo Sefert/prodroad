@@ -17,8 +17,8 @@ export const teamStore = defineStore({
     add(team: ITeam) : void {
         this.teams.push(team);
     },
-    delete(team: ITeam) : void{
-        this.teams.splice(this.teams.findIndex((elem=> elem.id == team.id), 1));
+    delete(id: string) : void{
+        this.teams.splice(this.teams.findIndex(team=> team.id == id), 1);
     }
   },
 });

@@ -80,7 +80,7 @@ export class BaseService<TEntity> {
         console.log("add");
 
         var response : AxiosResponse;
-        //var respData : TEntity[] ;
+        
         var serviceResult : IServiceResult<void> = {};
         
         try {
@@ -92,11 +92,10 @@ export class BaseService<TEntity> {
                 }
             );
             
-            console.log(response);
+            console.log(response.status);
 
             serviceResult = {
                 status: response.status,
-                //data: response.data as TEntity[]
             }
         } catch (e) {
             response = (e as AxiosError).response!;
@@ -121,7 +120,71 @@ export class BaseService<TEntity> {
                         );
                         serviceResult = {
                             status: response.status,
-                            //data: response.data as TEntity[]
+                        }
+                    } catch (e) {
+                        response = (e as AxiosError).response!;
+                        serviceResult = {
+                            status: response.status,
+                            errorMsg: response.data.error,
+                        }
+                    }
+                    console.log(response);
+                }
+            } else {
+                serviceResult = {
+                    status: response.status,
+                    errorMsg: response.data.error ,
+                }
+            }
+
+        }
+        return serviceResult;
+    }
+
+    async edit(id: string, entity: TEntity): Promise<IServiceResult<void>> {          
+        console.log("add");
+
+        var response : AxiosResponse;
+
+        var serviceResult : IServiceResult<void> = {};
+        
+        try {
+            response = await httpCLient.put(`/${this.path}/${id}`, entity,
+                {
+                    headers: {
+                        "Authorization": "bearer " + this.identityStore.$state.jwt?.token
+                    }
+                }
+            );
+            
+            console.log(response.status);
+
+            serviceResult = {
+                status: response.status,
+            }
+        } catch (e) {
+            response = (e as AxiosError).response!;
+            if (response.status == 401 && this.identityStore.jwt) {
+                let identityService = new IdentityService();
+                let refreshResponse = await identityService.refreshIdentity();
+                this.identityStore.$state.jwt = refreshResponse.data!;
+
+                if (!this.identityStore.$state.jwt) { 
+                    serviceResult = {
+                        status: response.status,
+                        errorMsg: response.data.error ,
+                    }
+                } else {
+                    try {
+                        response = await httpCLient.put(`/${this.path}/${id}`, entity,
+                            {
+                                headers: {
+                                    "Authorization": "bearer " + this.identityStore.$state.jwt?.token
+                                }
+                            }
+                        );
+                        serviceResult = {
+                            status: response.status,
                         }
                     } catch (e) {
                         response = (e as AxiosError).response!;
@@ -138,37 +201,73 @@ export class BaseService<TEntity> {
         return serviceResult;
     }
 
-    /*async edit(id: string, entity: TEntity): Promise<IServiceResult<void>> {
-        console.log("put");
-        let response;
+    async delete(id: string): Promise<IServiceResult<void>> {
+        console.log("delete");
+
+        var response : AxiosResponse;
+
+        var serviceResult : IServiceResult<void> = {};
+        
         try {
-            response = await httpCLient.put(`/${this.path}/${id}`, entity,
+            response = await httpCLient.delete(`/${this.path}/${id}`, 
                 {
                     headers: {
                         "Authorization": "bearer " + this.identityStore.$state.jwt?.token
                     }
                 }
             );
+
+            console.log(response.status);
+
+            serviceResult = {
+                status: response.status,
+            }
         } catch (e) {
-            let response = (e as AxiosError).response!;
+            console.log('Here2');
+            response = (e as AxiosError).response!;
+            console.log(response);
+            console.log(response.status);
+            console.log((e as AxiosError).response!);
             if (response.status == 401 && this.identityStore.jwt) {
                 let identityService = new IdentityService();
                 let refreshResponse = await identityService.refreshIdentity();
                 this.identityStore.$state.jwt = refreshResponse.data!;
 
-                //if (!this.identityStore.$state.jwt) return [];
-                
-                response = await httpCLient.put(`/${this.path}/${id}`, entity,
-                    {
-                        headers: {
-                            "Authorization": "bearer " + this.identityStore.$state.jwt?.token
+                if (!this.identityStore.$state.jwt) { 
+                    serviceResult = {
+                        status: response.status,
+                        errorMsg: response.data.error,
+                    }
+                } else {
+                    try {
+                        console.log('Here3');
+                        response = await httpCLient.put(`/${this.path}/${id}`,
+                            {
+                                headers: {
+                                    "Authorization": "bearer " + this.identityStore.$state.jwt?.token
+                                }
+                            }
+                        );
+                        serviceResult = {
+                            status: response.status,
+                        }
+                    } catch (e) {
+                        response = (e as AxiosError).response!;
+                        serviceResult = {
+                            status: response.status,
+                            errorMsg: response.data.error,
                         }
                     }
-                );
-                console.log(response);
-
+                    console.log(response);
+                }
+            } else {
+                serviceResult = {
+                    status: response.status,
+                    errorMsg: response.data.error,
+                }
             }
+
         }
-        return { status: response.status };
-    }*/
+        return serviceResult;
+    }
 }

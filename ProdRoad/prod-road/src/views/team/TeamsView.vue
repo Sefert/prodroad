@@ -28,7 +28,6 @@ export default class TeamsView extends Vue {
     errorMsg: string | null = null;
 
     addNewRow(){
-        console.log(this.editTeamId);
         if (this.editTeamId == null){
             
             var team: ITeam = {
@@ -42,25 +41,31 @@ export default class TeamsView extends Vue {
     }
 
     async saveRow(team : ITeam){
-        if (this.editTeamId != null){
-            this.editTeamId = null;
+        console.log('Save row');
+        //change because of html check
+        if (team.id == null){
+            team.id = "newTeam";
+        }
 
-            if (team.id == null){
-                team.id = "newTeam";
-            }
+        team.AppUserId = this.identity.$id;
 
-        var res : IServiceResult<void> = await this.teamService.add(team);
-
-        console.log(res);
-
+        var res : IServiceResult<void>;
+        if (team.id == "newTeam"){
+            //accepts with no id only
+            delete team.id
+            res = await this.teamService.add(team);
+        } else {
+            res = await this.teamService.edit(team.id,team);
+        }
+        
         if (res.status >= 300) {
                 this.errorMsg = res.status + ' ' + res.errorMsg;
                 console.log(this.errorMsg);
-            } else {
-                var data = res.data;
-                console.log(data);
-                this.teamStore.$state.teams = await this.getTeams();
-            }
+        } else {
+            this.editTeamId = null;
+            var data = res.data;
+            console.log(data);
+            this.teamStore.$state.teams = await this.getTeams();
         }
     }
 
@@ -68,8 +73,23 @@ export default class TeamsView extends Vue {
         this.editTeamId = id;
     }
 
-    deleteRow(team : ITeam){
-        this.teamStore.delete(team);
+    async deleteRow(id : string){
+        var res : IServiceResult<void> = await this.teamService.delete(id);
+        console.log('HERE1');
+        console.log(res.status);
+        if (res.status >= 300) {
+            this.errorMsg = res.status + ' ' + res.errorMsg;
+            console.log(this.errorMsg);
+            } else {
+                this.teamStore.delete(id);
+            }      
+    }
+
+    cancelChange(id : string){
+        if (id == null){          
+            this.teamStore.delete(id);
+        }
+        this.editTeamId = null;
     }
 
     async mounted(): Promise<void> {
@@ -117,7 +137,7 @@ export default class TeamsView extends Vue {
                             <button @click="saveRow(team)" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm" data-original-title="" title="">
                                 <i class="material-icons">SAVE</i>
                             </button>
-                            <button @click="deleteRow(team)" type="button" rel="tooltip" class="btn btn-danger btn-just-icon btn-sm" data-original-title="" title="">
+                            <button @click="cancelChange(team.id)" type="button" rel="tooltip" class="btn btn-danger btn-just-icon btn-sm" data-original-title="" title="">
                                 <i class="material-icons">CANCEL</i>
                             </button>
                         </td>
@@ -129,7 +149,7 @@ export default class TeamsView extends Vue {
                             <button @click="editRow(team.id)" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm" data-original-title="" title="">
                                 <i class="material-icons">EDIT</i>
                             </button>
-                            <button @click="deleteRow(team)" type="button" rel="tooltip" class="btn btn-danger btn-just-icon btn-sm" data-original-title="" title="">
+                            <button @click="deleteRow(team.id)" type="button" rel="tooltip" class="btn btn-danger btn-just-icon btn-sm" data-original-title="" title="">
                                 <i class="material-icons">DELETE</i>
                             </button>
                         </td>
