@@ -66,11 +66,11 @@ public class BaseEntityService<TBllEntity, TDalEntity, TRepository, TKey> : IEnt
     {
         return Repo.Exists(id);
     }
-
-    //TODO: what was this for
+    
+    //TODO fix put STATEMENT FOR ALL
     public void ModifyState(TBllEntity entity)
     {
-        throw new NotImplementedException();
+        Repo.ModifyState(Mapper.Map(entity)!);
     }
 
     public async Task<TBllEntity?> FirstOrDefaultAsync(TKey id, bool noTracking = true)

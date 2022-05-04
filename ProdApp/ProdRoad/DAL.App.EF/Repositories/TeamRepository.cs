@@ -1,5 +1,6 @@
 using Base.Contracts;
 using DAL.App.Contracts;
+using DAL.App.DTO;
 using DAL.Base.EF;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,14 +21,13 @@ public class TeamRepository : BaseEntityRepository<DAL.App.DTO.Team, Domain.App.
 
         return (await query.ToListAsync()).Select(x => Mapper.Map(x)!);
     }
-    
+
     public async Task<DAL.App.DTO.Team?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = true)
     {
         var query = CreateQuery(noTracking);
         query = query.Where(m => m.AppUserId.Equals(userId) && m.Id.Equals(id))
             .Include(u => u.AppUser)
-            .Where(m => m.AppUserId == userId);
+            .Where(m => m.AppUserId.Equals(userId));
         return Mapper.Map(await query.FirstOrDefaultAsync());
     }
-
 }

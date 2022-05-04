@@ -92,6 +92,7 @@ public class BaseEntityRepository<TAppEntity, TDomainEntity, TKey, TDbContext> :
         return RepoDbSet.Any(a => a.Id.Equals(id));
     }
 
+    //custom Method for Modifying state
     public void ModifyState(TAppEntity entity)
     {
         RepoDbContext.Entry(entity).State = EntityState.Modified;

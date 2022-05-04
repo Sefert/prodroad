@@ -77,6 +77,7 @@ namespace WebApp.ApiControllers
             bllTeam.Name!.SetTranslation(team.Name!);
             bllTeam.Code!.SetTranslation(team.Code!);
 
+            //_bll.Entry(bllTeam).State = EntityState.Modified;
             _bll.Teams.ModifyState(bllTeam);
 
             try
