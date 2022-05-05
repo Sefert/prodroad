@@ -213,6 +213,137 @@ public class AccountController : ControllerBase
         return Ok(res);
     }
 
+    [HttpPut("{id}")]
+    public async Task<ActionResult<JwtResponse>> EditPassword(Guid id, EditPassword editPasswordData)
+    {
+        //verify user
+        var appUser = await _userManager.FindByIdAsync(User.GetUserId().ToString());
+        if (appUser?.Id != id)
+        {
+            _logger.LogWarning("User {} not found!", editPasswordData.Email);
+            var errorResponse = RequestResponse(HttpStatusCode.BadRequest);
+            errorResponse.Errors["user"] = new List<string>()
+            {
+                "Cant find user!"
+            };
+            return BadRequest(errorResponse);
+        }
+
+        var refreshToken = new RefreshToken();
+
+        var result = await _userManager.ChangePasswordAsync(
+            appUser,
+            editPasswordData.OldPassword,
+            editPasswordData.NewPassword);
+
+        if (!result.Succeeded)
+        {
+            return BadRequest(result);
+        }
+
+        //get claims based user
+        var claimsPrincipal = await _signInManager.CreateUserPrincipalAsync(appUser);
+        if (claimsPrincipal == null)
+        {
+            _logger.LogWarning("Could not get ClaimsPrincipal for user {}", editPasswordData.Email);
+            var errorResponse = RequestResponse(HttpStatusCode.NotFound);
+            
+            errorResponse.Errors["user"] = new List<string>()
+            {
+                "Claims problem!"
+            };
+            return NotFound(errorResponse);
+        }
+
+        //generate jwt
+        var jwt = IdentityExtensions.GenerateJwt(
+            claimsPrincipal.Claims,
+            _configuration["JWT:Key"],
+            _configuration["JWT:Issuer"],
+            _configuration["JWT:Issuer"],
+            DateTime.Now.AddMinutes(_configuration.GetValue<int>("JWT:ExpireInMinutes"))
+        );
+
+        // can add additional data to jwt response
+        var res = new JwtResponse()
+        {
+            Token = jwt,
+            RefreshToken = refreshToken.Token
+        };
+        return Ok(res);
+    }
+    
+    [HttpPost("/Manager/{id}")]
+    public async Task<ActionResult<JwtResponse>> UptadeToManagerRole(Guid id)
+    {
+        //verify user
+        var appUser = await _userManager.FindByIdAsync(User.GetUserId().ToString());
+        if (appUser?.Id != id)
+        {
+            _logger.LogWarning("User {} not found!", id);
+            var errorResponse = RequestResponse(HttpStatusCode.BadRequest);
+            errorResponse.Errors["user"] = new List<string>()
+            {
+                "Cant find user!"
+            };
+            return BadRequest(errorResponse);
+        }
+
+        var refreshToken = new RefreshToken();
+        
+        var roleResult = _userManager.AddToRolesAsync(appUser, 
+            ("manager").Split(',').Select(a => a.Trim())).Result;
+        
+        if (!roleResult.Succeeded)
+        {
+            return BadRequest(roleResult);
+        }
+        
+        //get full user (get from system created)
+        appUser = await _userManager.FindByEmailAsync(appUser.Email);
+        if (appUser == null)
+        {
+            _logger.LogWarning("User {} not found!", id);
+            var errorResponse = RequestResponse(HttpStatusCode.BadRequest);
+            errorResponse.Errors["user"] = new List<string>()
+            {
+                "Cant find user!"
+            };
+            return BadRequest(errorResponse);
+        }
+
+        //get claims based user
+        var claimsPrincipal = await _signInManager.CreateUserPrincipalAsync(appUser);
+        if (claimsPrincipal == null)
+        {
+            _logger.LogWarning("Could not get ClaimsPrincipal for user {}", id);
+            var errorResponse = RequestResponse(HttpStatusCode.NotFound);
+            
+            errorResponse.Errors["user"] = new List<string>()
+            {
+                "Claims problem!"
+            };
+            return NotFound(errorResponse);
+        }
+
+        //generate jwt
+        var jwt = IdentityExtensions.GenerateJwt(
+            claimsPrincipal.Claims,
+            _configuration["JWT:Key"],
+            _configuration["JWT:Issuer"],
+            _configuration["JWT:Issuer"],
+            DateTime.Now.AddMinutes(_configuration.GetValue<int>("JWT:ExpireInMinutes"))
+        );
+
+        // can add additional data to jwt response
+        var res = new JwtResponse()
+        {
+            Token = jwt,
+            RefreshToken = refreshToken.Token
+        };
+        return Ok(res);
+    }
+
     [HttpPost]
     public async Task<ActionResult> RefreshToken([FromBody] RefreshTokenModel refreshTokenModel)
     {
