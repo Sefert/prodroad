@@ -26,4 +26,9 @@ public class TeamService :
     {
         return Mapper.Map(await Repo.FirstOrDefaultAsync(userId,id,noTracking));
     }
+    
+    public async Task<Team?> PublicTeamAsync(string code, bool noTracking = true)
+    {
+        return Mapper.Map(await Repo.PublicTeamAsync(code,noTracking));
+    }
 }

@@ -18,6 +18,8 @@ public class Team : BaseEntity
     [Column(TypeName = "jsonb")] 
     public LangStr Code { get; set; } = new();
 
+    [MaxLength(20)] public bool IsPublic { get; set; } = default!;
+
     public ICollection<Process>? Processes { get; set; } 
     public ICollection<UserTeam>? UserTeams { get; set; }
     public ICollection<ActiveNotification>? ActiveNotifications { get; set; }

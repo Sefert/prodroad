@@ -13,7 +13,6 @@ namespace WebApp.ApiControllers
     [ApiController]
     [ApiVersion( "1.0" )]
     [Route("api/v{version:apiVersion}/[controller]")]
-    [Authorize(Roles="admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class TeamController : ControllerBase
     {
         private readonly IAppBLL _bll;
@@ -23,8 +22,33 @@ namespace WebApp.ApiControllers
             _bll = bll;
         }
 
+        [HttpGet("[action]/{id}")]
+        [Authorize(Roles="user,admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<Public.App.DTO.v1.Team>> GetPublicTeam(string code)
+        {
+            var bllTeam = await _bll.Teams.PublicTeamAsync(code);
+
+            if (bllTeam == null)
+            {
+                return NotFound();
+            }
+            
+            var publicTeam = new Public.App.DTO.v1.Team()
+            {
+                Id = bllTeam.Id,
+                AppUserId = User.GetUserId(),
+                Name = bllTeam.Name,
+                Code = bllTeam.Code,
+                IsPublic = bllTeam.IsPublic
+            };
+            
+            return publicTeam;
+        }
+
+        
         // GET: api/Team
         [HttpGet]
+        [Authorize(Roles="admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<IEnumerable<Team>>> GetTeams()
         {
             var dataList = (await _bll.Teams
@@ -33,12 +57,14 @@ namespace WebApp.ApiControllers
                             Id = x.Id,
                             Name = x.Name,
                             Code = x.Code,
+                            IsPublic = x.IsPublic,
                         }).ToList();
             return dataList;
         }
 
         // GET: api/Team/5
         [HttpGet("{id}")]
+        [Authorize(Roles="admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<Team>> GetTeam(Guid id)
         {
             var bllTeam = await _bll.Teams.FirstOrDefaultAsync(User.GetUserId(), id);
@@ -53,7 +79,8 @@ namespace WebApp.ApiControllers
                 Id = bllTeam.Id,
                 AppUserId = User.GetUserId(),
                 Name = bllTeam.Name,
-                Code = bllTeam.Code
+                Code = bllTeam.Code,
+                IsPublic = bllTeam.IsPublic
             };
             
 
@@ -63,6 +90,7 @@ namespace WebApp.ApiControllers
         // PUT: api/Team/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize(Roles="admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> PutTeam(Guid id, Public.App.DTO.v1.Team team)
         {
             if (id != team.Id)
@@ -76,6 +104,7 @@ namespace WebApp.ApiControllers
 
             bllTeam.Name!.SetTranslation(team.Name!);
             bllTeam.Code!.SetTranslation(team.Code!);
+            bllTeam.IsPublic = team.IsPublic;
 
             //_bll.Entry(bllTeam).State = EntityState.Modified;
             _bll.Teams.ModifyState(bllTeam);
@@ -102,11 +131,13 @@ namespace WebApp.ApiControllers
         // POST: api/Team
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize(Roles="admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<Team>> PostTeam(Public.App.DTO.v1.Team team)
         {
             var bllTeam = new BLL.App.DTO.Team()
             {
-                AppUserId = User.GetUserId()
+                AppUserId = User.GetUserId(),
+                IsPublic = team.IsPublic
             };
             
             bllTeam.Name!.SetTranslation(team.Name!);
@@ -126,6 +157,7 @@ namespace WebApp.ApiControllers
 
         // DELETE: api/Team/5
         [HttpDelete("{id}")]
+        [Authorize(Roles="admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> DeleteTeam(Guid id)
         {
             var team = await _bll.Teams.FirstOrDefaultAsync(User.GetUserId(),id);

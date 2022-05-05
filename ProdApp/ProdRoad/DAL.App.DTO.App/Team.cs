@@ -17,6 +17,8 @@ public class Team : BaseEntity
     [MaxLength(20)] 
     [Column(TypeName = "jsonb")] 
     public LangStr Code { get; set; } = new();
+    
+    [MaxLength(20)] public bool IsPublic { get; set; } = default!;
 
     public ICollection<Process>? Processes { get; set; } 
     public ICollection<UserTeam>? UserTeams { get; set; }

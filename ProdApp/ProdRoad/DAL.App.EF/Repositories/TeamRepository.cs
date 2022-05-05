@@ -30,4 +30,11 @@ public class TeamRepository : BaseEntityRepository<DAL.App.DTO.Team, Domain.App.
             .Where(m => m.AppUserId.Equals(userId));
         return Mapper.Map(await query.FirstOrDefaultAsync());
     }
+    
+    public async Task<DAL.App.DTO.Team?> PublicTeamAsync(string code, bool noTracking = true)
+    {
+        var query = CreateQuery(noTracking);
+        query = query.Where(m => m.Code.Equals(code) && m.IsPublic.Equals(true));
+        return Mapper.Map(await query.FirstOrDefaultAsync());
+    }
 }

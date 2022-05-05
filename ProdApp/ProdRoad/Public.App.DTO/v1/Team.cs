@@ -11,6 +11,8 @@ public class Team : BaseEntity
     
     [MaxLength(50)] public string Name { get; set; } = default!;
     [MaxLength(20)] public string Code { get; set; } = default!;
+    
+    public bool IsPublic { get; set; } = default!;
 
     public ICollection<Process>? Processes { get; set; }
     public ICollection<UserTeam>? UserTeams { get; set; }
