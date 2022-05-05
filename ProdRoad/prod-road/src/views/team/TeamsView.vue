@@ -26,6 +26,7 @@ export default class TeamsView extends Vue {
     teamService = new TeamService();
     editTeamId : string | null = null;
     errorMsg: string | null = null;
+    publicTeam: ITeam | null = null;
 
     addNewRow(){
         if (this.editTeamId == null){
@@ -93,10 +94,18 @@ export default class TeamsView extends Vue {
         this.editTeamId = null;
     }
 
+    beforeCreate(): void {
+        console.log("beforeCreate");
+        this.publicTeam = this.teamStore.getPublicTeam();
+         console.log(this.publicTeam);
+        console.log("afterCreate");
+    }
+
     async mounted(): Promise<void> {
-        console.log('Team mounted');
+        console.log('Team mounted');     
         this.teamStore.$state.teams = await this.getTeams();
     }
+
 
     private async getTeams() : Promise<ITeam[]> {
         var res : IServiceResult<ITeam[]> = await this.teamService.getAll();
@@ -115,6 +124,44 @@ export default class TeamsView extends Vue {
 
 <template>
     <TopNavBar />
+
+    
+    <div class="container card mt-3">
+        <div class="d-flex row">
+            <div class="float-left col"><h4><small>Manage public team connection</small></h4></div>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <tbody>
+                    <tr v-if="publicTeam.id == editTeamId">
+                        <td><input v-model="publicTeam.name"  class="form-control" placeholder="Add new name"></td>
+                        <td><input v-model="publicTeam.code"  class="form-control" placeholder="Add new code"></td>
+                        <td>
+                            <button @click="saveRow(publicTeam)" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm" data-original-title="" title="">
+                                <i class="material-icons">SAVE</i>
+                            </button>
+                            <button @click="cancelChange(publicTeam.id)" type="button" rel="tooltip" class="btn btn-danger btn-just-icon btn-sm" data-original-title="" title="">
+                                <i class="material-icons">CANCEL</i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr v-else>
+                        <td>{{publicTeam.name}}</td>
+                        <td>{{publicTeam.code}}</td>
+                        <td>
+                            <button @click="editRow(publicTeam.id)" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm" data-original-title="" title="">
+                                <i class="material-icons">EDIT</i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+
+
     <div class="container card mt-3">
         <div class="d-flex row">
             <div class="float-left col"><h4><small>Teams</small></h4></div>
