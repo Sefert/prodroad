@@ -16,6 +16,21 @@ export const userStore = defineStore({
     }
   },
   actions: {
+    isInRole(access: string) : boolean {
+      var exist : boolean = false;
+      if (typeof(this.role) == "string"){
+        if (this.role == access){
+          exist = true;
+        }
+      } else {
+        var index  = this.role.findIndex(role => role == access);
+        if (index >= 0) {
+          exist = true;
+        }
+      }
+      
+      return exist;
+    }
   },
 
 });

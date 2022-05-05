@@ -4,7 +4,7 @@
 
     export default class TopNavBar extends Vue {
         identityStore = userStore();
-
+        userManagerRole = this.identityStore.isInRole("manager");
 
       logOutClicked(): void {
         console.log('logOutClicked');
@@ -26,7 +26,7 @@
         <div class="d-flex">
             <RouterLink class="nav-link" to="/home">Home</RouterLink>
             <RouterLink class="nav-link" to="/user">Profile</RouterLink>
-            <RouterLink class="nav-link" to="/team">Teams</RouterLink>
+            <RouterLink v-if="userManagerRole"  class="nav-link" to="/team">Teams</RouterLink>
 
             <a @click="logOutClicked()" class="nav-link" href="#">Logout</a>
         </div>

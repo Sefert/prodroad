@@ -12,7 +12,13 @@ import { userStore } from "../../stores/identity";
 })
 export default class UserProfileView extends Vue {
   identity = userStore();
+
+  mounted(){
+    console.log("Profile mounted");
+    console.log(this.identity.$state.jwt);
+  }
 }
+
 </script>
 
 <template>

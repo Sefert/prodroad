@@ -21,7 +21,7 @@ import { TeamService } from "../../services/TeamService";
 })
 
 export default class TeamsView extends Vue {
-    identity = userStore();
+    identityStore = userStore();
     teamStore = teamStore();
     teamService = new TeamService();
     editTeamId : string | null = null;
@@ -34,6 +34,7 @@ export default class TeamsView extends Vue {
                 id : null,
                 name: null,
                 code: null,
+                isPublic: false
             }
             this.editTeamId = "newTeam";
             this.teamStore.add(team);
@@ -47,7 +48,7 @@ export default class TeamsView extends Vue {
             team.id = "newTeam";
         }
 
-        team.AppUserId = this.identity.$id;
+        team.AppUserId = this.identityStore.$id;
 
         var res : IServiceResult<void>;
         if (team.id == "newTeam"){
@@ -130,7 +131,7 @@ export default class TeamsView extends Vue {
                     </tr>
                 </thead>
                 <tbody v-for="team in teamStore.getTeams">
-                    <tr v-if="team.id == null || team.id == editTeamId">
+                    <tr v-if="(team.id == null || team.id == editTeamId) && team.isPublic == false">
                         <td><input v-model="team.name"  class="form-control" placeholder="Add new name"></td>
                         <td><input v-model="team.code"  class="form-control" placeholder="Add new code"></td>
                         <td>
@@ -142,7 +143,7 @@ export default class TeamsView extends Vue {
                             </button>
                         </td>
                     </tr>
-                    <tr v-else>
+                    <tr v-else-if="team.isPublic == false">
                         <td>{{team.name}}</td>
                         <td>{{team.code}}</td>
                         <td>
