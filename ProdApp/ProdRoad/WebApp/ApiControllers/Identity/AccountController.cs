@@ -30,7 +30,7 @@ public class AccountController : ControllerBase
 
     public AccountController(SignInManager<AppUser> signInManager, 
             ILogger<AccountController> logger, 
-            UserManager<AppUser> userManager, 
+            UserManager<AppUser> userManager,
             IConfiguration configuration, 
             AppDbContext context)
     {
@@ -167,7 +167,18 @@ public class AccountController : ControllerBase
             {
                 "Cant create user!"
             };
+
             return BadRequest(errorResponse);
+        }
+        
+        //add user to role
+        //TODO: move default role to properties
+        var roleResult = _userManager.AddToRolesAsync(appUser, 
+            ("user").Split(',').Select(a => a.Trim())).Result;
+        
+        if (!roleResult.Succeeded)
+        {
+            return BadRequest(roleResult);
         }
         
         //get claims based user
