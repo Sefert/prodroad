@@ -52,7 +52,7 @@ export default class TeamsView extends Vue {
         team.AppUserId = this.identityStore.$id;
 
         var res : IServiceResult<void>;
-        if (team.id == "newTeam"){
+        if (team.id == "newTeam" || team.id == "newTeam"){
             //accepts with no id only
             delete team.id
             res = await this.teamService.add(team);
@@ -96,14 +96,18 @@ export default class TeamsView extends Vue {
 
     beforeCreate(): void {
         console.log("beforeCreate");
-        this.publicTeam = this.teamStore.getPublicTeam();
-         console.log(this.publicTeam);
+
         console.log("afterCreate");
     }
 
     async mounted(): Promise<void> {
         console.log('Team mounted');     
-        this.teamStore.$state.teams = await this.getTeams();
+
+        await this.getTeams().then((data : ITeam[])=>{
+            this.teamStore.$state.teams = data;
+        }).then(() =>{
+            this.publicTeam = this.teamStore.getPublicTeam();
+        })
     }
 
 
@@ -126,7 +130,7 @@ export default class TeamsView extends Vue {
     <TopNavBar />
 
     
-    <div class="container card mt-3">
+    <div v-if="publicTeam != null" class="container card mt-3">
         <div class="d-flex row">
             <div class="float-left col"><h4><small>Manage public team connection</small></h4></div>
         </div>

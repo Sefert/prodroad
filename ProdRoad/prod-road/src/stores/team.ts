@@ -22,7 +22,7 @@ export const teamStore = defineStore({
     },
     //TODO: create backend endpoint
     getPublicTeam() : ITeam {
-      var team = this.teams.slice(this.teams.findIndex(team=> team.isPublic == true), 1)[0];
+      var team = this.teams.splice(this.teams.findIndex(team=> team.isPublic == true), 1)[0];
       if (team == null){
         team = {
           id : "PublicTeam",
