@@ -1,9 +1,10 @@
 #nullable enable
+
 using BLL.App.Contracts;
-using BLL.App.DTO;
-using DAL.App.Contracts;
+using Extensions.Base;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Public.App.DTO.v1;
 
 namespace WebApp.ApiControllers
 {
@@ -18,13 +19,27 @@ namespace WebApp.ApiControllers
             _bll = bll;
         }
 
+        public Guid AppUserId { get; set; }
+        /*public AppUser? AppUser { get; set; }*/
+
+        public Guid TeamId { get; set; }
+        public Team? Team { get; set; }
+
+        public bool? accepted { get; set; }
+        
         // GET: api/UserTeam
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserTeam>>> GetUserTeams()
         {
             var dataList = (await _bll.UserTeams
-                    .GetAllAsync())
-                .ToList();
+                    .GetAllAsync(User.GetUserId())).Select(x => new Public.App.DTO.v1.UserTeam()
+            {
+                Id = x.Id,
+                AppUserId = x.AppUserId,
+                TeamId = x.TeamId,
+                //Team = x.Team,
+                Accepted = x.Accepted,
+            }).ToList();
             return dataList;
         }
 
@@ -33,30 +48,40 @@ namespace WebApp.ApiControllers
         public async Task<ActionResult<UserTeam>> GetUserTeam(Guid id)
         {
             var userTeam  = await _bll.UserTeams.FirstOrDefaultAsync(id);
+
+            var publicUserTeam = new Public.App.DTO.v1.UserTeam()
+            {
+                Id = userTeam.Id,
+                AppUserId = userTeam.AppUserId,
+                TeamId = userTeam.TeamId,
+                //Team = x.Team,
+                Accepted = userTeam.Accepted,
+            };
             
             if (userTeam  == null)
             {
                 return NotFound();
             }
 
-            return userTeam;
+            return publicUserTeam;
         }
 
         // PUT: api/UserTeam/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUserTeam(Guid id, UserTeam userTeam)
+        public async Task<IActionResult> PutUserTeam(Guid id, Public.App.DTO.v1.UserTeam userTeam)
         {
             if (id != userTeam.Id)
             {
                 return BadRequest();
             }
 
-            var dbRow = await _bll.UserTeams.FirstOrDefaultAsync(id);
-            
-            if (dbRow == null) {return NotFound();}
+            var bllUserTeam = await _bll.UserTeams.FirstOrDefaultAsync(id);
 
-            _bll.UserTeams.ModifyState(dbRow);
+            if (bllUserTeam == null) {return NotFound();}
+            
+            bllUserTeam.Accepted = userTeam.Accepted;
+            _bll.UserTeams.ModifyState(bllUserTeam);
 
             try
             {
@@ -80,17 +105,24 @@ namespace WebApp.ApiControllers
         // POST: api/UserTeam
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<UserTeam>> PostUserTeam(UserTeam userTeam)
+        public async Task<ActionResult<UserTeam>> PostUserTeam(Public.App.DTO.v1.UserTeam userTeam)
         {
-            var dbRow = new UserTeam()
+            var bllUserTeam = new BLL.App.DTO.UserTeam()
             {
-                AppUserId = userTeam.AppUserId,
-                TeamId = userTeam.TeamId
+                Id = userTeam.Id,
+                AppUserId = User.GetUserId(),
+                TeamId = userTeam.TeamId,
+                Accepted = userTeam.Accepted,
             };
-            _bll.UserTeams.Add(dbRow);
+            
+            _bll.UserTeams.Add(bllUserTeam);
             await _bll.SaveChangesAsync();
 
-            return CreatedAtAction("GetUserTeam", new { id = userTeam.Id }, userTeam);
+            return CreatedAtAction("GetUserTeam", new
+            {
+                version = HttpContext.GetRequestedApiVersion()!.ToString(),
+                id = userTeam.Id
+            }, userTeam);
         }
 
         // DELETE: api/UserTeam/5
@@ -103,7 +135,7 @@ namespace WebApp.ApiControllers
                 return NotFound();
             }
 
-            _bll.UserTeams.Remove(userTeam);
+            await _bll.UserTeams.RemoveAsync(id);
             await _bll.SaveChangesAsync();
 
             return NoContent();
