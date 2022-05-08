@@ -1,24 +1,42 @@
+<i18n>
+{
+  "en": {
+    "hello": "hello world!"
+  },
+  "et": {
+    "hello": "tere maailm!"
+  }
+}
+</i18n>
+
 <script lang="ts">
-    import { Options, Vue } from "vue-class-component";
+    import { Vue } from "vue-class-component";
     import { userStore } from "../stores/identity";
     import {IdentityService } from "../services/identity/IdentityService"
     import type { IJWTResponse } from "../domain/IJWTResponse";
     import jwt_decode from "jwt-decode";
     import type { IServiceResult } from "../services/contracts/IServiceResult";
-
-    //TODO: add culture support
+    
+    
     export default class Login extends Vue {
-        identityStore = userStore();
+      identityStore = userStore();
 
-        email: string = '';
-        password: string = '';
-        repeatedPassword: string = '';
-        errorMsg: string | null = null;
-        isRegister: boolean = false;
-        //jwtResp: IJWTResponse = null;
+      email: string = '';
+      password: string = '';
+      repeatedPassword: string = '';
+      errorMsg: string | null = null;
+      isRegister: boolean = false;
+      //jwtResp: IJWTResponse = null;
 
 
-        identityService = new IdentityService();
+      identityService = new IdentityService();
+
+      /*setup() {
+        const { locale, t } = useI18n({
+          inheritLocale: true
+        })
+        return { locale, t }
+      }*/
 
       //TODO: move magic strings to properties
       async loginClicked(): Promise<void> {
@@ -61,7 +79,8 @@
       }
 
       saveStateData(result: IServiceResult<IJWTResponse>){
-        this.identityStore.$state.jwt = result.data!;
+        if (result.data != null) {
+        this.identityStore.$state.jwt = result.data;
         
         var decoded = jwt_decode(result.data.token);
 
@@ -79,6 +98,7 @@
         //TODO: make more secure!!!!
         window.localStorage.setItem("prodRoad-r", result.data.refreshToken);
         window.localStorage.setItem("prodRoad-j", result.data.token);
+        }
       }
     }
 
@@ -91,7 +111,7 @@
         <div class="form-signin">
             <form>
                 <img class="mb-4" src="None" alt="" width="72" height="57">
-                <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+                <h1 class="h3 mb-3 fw-normal">Please sign in {{ $t('hello') }}</h1>
                 <p v-if="errorMsg != null" class="text-danger h3 mb-3 fw-normal">{{errorMsg}}</p>
                 <div class="form-floating">
                 <input v-model="email" type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
@@ -160,5 +180,6 @@ body {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+
 
 </style>

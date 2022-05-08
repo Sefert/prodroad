@@ -1,3 +1,14 @@
+<i18n locale>
+{
+  "en": {
+    "hello": "!!!!!hello world!"
+  },
+  "et": {
+    "hello": "tere maailm!"
+  }
+}
+</i18n>
+
 <script lang="ts">
 import TopNavBar from "../../components/TopNavBar.vue";
 import { Options, Vue } from "vue-class-component";
@@ -10,6 +21,7 @@ import type { IServiceResult } from "../../services/contracts/IServiceResult";
 
 import { TeamService } from "../../services/TeamService";
 
+import { useI18n } from 'vue-i18n'
 
 
 @Options({
@@ -27,6 +39,29 @@ export default class TeamsView extends Vue {
     editTeamId : string | null = null;
     errorMsg: string | null = null;
     publicTeam: ITeam | null = null;
+
+    setup() {
+        const { locale, t } = useI18n({
+        locale: 'en',
+        inheritLocale: true,
+        messages: {
+            en: {
+                hello:"!!!!hello world!!"
+            },
+            et: {
+                hello:"tere maailm!!"
+            },
+        }
+        })
+
+        return { locale, t }
+    }
+
+
+    /*setup(){
+    const {t} = useI18n();
+    return {t}
+    }*/
 
     addNewRow(){
         if (this.editTeamId == null){
@@ -52,7 +87,7 @@ export default class TeamsView extends Vue {
         team.AppUserId = this.identityStore.$id;
 
         var res : IServiceResult<void>;
-        if (team.id == "newTeam" || team.id == "newTeam"){
+        if (team.id == "newTeam" || team.id == "PublicTeam"){
             //accepts with no id only
             delete team.id
             res = await this.teamService.add(team);
@@ -129,7 +164,7 @@ export default class TeamsView extends Vue {
 <template>
     <TopNavBar />
 
-    
+    <p>{{ $t('hello') }}</p>
     <div v-if="publicTeam != null" class="container card mt-3">
         <div class="d-flex row">
             <div class="float-left col"><h4><small>Manage public team connection</small></h4></div>
@@ -137,7 +172,7 @@ export default class TeamsView extends Vue {
         <div class="table-responsive">
             <table class="table">
                 <tbody>
-                    <tr v-if="publicTeam.id == editTeamId">
+                    <tr v-if="publicTeam.id == editTeamId && publicTeam.isPublic == true">
                         <td><input v-model="publicTeam.name"  class="form-control" placeholder="Add new name"></td>
                         <td><input v-model="publicTeam.code"  class="form-control" placeholder="Add new code"></td>
                         <td>
@@ -149,7 +184,7 @@ export default class TeamsView extends Vue {
                             </button>
                         </td>
                     </tr>
-                    <tr v-else>
+                    <tr v-else-if="publicTeam.isPublic == true">
                         <td>{{publicTeam.name}}</td>
                         <td>{{publicTeam.code}}</td>
                         <td>
@@ -168,7 +203,7 @@ export default class TeamsView extends Vue {
 
     <div class="container card mt-3">
         <div class="d-flex row">
-            <div class="float-left col"><h4><small>Teams</small></h4></div>
+            <div class="float-left col"><h4><small>Teams {{ $t('hello') }}</small></h4></div>
             <button @click="addNewRow()" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm col-sm-4" data-original-title="" title="">
                 <i class="material-icons">ADD NEW</i>
             </button>
