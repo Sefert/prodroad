@@ -6,7 +6,7 @@ namespace Domain.Base;
 public class LangStr : Dictionary<string, string>
 {
 
-    private const string DefaultCulture = "et";
+    private const string DefaultCulture = "en";
 
     private string GetCultureName(string culture)
     {

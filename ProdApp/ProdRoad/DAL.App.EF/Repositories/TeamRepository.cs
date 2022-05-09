@@ -31,6 +31,7 @@ public class TeamRepository : BaseEntityRepository<DAL.App.DTO.Team, Domain.App.
         return Mapper.Map(await query.FirstOrDefaultAsync());
     }
     
+    /*TODO https://stackoverflow.com/questions/70332565/jetbrains-rider-debug-mode-evaluator-exception */
     public async Task<DAL.App.DTO.Team?> PublicTeamAsync(string code, bool noTracking = true)
     {
         var query = CreateQuery(noTracking);

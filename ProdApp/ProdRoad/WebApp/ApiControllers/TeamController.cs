@@ -22,7 +22,7 @@ namespace WebApp.ApiControllers
             _bll = bll;
         }
 
-        [HttpGet("[action]/{id}")]
+        [HttpGet("[action]/{code}")]
         [Authorize(Roles="user,admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<Public.App.DTO.v1.Team>> GetPublicTeam(string code)
         {
