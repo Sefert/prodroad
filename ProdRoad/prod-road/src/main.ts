@@ -1,7 +1,9 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { createI18n } from 'vue-i18n'
-//import { createI18n } from "vue-i18n/dist/vue-i18n.esm-bundler.js"
+
+import en from './locales/en.json'
+import et from './locales/et.json'
 
 import App from '@/App.vue'
 import router from './router'
@@ -16,15 +18,13 @@ const i18n = createI18n({
     fallbackLocale: 'en', // set fallback locale
     availableLocales: ['en', 'et'],
     globalInjection: true,
+
     messages: {
-        en: {
-            hello:"hello world!!"
-        },
-        et: {
-            hello:"tere maailm!!"
-        },
+        en,
+        et
     }
 })
+
 const app = createApp(App)
 
 app.use(i18n)

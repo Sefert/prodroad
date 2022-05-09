@@ -2,14 +2,11 @@
   import { Options, Vue } from "vue-class-component";
   import { RouterLink, RouterView } from 'vue-router';
   import { userStore } from "@/stores/identity";
-  import { useI18n } from 'vue-i18n'
+
   
   export default class App extends Vue {
-    identityStore = userStore();
-    setup() {
-    const { t } = useI18n() // call `useI18n`, and spread `t` from  `useI18n` returning
-    return { t } // return render context that included `t`
-  }
+    identityStore = userStore();  
+
   }
 </script>
 

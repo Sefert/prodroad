@@ -1,0 +1,12 @@
+{
+    "LoginView" :{
+        "sign-in-sign":"Already have an account?",
+        "email":"Email address",
+        "password":"Password",
+        "repeat-password":"Repeat password",
+        "register-radio":"Register",
+        "sign-in-button":"Sign in",
+        "sign-up-button":"Sign up"
+    }
+    
+}

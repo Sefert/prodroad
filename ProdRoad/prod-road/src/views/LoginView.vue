@@ -1,22 +1,17 @@
-<i18n>
-{
-  "en": {
-    "hello": "hello world!"
-  },
-  "et": {
-    "hello": "tere maailm!"
-  }
-}
-</i18n>
-
 <script lang="ts">
-    import { Vue } from "vue-class-component";
+    import { Options, Vue } from "vue-class-component";
     import { userStore } from "../stores/identity";
     import {IdentityService } from "../services/identity/IdentityService"
     import type { IJWTResponse } from "../domain/IJWTResponse";
     import jwt_decode from "jwt-decode";
     import type { IServiceResult } from "../services/contracts/IServiceResult";
-    
+    import LangChange from "../components/LangChange.vue";
+
+    @Options({
+      components: {
+        LangChange
+      }
+    })
     
     export default class Login extends Vue {
       identityStore = userStore();
@@ -26,25 +21,14 @@
       repeatedPassword: string = '';
       errorMsg: string | null = null;
       isRegister: boolean = false;
-      //jwtResp: IJWTResponse = null;
-
 
       identityService = new IdentityService();
 
-      /*setup() {
-        const { locale, t } = useI18n({
-          inheritLocale: true
-        })
-        return { locale, t }
-      }*/
-
       //TODO: move magic strings to properties
       async loginClicked(): Promise<void> {
-        //console.log('submitClicked');
-        //console.log(this.email);
+        console.log('submitClicked');
         
-        var res = await this.identityService.login(this.email, this.password);
-        //console.log(res);       
+        var res = await this.identityService.login(this.email, this.password);    
         
         //TODO: route if login succeeded and inform user       
         if (res.status == 200) {
@@ -61,8 +45,7 @@
         if (this.password != this.repeatedPassword || this.password == '') {
             this.errorMsg = "Entered passwords do not match!"
         } else {
-          var res = await this.identityService.register(this.email, this.password);
-          //console.log(res);       
+          var res = await this.identityService.register(this.email, this.password);     
 
           //TODO: route if register succeeded and inform user     
           if (res.status == 200) {
@@ -107,33 +90,34 @@
 
 <!-- TODO: needs more intuitive error message -->
 <template>
+    <LangChange/>
     <div class="text-center">
         <div class="form-signin">
             <form>
                 <img class="mb-4" src="None" alt="" width="72" height="57">
-                <h1 class="h3 mb-3 fw-normal">Please sign in {{ $t('hello') }}</h1>
+                <h1 class="h3 mb-3 fw-normal">{{ $t('LoginView.sign-in-sign') }}</h1>
                 <p v-if="errorMsg != null" class="text-danger h3 mb-3 fw-normal">{{errorMsg}}</p>
                 <div class="form-floating">
                 <input v-model="email" type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
-                <label for="floatingInput">Email address</label>
+                <label for="floatingInput">{{ $t('LoginView.email') }}</label>
                 </div>
                 <div class="form-floating">
                 <input v-model="password" type="password" class="form-control" id="floatingPassword" placeholder="Password">
-                <label for="floatingPassword">Password</label>
+                <label for="floatingPassword">{{ $t('LoginView.password') }}</label>
                 </div>
                 <div v-if="isRegister == true" class="form-floating">
                 <input v-model="repeatedPassword" type="password" class="form-control" placeholder="Password">
-                <label for="floatingPassword">Repeat Password</label>
+                <label for="floatingPassword">{{ $t('LoginView.repeat-password') }}</label>
                 </div>
 
                 <div class="checkbox mb-3">
                 <label>
-                    <input v-model="isRegister" type="checkbox" value="true"> Register
+                    <input v-model="isRegister" type="checkbox" value="true"> {{ $t('LoginView.register-radio') }}
                 </label>
                 </div>
                 <!-- TODO: button type submit fuckes things up why?-->
-                <button v-if="isRegister == false" @click="loginClicked()" class="w-100 btn btn-lg btn-primary" type="button">Sign in</button>
-                <button v-if="isRegister == true" @click="registerClicked()" class="w-100 btn btn-lg btn-primary" type="button">Register</button>
+                <button v-if="isRegister == false" @click="loginClicked()" class="w-100 btn btn-lg btn-primary" type="button">{{ $t('LoginView.sign-in-button') }}</button>
+                <button v-if="isRegister == true" @click="registerClicked()" class="w-100 btn btn-lg btn-primary" type="button">{{ $t('LoginView.sign-up-button') }}</button>
                 <p class="mt-5 mb-3 text-muted">© ME</p>
             </form>
         </div>

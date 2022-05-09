@@ -1,0 +1,11 @@
+{
+    "LoginView" :{
+        "sign-in-sign":"Kasutaja juba olemas?",
+        "email":"E-posti aadress",
+        "password":"Parool",
+        "repeat-password":"Korda parooli",
+        "register-radio":"Registreeri",
+        "sign-in-button":"Sisene",
+        "sign-up-button":"Registreeri"
+    }
+}

@@ -1,6 +1,17 @@
 <script lang="ts">
-    import { Vue } from "vue-class-component";
+    import { Options, Vue } from "vue-class-component";
     import { userStore } from "../stores/identity";
+    import LangChange from "./LangChange.vue";
+
+
+    @Options({
+        components: {
+        TopNavBar,
+        LangChange
+        },
+        props: {},
+        emits: [],
+    })
 
     export default class TopNavBar extends Vue {
         identityStore = userStore();
@@ -30,10 +41,7 @@
 
             <a @click="logOutClicked()" class="nav-link" href="#">Logout</a>
 
-            <select class="form-select-sm" v-model="$i18n.locale">
-                <option selected="true" value="en">EN</option>
-                <option value="et">ET</option>
-            </select>
+            <LangChange/>
         </div>
     </nav>
 </template>
