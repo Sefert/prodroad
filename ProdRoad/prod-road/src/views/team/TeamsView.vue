@@ -191,7 +191,8 @@ export default class TeamsView extends Vue {
                         <th>Code</th>
                     </tr>
                 </thead>
-                <tbody v-for="team in teamStore.getTeams">
+                <tbody v-if="teamStore.getTeams.length != 0" v-for="team in teamStore.getTeams">
+                    <!--TODO: fix cant find id null bug  -->
                     <tr v-if="(team.id == null || team.id == editTeamId) && team.isPublic == false">
                         <td><input v-model="team.name"  class="form-control" placeholder="Add new name"></td>
                         <td><input v-model="team.code"  class="form-control" placeholder="Add new code"></td>

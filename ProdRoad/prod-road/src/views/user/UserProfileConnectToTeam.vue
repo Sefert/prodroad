@@ -19,9 +19,11 @@ import { userStore } from "../../stores/identity";
     teamStore = teamStore();
     teamService = new TeamService();
     errorMsg : null | string = null;
+    teamCode : string = "";
 
-    async getPublicTeam(code : string) : Promise<ITeam> {
-        var res = await this.teamService.getPublicTeam(code);
+
+    async getPublicTeam() : Promise<void> {
+        var res = await this.teamService.getPublicTeam(this.teamCode);
 
         if (res != null && typeof(res) != "undefined"){
             if (res.status! >= 300) {
@@ -33,7 +35,11 @@ import { userStore } from "../../stores/identity";
                 }
                
         }
-        return res.data!;  
+        this.teamStore.$state.teams=[res.data!];  
+    }
+
+    mounted(){
+        this.teamStore.$state.teams=[];  
     }
 
 }
@@ -43,13 +49,29 @@ import { userStore } from "../../stores/identity";
 <template>
     <TopNavBar />
 
-    <div class="input-group">
-        <div id="search-autocomplete" class="form-outline">
-            <input type="search" id="form1" class="form-control" />
-            <label class="form-label" for="form1">Search</label>
+
+    <div class="container">
+        <div class="row height d-flex justify-content-center align-items-center">
+
+            <div class="col-md-8">
+
+                <div class="search">
+                    <i class="fa fa-search"></i>
+                    <input v-model="teamCode" type="text" class="form-control" placeholder="Insert given CODE">
+                    <button @click="getPublicTeam()" type="button" class="btn btn-primary">Search</button>
+                </div>
+                
+            </div>
+                
         </div>
-        <button type="button" class="btn btn-primary">
-            <i class="fas fa-search"></i>
-        </button>
+
+        <br/>
+        <br/>
+
+        <div v-if="teamStore.$state.teams.length != 0" class="form-check form-switch">
+            <input class="form-check-input" type="checkbox">
+            <label class="form-check-label" for="flexSwitchCheckDefault">{this.teamStore.$state.teams[0].code}</label>
+        </div>
     </div>
+
 </template>
