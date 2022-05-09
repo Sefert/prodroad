@@ -8,6 +8,7 @@ import TopNavBar from '@/components/TopNavBar.vue';
 import {IdentityService } from "../services/identity/IdentityService";
 import jwt_decode from "jwt-decode";
 import type { IJWTResponse } from '@/domain/IJWTResponse';
+import UserProfileConnectToTeamVue from '@/views/user/UserProfileConnectToTeam.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,6 +18,7 @@ const router = createRouter({
 
     {path: "/user", name: "Profile", component: UserProfileView},
     {path: "/user/edit-profile", name: "EditProfile", component: UserProfileEditView},
+    {path: "/user/connect-team", name: "ConnectTeam", component: UserProfileConnectToTeamVue},
 
     {path: "/Team", name: "Teams", component: TeamsView},
   ]

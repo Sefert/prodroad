@@ -46,7 +46,8 @@ export default class UserProfileView extends Vue {
                       <h4>{{identity.email}}</h4>
                       <p class="text-secondary mb-1">U R AWAESOME</p>
                       <p class="text-muted font-size-sm">CURRENT SERVICE ACCESS: not implemented</p>
-                      <button type="button" class="btn btn-primary mt-1">Connect to Team - not implemented</button>
+                      <RouterLink  class="btn btn-primary mt-1" to="/team/connect-team">Connect to Team - not implemented</RouterLink>
+                      
                       <button type="button" class="btn btn-primary mt-1">Update service level - not implemented</button>
                       <!--<button class="btn btn-outline-primary">Message</button>-->
                     </div>

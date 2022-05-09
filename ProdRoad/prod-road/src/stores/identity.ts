@@ -1,4 +1,5 @@
 import type { IJWTResponse } from "@/domain/IJWTResponse"
+import router from "@/router";
 import { defineStore } from "pinia"
 
 
@@ -30,6 +31,20 @@ export const userStore = defineStore({
       }
       
       return exist;
+    },
+    logOut(): void {
+      console.log('logOut');
+      
+      window.localStorage.removeItem("prodRoad-r");
+      window.localStorage.removeItem("prodRoad-j");
+
+      this.$state.jwt = null;
+      this.$id = '';
+      this.$state.email = null;
+      this.$state.role = [];
+      this.$state.jwtExp = null;
+
+      router.push("Login");
     }
   },
 

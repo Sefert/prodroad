@@ -107,7 +107,10 @@ export default class TeamsView extends Vue {
     }
 
     async mounted(): Promise<void> {
-        console.log('Team mounted');     
+        console.log('Team mounted'); 
+        if (!this.identityStore.isInRole("manager")){
+            this.identityStore.logOut();
+        } 
 
         await this.getTeams().then((data : ITeam[])=>{
             this.teamStore.$state.teams = data;
