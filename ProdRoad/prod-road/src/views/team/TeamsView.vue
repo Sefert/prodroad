@@ -101,17 +101,12 @@ export default class TeamsView extends Vue {
         this.editTeamId = null;
     }
 
-    beforeCreate(): void {
-        console.log("beforeCreate");
-
-        console.log("afterCreate");
-    }
-
     async mounted(): Promise<void> {
         console.log('Team mounted'); 
+
         if (!this.identityStore.isInRole("manager")){
             this.identityStore.logOut();
-        } 
+        }
 
         await this.getTeams().then((data : ITeam[])=>{
             this.teamStore.$state.teams = data;
