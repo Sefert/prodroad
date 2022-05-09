@@ -22,8 +22,10 @@ export const teamStore = defineStore({
     },
     //TODO: create backend endpoint
     getPublicTeam() : ITeam {
-      var team = this.teams.slice(this.teams.findIndex(x=> x.isPublic == true), 1)[0];
-      if (team.isPublic != true){
+      var index : number = this.teams.findIndex(x=> x.isPublic == true);
+      var team = this.teams.slice(index, ++index)[0];
+      console.log(team);
+      if (team == null){
         team = {
           id : "PublicTeam",
           name: "Add new name",
@@ -31,10 +33,10 @@ export const teamStore = defineStore({
           isPublic: true
         }
       } 
-      console.log("Getting public team");
-      console.log(team.isPublic);
-      console.log(team);
-      console.log("Getting public team");
+      //console.log("Getting public team");
+      //console.log(team.isPublic);
+      //console.log(team);
+      //console.log("Getting public team");
       return team;
     }
   },

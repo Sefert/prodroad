@@ -60,15 +60,19 @@ export default class TeamsView extends Vue {
             res = await this.teamService.edit(team.id,team);
         }
         
-        if (res.status >= 300) {
-                this.errorMsg = res.status + ' ' + res.errorMsg;
-                console.log(this.errorMsg);
-        } else {
-            this.editTeamId = null;
-            var data = res.data;
-            console.log(data);
-            this.teamStore.$state.teams = await this.getTeams();
+        if (res != null && typeof(res) != "undefined"){
+            if (res.status! >= 300) {
+                    this.errorMsg = res.status + ' ' + res.errorMsg;
+                    console.log(this.errorMsg);
+            } else {
+                this.editTeamId = null;
+                var data = res.data;
+                console.log(data);
+                this.teamStore.$state.teams = await this.getTeams();
+            }
         }
+
+        this.editTeamId = null;
     }
 
     editRow(id : string){
@@ -79,12 +83,14 @@ export default class TeamsView extends Vue {
         var res : IServiceResult<void> = await this.teamService.delete(id);
         console.log('HERE1');
         console.log(res.status);
-        if (res.status >= 300) {
-            this.errorMsg = res.status + ' ' + res.errorMsg;
-            console.log(this.errorMsg);
+        if (res != null && typeof(res) != "undefined"){
+            if (res.status! >= 300) {
+                this.errorMsg = res.status + ' ' + res.errorMsg;
+                console.log(this.errorMsg);
             } else {
-                this.teamStore.delete(id);
-            }      
+                    this.teamStore.delete(id);
+            }  
+        }    
     }
 
     cancelChange(id : string){
@@ -114,14 +120,17 @@ export default class TeamsView extends Vue {
     private async getTeams() : Promise<ITeam[]> {
         var res : IServiceResult<ITeam[]> = await this.teamService.getAll();
         console.log(res);
-        if (res.status >= 300) {
-            this.errorMsg = res.status + ' ' + res.errorMsg;
-            console.log(this.errorMsg);
-            } else {
-                var data = res.data;
-                console.log(data);
-            }
-        return res.data;
+        if (res != null && typeof(res) != "undefined"){
+            if (res.status! >= 300) {
+                this.errorMsg = res.status + ' ' + res.errorMsg;
+                console.log(this.errorMsg);
+                } else {
+                    var data = res.data;
+                    console.log(data);
+                }
+            return res.data!;      
+        }
+        return [];
     }
 }
 
@@ -143,10 +152,10 @@ export default class TeamsView extends Vue {
                         <td><input v-model="publicTeam.name"  class="form-control" placeholder="Add new name"></td>
                         <td><input v-model="publicTeam.code"  class="form-control" placeholder="Add new code"></td>
                         <td>
-                            <button @click="saveRow(publicTeam)" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm" data-original-title="" title="">
+                            <button @click="saveRow(publicTeam!)" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm" data-original-title="" title="">
                                 <i class="material-icons">SAVE</i>
                             </button>
-                            <button @click="cancelChange(publicTeam.id)" type="button" rel="tooltip" class="btn btn-danger btn-just-icon btn-sm" data-original-title="" title="">
+                            <button @click="cancelChange(publicTeam!.id)" type="button" rel="tooltip" class="btn btn-danger btn-just-icon btn-sm" data-original-title="" title="">
                                 <i class="material-icons">CANCEL</i>
                             </button>
                         </td>
@@ -155,7 +164,7 @@ export default class TeamsView extends Vue {
                         <td>{{publicTeam.name}}</td>
                         <td>{{publicTeam.code}}</td>
                         <td>
-                            <button @click="editRow(publicTeam.id)" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm" data-original-title="" title="">
+                            <button @click="editRow(publicTeam!.id)" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm" data-original-title="" title="">
                                 <i class="material-icons">EDIT</i>
                             </button>
                         </td>
@@ -191,7 +200,7 @@ export default class TeamsView extends Vue {
                             <button @click="saveRow(team)" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm" data-original-title="" title="">
                                 <i class="material-icons">SAVE</i>
                             </button>
-                            <button @click="cancelChange(team.id)" type="button" rel="tooltip" class="btn btn-danger btn-just-icon btn-sm" data-original-title="" title="">
+                            <button @click="cancelChange(team.id!)" type="button" rel="tooltip" class="btn btn-danger btn-just-icon btn-sm" data-original-title="" title="">
                                 <i class="material-icons">CANCEL</i>
                             </button>
                         </td>
@@ -200,10 +209,10 @@ export default class TeamsView extends Vue {
                         <td>{{team.name}}</td>
                         <td>{{team.code}}</td>
                         <td>
-                            <button @click="editRow(team.id)" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm" data-original-title="" title="">
+                            <button @click="editRow(team.id!)" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm" data-original-title="" title="">
                                 <i class="material-icons">EDIT</i>
                             </button>
-                            <button @click="deleteRow(team.id)" type="button" rel="tooltip" class="btn btn-danger btn-just-icon btn-sm" data-original-title="" title="">
+                            <button @click="deleteRow(team.id!)" type="button" rel="tooltip" class="btn btn-danger btn-just-icon btn-sm" data-original-title="" title="">
                                 <i class="material-icons">DELETE</i>
                             </button>
                         </td>
