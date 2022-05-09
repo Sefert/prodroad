@@ -28,6 +28,7 @@
         this.identityStore.$state.email = null;
         this.identityStore.$state.role = [];
         this.identityStore.$state.jwtExp = null;
+       
       }
     }
 </script>

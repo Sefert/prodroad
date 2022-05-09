@@ -10,6 +10,7 @@ import jwt_decode from "jwt-decode";
 import type { IJWTResponse } from '@/domain/IJWTResponse';
 import UserProfileConnectToTeamVue from '@/views/user/UserProfileConnectToTeam.vue';
 
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [

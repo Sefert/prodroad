@@ -59,6 +59,9 @@
 
       mounted(){
         console.log(this.identityStore.$state.jwt);
+        if(this.identityStore.$state.jwt) {
+          this.$router.push('Home');
+        }
       }
 
       saveStateData(result: IServiceResult<IJWTResponse>){
