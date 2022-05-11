@@ -1,3 +1,4 @@
+import type { ITeam } from './../domain/ITeam';
 import { useI18n } from 'vue-i18n';
 import httpCLient from "@/http-client";
 import { userStore } from "@/stores/identity";
@@ -82,13 +83,13 @@ export class BaseService<TEntity> {
         return res;
     }*/
 
-    async add(entity: TEntity): Promise<IServiceResult<void>> {
+    async add(entity: TEntity): Promise<IServiceResult<TEntity>> {
         console.log("add");
 
         var response : AxiosResponse;
         
         console.log(`/${this.path}?culture=${this.i18n.locale}`);
-        var serviceResult : IServiceResult<void> = {};
+        var serviceResult : IServiceResult<TEntity> = {};
         try {
             response = await httpCLient.post(`/${this.path}?culture=${this.i18n.locale}`, entity,
                 {
@@ -98,10 +99,11 @@ export class BaseService<TEntity> {
                 }
             );
             
-            console.log(response.status);
+            console.log(response);
 
             serviceResult = {
                 status: response.status,
+                data : response.data as TEntity
             }
         } catch (e) {
             response = (e as AxiosError).response!;
@@ -126,6 +128,7 @@ export class BaseService<TEntity> {
                         );
                         serviceResult = {
                             status: response.status,
+                            data : response.data as TEntity
                         }
                     } catch (e) {
                         response = (e as AxiosError).response!;

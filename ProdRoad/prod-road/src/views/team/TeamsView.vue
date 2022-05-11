@@ -52,13 +52,18 @@ export default class TeamsView extends Vue {
 
         team.AppUserId = this.identityStore.$id;
 
-        var res : IServiceResult<void>;
+        var res : IServiceResult<ITeam> | IServiceResult<void>;
         if (team.id == "newTeam" || team.id == "PublicTeam"){
             //accepts with no id only
-            delete team.id
-            res = await this.teamService.add(team);
+            var teamToAdd : ITeam = {
+                name : team.name,
+                code : team.code,
+                isPublic : (team.id == "PublicTeam") ? true : false,
+            }
+            res = await this.teamService.add(teamToAdd);
             console.log("here-st");
         } else {
+            //TODO: should reload when fail or revert back
             res = await this.teamService.edit(team.id,team);
         }
         console.log("here-st3");
@@ -66,16 +71,17 @@ export default class TeamsView extends Vue {
             console.log("here-st34");
             console.log(res);
             console.log(res.status);
-            /*if (res.status! >= 300) {
+            if (res.status! >= 300) {
                 console.log("here-st2");
                     this.errorMsg = res.status + ' ' + res.errorMsg;
                     console.log(this.errorMsg);
-            } else {
-                this.editTeamId = null;
+            } else if (res.status == 201){
                 var data = res.data;
-                console.log(data);
-                this.teamStore.$state.teams = await this.getTeams();
-            }*/
+                if (data != null && typeof(data) != 'undefined'){
+                    this.teamStore.add(data);
+                }
+                this.cancelChange("newTeam");
+            }
         }
 
         this.editTeamId = null;
@@ -100,9 +106,9 @@ export default class TeamsView extends Vue {
     }
 
     cancelChange(id : string){
-        if (id == null){          
+        //if (id == null){          
             this.teamStore.delete(id);
-        }
+        //}
         this.editTeamId = null;
     }
 
