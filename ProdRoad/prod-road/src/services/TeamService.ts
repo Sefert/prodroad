@@ -5,11 +5,13 @@ import { BaseService } from "./BaseService";
 import { teamStore } from "../stores/team";
 import type { IServiceResult } from './contracts/IServiceResult';
 import { IdentityService } from './identity/IdentityService';
+import { useI18n } from 'vue-i18n'
 
 export class TeamService extends BaseService<ITeam> {
-
+    
     constructor() {
         super("Team");
+
     }
 
     async getPublicTeam(code : string) : Promise<IServiceResult<ITeam>> {
@@ -19,7 +21,7 @@ export class TeamService extends BaseService<ITeam> {
         var serviceResult : IServiceResult<ITeam> = {};
         
         try {
-            response = await httpCLient.get(`/Team/GetPublicTeam/${code}`, {
+            response = await httpCLient.get(`/Team/GetPublicTeam/${code}?culture=${this.i18n.locale}`, {
                 headers: {
                     "Authorization": "bearer " + this.identityStore.$state.jwt?.token
                 }
@@ -45,7 +47,7 @@ export class TeamService extends BaseService<ITeam> {
                     }
                 } else {
                     try {
-                        response = await httpCLient.get(`/Team/GetPublicTeam/${code}`, {
+                        response = await httpCLient.get(`/Team/GetPublicTeam/${code}?culture=${this.i18n.locale}`, {
                             headers: {
                                 "Authorization": "bearer " + this.identityStore.$state.jwt?.token
                             }

@@ -57,12 +57,17 @@ export default class TeamsView extends Vue {
             //accepts with no id only
             delete team.id
             res = await this.teamService.add(team);
+            console.log("here-st");
         } else {
             res = await this.teamService.edit(team.id,team);
         }
-        
+        console.log("here-st3");
         if (res != null && typeof(res) != "undefined"){
-            if (res.status! >= 300) {
+            console.log("here-st34");
+            console.log(res);
+            console.log(res.status);
+            /*if (res.status! >= 300) {
+                console.log("here-st2");
                     this.errorMsg = res.status + ' ' + res.errorMsg;
                     console.log(this.errorMsg);
             } else {
@@ -70,7 +75,7 @@ export default class TeamsView extends Vue {
                 var data = res.data;
                 console.log(data);
                 this.teamStore.$state.teams = await this.getTeams();
-            }
+            }*/
         }
 
         this.editTeamId = null;

@@ -2,8 +2,8 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { createI18n } from 'vue-i18n'
 
-import en from './locales/en.json'
-import et from './locales/et.json'
+import en from './locales/en-GB.json'
+import et from './locales/et-EE.json'
 
 import App from '@/App.vue'
 import router from './router'
@@ -14,16 +14,27 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 const i18n = createI18n({
     legacy: false,
-    locale: 'en', // set locale
-    fallbackLocale: 'en', // set fallback locale
-    availableLocales: ['en', 'et'],
+    locale: getLocale(), // set locale
+    fallbackLocale: 'en-GB', // set fallback locale
+    availableLocales: ['en-GB', 'et-EE'],
     globalInjection: true,
 
     messages: {
-        en,
-        et
+        "en-GB" : en ,
+        "et-EE" : et
     }
 })
+
+function getLocale() : string {
+    var prodRoadLocale = window.localStorage.getItem("prodRoad-locale");
+    if (prodRoadLocale == null || 
+        typeof(prodRoadLocale) == "undefined") {
+            window.localStorage.setItem("prodRoad-locale","en-GB");
+        }
+    return (prodRoadLocale != null && 
+            typeof(prodRoadLocale) != "undefined") ? 
+            prodRoadLocale : 'en-GB';
+}
 
 const app = createApp(App)
 
