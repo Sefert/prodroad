@@ -1,9 +1,47 @@
 <script lang="ts">
+import { userStore } from "@/stores/identity";
+import { Options, Vue } from "vue-class-component";
+import TeamsView from "../views/team/TeamsView.vue";
+
+@Options({
+    components: {
+      TeamsView,
+    },
+    props: {},
+    emits: [],
+})
+export default class RightBar extends Vue{
+    identityStore = userStore();
+    userManagerRole = this.identityStore.isInRole("manager");
+}
 </script>
+
 
 <template>
     <div class="sidenav p-3 bg-white text-start" style="width: 280px;">
-        <h4>Stuff</h4>
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <span class="nav-link active">Teams</span>
+            </li>
+            <!--<li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Dropdown</a>
+                <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">Separated link</a></li>
+                </ul>
+            </li>-->
+            <li class="nav-item">
+                <a class="nav-link" href="#">Link</a>
+            </li>
+        </ul>
+        <div class="container">
+            <TeamsView/>
+        </div>
+        
+        <!--<h4>Stuff</h4>
         <ul class="list-unstyled ps-0">
             <li class="border-top my-3"></li>
             <li class="mb-1">
@@ -58,7 +96,7 @@
                 </ul>
                 </div>
             </li>
-        </ul>
+        </ul>-->
     </div>    
 </template>
 

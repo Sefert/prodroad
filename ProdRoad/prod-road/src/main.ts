@@ -7,6 +7,9 @@ import et from './locales/et-EE.json'
 
 import App from '@/App.vue'
 import router from './router'
+import vfmPlugin from 'vue-final-modal/'
+//import VueUniversalModal from 'vue-universal-modal'
+
 
 //import 'jquery';
 import 'bootstrap';
@@ -38,6 +41,11 @@ function getLocale() : string {
 
 const app = createApp(App)
 
+/*app.use(VueUniversalModal, {
+    teleportTarget: '.modals',
+    modalComponent: 'Modals',
+  })*/
+app.use(vfmPlugin)
 app.use(i18n)
 app.use(createPinia())
 app.use(router)

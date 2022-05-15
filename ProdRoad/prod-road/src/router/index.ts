@@ -3,8 +3,8 @@ import LoginView from '@/views/LoginView.vue';
 import UserProfileView from '@/views/user/UserProfileView.vue';
 import UserProfileEditView from '@/views/user/UserProfileEditView.vue';
 import TeamsView from '@/views/team/TeamsView.vue';
+import HomeView from '@/views/HomeView.vue';
 import { userStore } from "../stores/identity";
-import TopNavBar from '@/components/TopNavBar.vue';
 import {IdentityService } from "../services/identity/IdentityService";
 import jwt_decode from "jwt-decode";
 import type { IJWTResponse } from '@/domain/IJWTResponse';
@@ -15,7 +15,7 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {path: "/login", name: "Login", component: LoginView},
-    {path: "/home", name: "Home", component: TopNavBar, alias: ""},
+    {path: "/home", name: "Home", component: HomeView, alias: ""},
 
     {path: "/user", name: "Profile", component: UserProfileView},
     {path: "/user/edit-profile", name: "EditProfile", component: UserProfileEditView},

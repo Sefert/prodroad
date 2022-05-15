@@ -1,7 +1,8 @@
-<script lang="ts">
+<script  lang="ts">
   import { Options, Vue } from "vue-class-component";
   import { RouterLink, RouterView } from 'vue-router';
   import { userStore } from "@/stores/identity";
+  
 
   
   export default class App extends Vue {
@@ -11,9 +12,10 @@
 </script>
 
 <template>
-    <div class="wrapper" >
+    <div class="app wrapper" >
       <RouterView />
     </div>
+    <!--<div class="modals"></div>-->
 </template>
 
 <style>
@@ -75,5 +77,14 @@ nav a:first-of-type {
 
 @media (min-width: 1024px) {
  
+}
+
+.modals {
+  width: 300px;
+  padding: 30px;
+  box-sizing: border-box;
+  background-color: #fff;
+  font-size: 20px;
+  text-align: center;
 }
 </style>

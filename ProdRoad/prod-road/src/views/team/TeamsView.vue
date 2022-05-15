@@ -11,11 +11,14 @@ import type { IServiceResult } from "../../services/contracts/IServiceResult";
 
 import { TeamService } from "../../services/TeamService";
 
+//import TestModal from "../../components/TestModal.vue"
+import CustomModal from "../../components/TestModal.vue"
 
 
 @Options({
     components: {
-      TopNavBar,
+        //TestModal,
+        CustomModal
     },
     props: {},
     emits: [],
@@ -28,6 +31,18 @@ export default class TeamsView extends Vue {
     editTeamId : string | null = null;
     errorMsg: string | null = null;
     publicTeam: ITeam | null = null;
+
+    show: boolean = false;
+
+    confirm() {
+      // some code...
+      this.show = false;
+    }
+
+    cancel(close) {
+      // some code...
+      close()
+    }
 
     addNewRow(){
         if (this.editTeamId == null){
@@ -106,9 +121,9 @@ export default class TeamsView extends Vue {
     }
 
     cancelChange(id : string){
-        //if (id == null){          
+        if (id == null){          
             this.teamStore.delete(id);
-        //}
+        }
         this.editTeamId = null;
     }
 
@@ -149,8 +164,16 @@ export default class TeamsView extends Vue {
 
 
 <template>
-    <TopNavBar />
 
+    <div>
+        <custom-modal v-model="show" @confirm="confirm" @cancel="cancel">
+            <template v-slot:title>Hello, vue-final-modal</template>
+            <p>Vue Final Modal is a renderless, stackable, detachable and lightweight modal component.</p>
+        </custom-modal>
+
+        <v-button @click="show = true">Open modal</v-button>
+    </div>
+    
     <div v-if="publicTeam != null" class="container card mt-3">
         <div class="d-flex row">
             <div class="float-left col"><h4><small>Manage public team connection</small></h4></div>
@@ -158,6 +181,7 @@ export default class TeamsView extends Vue {
         <div class="table-responsive">
             <table class="table">
                 <tbody>
+                    <!-- Vertically centered modal -->
                     <tr v-if="publicTeam.id == editTeamId && publicTeam.isPublic == true">
                         <td><input v-model="publicTeam.name"  class="form-control" placeholder="Add new name"></td>
                         <td><input v-model="publicTeam.code"  class="form-control" placeholder="Add new code"></td>
@@ -185,8 +209,6 @@ export default class TeamsView extends Vue {
     </div>
 
 
-
-
     <div class="container card mt-3">
         <div class="d-flex row">
             <div class="float-left col"><h4><small>Teams</small></h4></div>
@@ -194,7 +216,7 @@ export default class TeamsView extends Vue {
                 <i class="material-icons">ADD NEW</i>
             </button>
         </div>
-        <div class="table-responsive">
+        <div draggable="true" class="table-responsive card shadow-lg" v-for="team in teamStore.getTeams">
             <table class="table">
                 <thead>
                     <tr>
@@ -202,7 +224,7 @@ export default class TeamsView extends Vue {
                         <th>Code</th>
                     </tr>
                 </thead>
-                <tbody v-if="teamStore.getTeams.length != 0" v-for="team in teamStore.getTeams">
+                <tbody v-if="teamStore.getTeams.length != 0" >
                     <!--TODO: fix cant find id null bug  -->
                     <tr v-if="(team.id == null || team.id == editTeamId) && team.isPublic == false">
                         <td><input v-model="team.name"  class="form-control" placeholder="Add new name"></td>
@@ -217,6 +239,7 @@ export default class TeamsView extends Vue {
                         </td>
                     </tr>
                     <tr v-else-if="team.isPublic == false">
+                    
                         <td>{{team.name}}</td>
                         <td>{{team.code}}</td>
                         <td>
@@ -287,5 +310,14 @@ body{
 }
 .shadow-none {
     box-shadow: none!important;
+}
+
+.modals {
+  width: 300px;
+  padding: 30px;
+  box-sizing: border-box;
+  background-color: #fff;
+  font-size: 20px;
+  text-align: center;
 }
 </style>
