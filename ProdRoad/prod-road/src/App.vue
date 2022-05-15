@@ -79,6 +79,7 @@ nav a:first-of-type {
  
 }
 
+ 
 .modals {
   width: 300px;
   padding: 30px;
