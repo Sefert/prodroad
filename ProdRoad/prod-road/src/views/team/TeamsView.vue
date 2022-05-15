@@ -165,14 +165,14 @@ export default class TeamsView extends Vue {
 
 <template>
 
-    <div>
+    <!--<div>
         <custom-modal v-model="show" @confirm="confirm" @cancel="cancel">
             <template v-slot:title>Hello, vue-final-modal</template>
             <p>Vue Final Modal is a renderless, stackable, detachable and lightweight modal component.</p>
         </custom-modal>
 
         <v-button @click="show = true">Open modal</v-button>
-    </div>
+    </div>-->
     
     <div v-if="publicTeam != null" class="container card mt-3">
         <div class="d-flex row">

@@ -33,7 +33,7 @@
         //TODO: route if login succeeded and inform user       
         if (res.status == 200) {
           this.saveStateData(res);
-          this.$router.push({name:'Home'})      
+          this.$router.push({name:'Profile'})      
         };
       };
 
@@ -50,7 +50,7 @@
           //TODO: route if register succeeded and inform user     
           if (res.status == 200) {
             this.saveStateData(res);
-            this.$router.push({name:'Home'})
+            this.$router.push({name:'Profile'})
           };
         };
         
@@ -60,7 +60,7 @@
       mounted(){
         console.log(this.identityStore.$state.jwt);
         if(this.identityStore.$state.jwt) {
-          this.$router.push('Home');
+          this.$router.push('Profile');
         }
       }
 

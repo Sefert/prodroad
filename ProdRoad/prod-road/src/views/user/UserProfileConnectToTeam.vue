@@ -1,7 +1,5 @@
 <script lang="ts">
 import TopNavBar from "@/components/TopNavBar.vue";
-import type { ITeam } from "@/domain/ITeam";
-import type { IServiceResult } from "@/services/contracts/IServiceResult";
 import { TeamService } from "@/services/TeamService";
 import { teamStore } from "@/stores/team";
 import { Options, Vue } from "vue-class-component";
@@ -32,13 +30,16 @@ import { userStore } from "../../stores/identity";
                 } else {
                     var data = res.data;
                     console.log(data);
+                    this.teamStore.$state.teams.push(data!);  
+                    console.log(this.teamStore.$state.teams);
                 }
                
         }
-        this.teamStore.$state.teams=[res.data!];  
+        
     }
 
     mounted(){
+        console.log("connect to teams")
         this.teamStore.$state.teams=[];  
     }
 
@@ -69,8 +70,9 @@ import { userStore } from "../../stores/identity";
         <br/>
 
         <div v-if="teamStore.$state.teams.length != 0" class="form-check form-switch">
-            <input class="form-check-input" type="checkbox">
-            <label class="form-check-label" for="flexSwitchCheckDefault">{this.teamStore.$state.teams[0].code}</label>
+            <p>Join TEAM:</p>
+            <input v-model="isJoined" type="checkbox" value="true" class="form-check-input" type="checkbox">
+            <label class="form-check-label" for="flexSwitchCheckDefault">{{teamStore.$state.teams[0].code}}</label>
         </div>
     </div>
 
