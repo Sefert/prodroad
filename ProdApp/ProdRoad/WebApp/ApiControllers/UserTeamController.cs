@@ -101,9 +101,9 @@ namespace WebApp.ApiControllers
 
         // POST: api/UserTeam
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost("[action]")]
+        [HttpPost]
         [Authorize(Roles="user,admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ActionResult<UserTeam>> UserTeam(Public.App.DTO.v1.UserTeam userTeam)
+        public async Task<ActionResult<UserTeam>> PostUserTeam(Public.App.DTO.v1.UserTeam userTeam)
         {
             var bllUserTeam = new BLL.App.DTO.UserTeam()
             {
@@ -127,7 +127,7 @@ namespace WebApp.ApiControllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("[action]")]
         [Authorize(Roles="admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ActionResult<UserTeam>> ManagerTeam(Public.App.DTO.v1.UserTeam userTeam)
+        public async Task<ActionResult<UserTeam>> ManageTeam(Public.App.DTO.v1.UserTeam userTeam)
         {
             var bllUserTeam = new BLL.App.DTO.UserTeam()
             {

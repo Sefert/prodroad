@@ -18,7 +18,8 @@ public class TeamRepository : BaseEntityRepository<DAL.App.DTO.Team, Domain.App.
         var query = CreateQuery(noTracking);
         query = query
             .Include(u => u.AppUser)
-            .Where(m => m.AppUserId == userId);
+            .Where(m => m.AppUserId == userId)
+            .Include(ut => ut.UserTeams);
 
         return (await query.ToListAsync()).Select(x => Mapper.Map(x)!);
     }
@@ -28,7 +29,8 @@ public class TeamRepository : BaseEntityRepository<DAL.App.DTO.Team, Domain.App.
         var query = CreateQuery(noTracking);
         query = query.Where(m => m.AppUserId.Equals(userId) && m.Id.Equals(id))
             .Include(u => u.AppUser)
-            .Where(m => m.AppUserId.Equals(userId));
+            .Where(m => m.AppUserId.Equals(userId))
+            .Include(ut => ut.UserTeams);
         return Mapper.Map(await query.FirstOrDefaultAsync());
     }
     
