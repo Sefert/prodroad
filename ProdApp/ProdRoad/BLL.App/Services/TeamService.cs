@@ -3,6 +3,7 @@ using BLL.App.Contracts.Services;
 using BLL.App.DTO;
 using BLL.Base;
 using DAL.App.Contracts;
+using Domain.Base;
 
 namespace BLL.App.Services;
 
@@ -27,7 +28,7 @@ public class TeamService :
         return Mapper.Map(await Repo.FirstOrDefaultAsync(userId,id,noTracking));
     }
     
-    public async Task<Team?> PublicTeamAsync(string code, bool noTracking = true)
+    public async Task<Team?> PublicTeamAsync(LangStr code, bool noTracking = true)
     {
         return Mapper.Map(await Repo.PublicTeamAsync(code,noTracking));
     }

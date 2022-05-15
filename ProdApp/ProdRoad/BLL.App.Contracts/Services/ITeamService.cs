@@ -1,5 +1,6 @@
 using Base.Contracts.BLL;
 using DAL.App.Contracts;
+using Domain.Base;
 
 namespace BLL.App.Contracts.Services;
 
@@ -10,6 +11,6 @@ public interface ITeamService : IEntityService<BLL.App.DTO.Team>,
 
     Task<BLL.App.DTO.Team?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = true);
 
-    Task<BLL.App.DTO.Team?> PublicTeamAsync(string code, bool noTracking = true);
+    Task<BLL.App.DTO.Team?> PublicTeamAsync(LangStr code, bool noTracking = true);
 }
 

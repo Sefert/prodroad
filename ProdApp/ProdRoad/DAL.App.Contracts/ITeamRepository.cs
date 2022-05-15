@@ -1,4 +1,5 @@
 using Base.Contracts.DAL;
+using Domain.Base;
 
 namespace DAL.App.Contracts;
 
@@ -13,5 +14,5 @@ public interface ITeamRepositoryCustom<TEntity>
     //custom methods here (search, so on)
     Task<IEnumerable<TEntity>> GetAllAsync(Guid userId, bool noTracking = true);
     Task<TEntity?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = true);
-    Task<TEntity?> PublicTeamAsync(string code, bool noTracking = true);
+    Task<TEntity?> PublicTeamAsync(LangStr code, bool noTracking = true);
 }

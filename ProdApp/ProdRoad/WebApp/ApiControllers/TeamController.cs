@@ -26,8 +26,11 @@ namespace WebApp.ApiControllers
         [Authorize(Roles="user,admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<Public.App.DTO.v1.Team>> GetPublicTeam(string code)
         {
+            var incomingTeam = new BLL.App.DTO.Team();
+            incomingTeam.Code!.SetTranslation(code);
+            //incomingTeam.Code!.SetTranslation(team.Code!);
             var bllTeam = await _bll.Teams.PublicTeamAsync(code);
-
+            
             if (bllTeam == null)
             {
                 return NotFound();

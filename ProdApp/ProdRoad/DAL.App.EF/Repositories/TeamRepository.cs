@@ -2,6 +2,7 @@ using Base.Contracts;
 using DAL.App.Contracts;
 using DAL.App.DTO;
 using DAL.Base.EF;
+using Domain.Base;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.App.EF.Repositories;
@@ -32,10 +33,11 @@ public class TeamRepository : BaseEntityRepository<DAL.App.DTO.Team, Domain.App.
     }
     
     /*TODO https://stackoverflow.com/questions/70332565/jetbrains-rider-debug-mode-evaluator-exception */
-    public async Task<DAL.App.DTO.Team?> PublicTeamAsync(string code, bool noTracking = true)
+    public async Task<DAL.App.DTO.Team?> PublicTeamAsync(LangStr code, bool noTracking = true)
     {
         var query = CreateQuery(noTracking);
         query = query.Where(m => m.Code.Equals(code) && m.IsPublic.Equals(true));
+        
         return Mapper.Map(await query.FirstOrDefaultAsync());
     }
 }
