@@ -1,6 +1,9 @@
 <script lang="ts">
 import TopNavBar from "@/components/TopNavBar.vue";
+import type { ITeam } from "@/domain/ITeam";
+import type { IUserTeam } from "@/domain/IUserTeam";
 import { TeamService } from "@/services/TeamService";
+import { UserTeamService } from "@/services/UserTeamService";
 import { teamStore } from "@/stores/team";
 import { Options, Vue } from "vue-class-component";
 import { userStore } from "../../stores/identity";
@@ -16,6 +19,7 @@ import { userStore } from "../../stores/identity";
     identity = userStore();
     teamStore = teamStore();
     teamService = new TeamService();
+    userTeamService = new UserTeamService();
     errorMsg : null | string = null;
     teamCode : string = "";
 
@@ -40,18 +44,24 @@ import { userStore } from "../../stores/identity";
         
     }
 
-    async askJoinTeam() : Promise<void> {
-        var res = await this.teamService.getPublicTeam(this.teamCode);
+    async askToJoinTeam(team : ITeam) : Promise<void> {
+        console.log(this.identity.$id)
+         console.log(team.id)
+        var userTeam : IUserTeam = {
+            AppUserId : this.identity.$id,
+            TeamId : team.id,
+            Accepted : false
+        };
+
+        var res = await this.userTeamService.add(userTeam);
 
         if (res != null && typeof(res) != "undefined"){
             if (res.status! >= 300) {
                 this.errorMsg = res.status + ' ' + res.errorMsg;
                 console.log(this.errorMsg);
                 } else {
-                    var data = res.data;
+                    var data : IUserTeam = res.data!;
                     console.log(data);
-                    this.teamStore.$state.teams.push(data!);  
-                    console.log(this.teamStore.$state.teams);
                 }
                
         }
@@ -92,7 +102,7 @@ import { userStore } from "../../stores/identity";
 
         <div v-if="teamStore.$state.teams.length != 0" class="form-check form-switch">
             <p>Join TEAM:</p>
-            <input @input="askToJoinTeam()" type="checkbox" class="form-check-input">
+            <input @input="askToJoinTeam(teamStore.$state.teams[0])" type="checkbox" class="form-check-input">
             <label class="form-check-label" for="flexSwitchCheckDefault">{{teamStore.$state.teams[0].code}}</label>
         </div>
     </div>
