@@ -11,7 +11,6 @@ export class TeamService extends BaseService<ITeam> {
     
     constructor() {
         super("Team");
-
     }
 
     async getPublicTeam(code : string) : Promise<IServiceResult<ITeam>> {

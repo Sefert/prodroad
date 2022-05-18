@@ -69,6 +69,7 @@ export default class TeamsView extends Vue {
 
         var res : IServiceResult<ITeam> | IServiceResult<void>;
         if (team.id == "newTeam" || team.id == "PublicTeam"){
+            this.teamStore.delete("newTeam");
             //accepts with no id only
             var teamToAdd : ITeam = {
                 name : team.name,
@@ -216,9 +217,9 @@ export default class TeamsView extends Vue {
                 <i class="material-icons">ADD NEW</i>
             </button>
         </div>
-        <div draggable="true" class="table-responsive card shadow-lg" v-for="team in teamStore.getTeams">
-            <table class="table">
-                <thead>
+        <div draggable="true" class="table-responsive card shadow-lg" v-for="team in teamStore.getTeams" >
+            <table  class="table">
+                <thead v-if="team.isPublic == false">
                     <tr>
                         <th>Name</th>
                         <th>Code</th>
