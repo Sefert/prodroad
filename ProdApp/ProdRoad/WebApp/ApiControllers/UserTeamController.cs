@@ -10,8 +10,9 @@ using Public.App.DTO.v1;
 
 namespace WebApp.ApiControllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [ApiVersion( "1.0" )]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class UserTeamController : ControllerBase
     {
         private readonly IAppBLL _bll;
@@ -36,13 +37,13 @@ namespace WebApp.ApiControllers
             }).ToList();
             return dataList;
         }
-
+        
         // GET: api/UserTeam/5
         [HttpGet("{id}")]
         [Authorize(Roles="user,admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<UserTeam>> GetUserTeam(Guid id)
         {
-            var userTeam  = await _bll.UserTeams.FirstOrDefaultAsync(id);
+            var userTeam  = await _bll.UserTeams.FirstOrDefaultAsync(User.GetUserId(),id);
 
             var publicUserTeam = new Public.App.DTO.v1.UserTeam()
             {
@@ -103,11 +104,11 @@ namespace WebApp.ApiControllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [Authorize(Roles="user,admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ActionResult<UserTeam>> PostUserTeam(Public.App.DTO.v1.UserTeam userTeam)
+        public async Task<ActionResult<UserTeam>> PostUserTeam([FromBody] Public.App.DTO.v1.UserTeam userTeam)
         {
             var bllUserTeam = new BLL.App.DTO.UserTeam()
             {
-                Id = userTeam.Id,
+                Id = Guid.NewGuid(),
                 AppUserId = User.GetUserId(),
                 TeamId = userTeam.TeamId,
                 Accepted = false,
@@ -115,6 +116,8 @@ namespace WebApp.ApiControllers
             
             _bll.UserTeams.Add(bllUserTeam);
             await _bll.SaveChangesAsync();
+
+            userTeam.Id = bllUserTeam.Id;
 
             return CreatedAtAction("GetUserTeam", new
             {
@@ -149,10 +152,11 @@ namespace WebApp.ApiControllers
 
         // DELETE: api/UserTeam/5
         [HttpDelete("{id}")]
-        [Authorize(Roles="admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(Roles="user,admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> DeleteUserTeam(Guid id)
         {
-            var userTeam = await _bll.UserTeams.FirstOrDefaultAsync(id);
+            var userid = User.GetUserId();
+            var userTeam = await _bll.UserTeams.FirstOrDefaultAsync(User.GetUserId(),id);
             if (userTeam == null)
             {
                 return NotFound();

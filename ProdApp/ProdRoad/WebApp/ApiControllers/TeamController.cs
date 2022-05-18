@@ -1,5 +1,4 @@
 #nullable enable
-
 using BLL.App.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -29,20 +28,28 @@ namespace WebApp.ApiControllers
             var incomingTeam = new BLL.App.DTO.Team();
             incomingTeam.Code!.SetTranslation(code);
             //incomingTeam.Code!.SetTranslation(team.Code!);
-            var bllTeam = await _bll.Teams.PublicTeamAsync(code);
-            
+            var bllTeam = await _bll.Teams.PublicTeamAsync(code,User.GetUserId());
+
             if (bllTeam == null)
             {
                 return NotFound();
             }
             
+            var publicUserTeams = bllTeam.UserTeams?.Select(x => new Public.App.DTO.v1.UserTeam()
+            {
+                Id = x.Id,
+                AppUserId = x.AppUserId,
+                TeamId = x.TeamId
+            }).ToList();
+
             var publicTeam = new Public.App.DTO.v1.Team()
             {
                 Id = bllTeam.Id,
                 AppUserId = User.GetUserId(),
                 Name = bllTeam.Name,
                 Code = bllTeam.Code,
-                IsPublic = bllTeam.IsPublic
+                IsPublic = bllTeam.IsPublic,
+                UserTeams = publicUserTeams
             };
             
             return publicTeam;
@@ -139,6 +146,7 @@ namespace WebApp.ApiControllers
         {
             var bllTeam = new BLL.App.DTO.Team()
             {
+                Id = Guid.NewGuid(),
                 AppUserId = User.GetUserId(),
                 IsPublic = team.IsPublic
             };
@@ -148,6 +156,8 @@ namespace WebApp.ApiControllers
             
             _bll.Teams.Add(bllTeam);
             await _bll.SaveChangesAsync();
+
+            team.Id = bllTeam.Id;
 
             return CreatedAtAction("GetTeam", 
                 new

@@ -35,11 +35,12 @@ public class TeamRepository : BaseEntityRepository<DAL.App.DTO.Team, Domain.App.
     }
     
     /*TODO https://stackoverflow.com/questions/70332565/jetbrains-rider-debug-mode-evaluator-exception */
-    public async Task<DAL.App.DTO.Team?> PublicTeamAsync(LangStr code, bool noTracking = true)
+    public async Task<DAL.App.DTO.Team?> PublicTeamAsync(LangStr code, Guid id, bool noTracking = false)
     {
         var query = CreateQuery(noTracking);
-        query = query.Where(m => m.Code.Equals(code) && m.IsPublic.Equals(true));
-        
+        query = query.Where(m => m.Code.Equals(code) && m.IsPublic.Equals(true))
+            .Include(m => m.UserTeams!.Where(ut => ut.AppUserId.Equals(id)));
+
         return Mapper.Map(await query.FirstOrDefaultAsync());
     }
 }

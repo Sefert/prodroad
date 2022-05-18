@@ -23,13 +23,13 @@ public class TeamService :
         return (await Repo.GetAllAsync(userId,noTracking)).Select(x => Mapper.Map(x)!);
     }
     
-    public async Task<Team?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = true)
+    public async Task<Team?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = false)
     {
         return Mapper.Map(await Repo.FirstOrDefaultAsync(userId,id,noTracking));
     }
     
-    public async Task<Team?> PublicTeamAsync(LangStr code, bool noTracking = true)
+    public async Task<Team?> PublicTeamAsync(LangStr code, Guid id, bool noTracking = true)
     {
-        return Mapper.Map(await Repo.PublicTeamAsync(code,noTracking));
+        return Mapper.Map(await Repo.PublicTeamAsync(code,id,noTracking));
     }
 }

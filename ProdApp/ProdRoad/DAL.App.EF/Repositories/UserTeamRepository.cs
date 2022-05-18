@@ -1,5 +1,6 @@
 using Base.Contracts;
 using DAL.App.Contracts;
+using DAL.App.EF.Migrations;
 using DAL.Base.EF;
 using Microsoft.EntityFrameworkCore;
 
