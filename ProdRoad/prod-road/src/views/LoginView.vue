@@ -64,16 +64,16 @@
         }
       }
 
-      saveStateData(result: IServiceResult<IJWTResponse>){
+      async saveStateData(result: IServiceResult<IJWTResponse>){
         if (result.data != null) {
         this.identityStore.$state.jwt = result.data;
         
         var decoded = jwt_decode(result.data.token);
 
-        this.identityStore.$id = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
-        this.identityStore.$state.email = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
-        this.identityStore.$state.role = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-        this.identityStore.$state.jwtExp = decoded["exp"];
+        this.identityStore.$id = await decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+        this.identityStore.$state.email = await decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
+        this.identityStore.$state.role = await decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+        this.identityStore.$state.jwtExp = await decoded["exp"];
 
         console.log(this.identityStore.$state.jwt);
         console.log(this.identityStore.$id);

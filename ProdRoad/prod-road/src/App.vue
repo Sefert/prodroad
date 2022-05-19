@@ -15,7 +15,8 @@ import RightBar from "./components/RightBar.vue";
     emits: [],
 })
   export default class App extends Vue {
-    identityStore = userStore();  
+    identityStore = userStore(); 
+    userManagerRole = this.identityStore.isInRole("manager");
 
   }
 </script>
@@ -27,7 +28,7 @@ import RightBar from "./components/RightBar.vue";
       <div style="width:calc(100% - 280px);">
         <RouterView />
       </div>    
-      <RightBar v-if="identityStore.$state.jwt != null"/>
+      <RightBar v-if="identityStore.$state.jwt != null && userManagerRole"/>
     </div>
     <!--<div class="modals"></div>-->
 </template>

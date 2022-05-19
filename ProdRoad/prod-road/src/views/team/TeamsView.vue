@@ -181,6 +181,10 @@ export default class TeamsView extends Vue {
         }
         return [];
     }
+
+    manageTeam(team : ITeam){
+        console.log(team);
+    }
 }
 
 
@@ -211,8 +215,8 @@ export default class TeamsView extends Vue {
                 <i class="material-icons">ADD NEW</i>
             </button>
         </div>
-        <div @click="" draggable="true" class="table-responsive card shadow-lg" v-for="team in teamStore.getTeams" >
-            <table  class="table">
+        <div draggable="true" class="table-responsive card shadow-lg" v-for="team in teamStore.getTeams" >
+            <table @click="manageTeam(team)" class="table">
                 <thead v-if="team.isPublic == false">
                     <tr>
                         <th>Name</th>
