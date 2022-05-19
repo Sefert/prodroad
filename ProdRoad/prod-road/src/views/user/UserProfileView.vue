@@ -5,7 +5,6 @@ import { userStore } from "../../stores/identity";
 
 @Options({
     components: {
-      TopNavBar,
     },
     props: {},
     emits: [],
@@ -22,7 +21,6 @@ export default class UserProfileView extends Vue {
 </script>
 
 <template>
-    <TopNavBar />
    <div class="container">
     <div class="main-body">
     

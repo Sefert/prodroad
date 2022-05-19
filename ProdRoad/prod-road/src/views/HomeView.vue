@@ -19,6 +19,5 @@ export class HomeView extends Vue {}*/
 
 <template>
 
-  <TopNavBar/>
-  <RightBar />
+
 </template>

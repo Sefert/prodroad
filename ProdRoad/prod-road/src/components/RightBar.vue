@@ -13,6 +13,35 @@ import TeamsView from "../views/team/TeamsView.vue";
 export default class RightBar extends Vue{
     identityStore = userStore();
     userManagerRole = this.identityStore.isInRole("manager");
+
+    isActiveTest : boolean = false;
+    isActiveTeams : boolean = false;
+    isActiveLink : boolean = false;
+    
+    isActive(active : string){
+        console.log(active);
+        switch(active){
+            case ('Test'):
+                this.isActiveTest  = !this.isActiveTest;
+                this.isActiveTeams = false;
+                this.isActiveLink = false;
+                break;
+            case ('Teams'):
+                this.isActiveTest  = false;
+                this.isActiveTeams = !this.isActiveTeams;
+                this.isActiveLink = false;
+                break;
+            case ('Link'):
+                this.isActiveTest  = false;
+                this.isActiveTeams = false;
+                this.isActiveLink = !this.isActiveLink;
+                break;
+            default:
+                this.isActiveTest  = false;
+                this.isActiveTeams = false;
+                this.isActiveLink = false;  
+        }
+    }
 }
 </script>
 
@@ -20,8 +49,11 @@ export default class RightBar extends Vue{
 <template>
     <div class="sidenav p-3 bg-white text-start" style="width: 280px;">
         <ul class="nav nav-tabs">
+            <li  class="nav-item">
+                <span v-bind:class="{active: isActiveTest}" @click="isActive('Test')" class="nav-link">Test</span>
+            </li>
             <li class="nav-item">
-                <span class="nav-link active">Teams</span>
+                <span v-bind:class="{active: isActiveTeams}" @click="isActive('Teams')" class="nav-link">Teams</span>               
             </li>
             <!--<li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Dropdown</a>
@@ -34,13 +66,12 @@ export default class RightBar extends Vue{
                 </ul>
             </li>-->
             <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
+                <span v-bind:class="{active: isActiveLink}" @click="isActive('Link')" class="nav-link">Link</span> 
             </li>
         </ul>
-        <div class="container">
+        <div v-if="isActiveTeams" class="container">
             <TeamsView/>
         </div>
-        
         <!--<h4>Stuff</h4>
         <ul class="list-unstyled ps-0">
             <li class="border-top my-3"></li>

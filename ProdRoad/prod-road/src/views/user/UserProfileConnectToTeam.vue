@@ -10,7 +10,6 @@ import { userStore } from "../../stores/identity";
 
 @Options({
     components: {
-    TopNavBar,
     },
     props: {},
     emits: [],
@@ -57,7 +56,7 @@ export default class UserProfileConnectToTeam extends Vue {
         var userTeam : IUserTeam = {
             AppUserId : this.identity.$id,
             TeamId : team.id,
-            Accepted : false
+            accepted : false
         };
 
         var res = await this.userTeamService.add(userTeam);
@@ -113,8 +112,6 @@ export default class UserProfileConnectToTeam extends Vue {
 </script>
 
 <template>
-    <TopNavBar />
-
     <div class="container">
         <div class="row height d-flex justify-content-center align-items-center">
 

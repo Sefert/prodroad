@@ -2,18 +2,32 @@
   import { Options, Vue } from "vue-class-component";
   import { RouterLink, RouterView } from 'vue-router';
   import { userStore } from "@/stores/identity";
+import TopNavBar from "./components/TopNavBar.vue";
+import RightBar from "./components/RightBar.vue";
   
 
-  
+  @Options({
+    components: {
+        TopNavBar,
+        RightBar
+    },
+    props: {},
+    emits: [],
+})
   export default class App extends Vue {
     identityStore = userStore();  
 
   }
 </script>
 
+<!--TODO:make protection better-->
 <template>
     <div class="app wrapper" >
-      <RouterView />
+      <TopNavBar v-if="identityStore.$state.jwt != null"/>
+      <div style="width:calc(100% - 280px);">
+        <RouterView />
+      </div>    
+      <RightBar v-if="identityStore.$state.jwt != null"/>
     </div>
     <!--<div class="modals"></div>-->
 </template>

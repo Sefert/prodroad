@@ -20,7 +20,7 @@ import type { IUserTeam } from "@/domain/IUserTeam";
 @Options({
     components: {
         //TestModal,
-        //CustomModal
+        CustomModal
     },
     props: {},
     emits: [],
@@ -36,16 +36,6 @@ export default class TeamsView extends Vue {
     publicTeam: ITeam | null = null;
 
     show: boolean = false;
-
-    confirm() {
-      // some code...
-      this.show = false;
-    }
-
-    cancel() {
-      // some code...
-      close()
-    }
 
     addNewRow(){
         if (this.editTeamId == null){
@@ -110,7 +100,7 @@ export default class TeamsView extends Vue {
         this.editTeamId = id;
     }
 
-    async deleteRow(id : string){
+    /*async deleteRow(id : string){
         var res : IServiceResult<void> = await this.teamService.delete(id);
         console.log('HERE1');
         console.log(res.status);
@@ -122,7 +112,7 @@ export default class TeamsView extends Vue {
                     this.teamStore.delete(id);
             }  
         }    
-    }
+    }*/
 
     cancelChange(id : string){
         if (id == null){          
@@ -140,7 +130,9 @@ export default class TeamsView extends Vue {
 
         await this.getTeams().then((data : ITeam[])=>{
             this.teamStore.$state.teams = data;
-        });
+        }).then(() =>{
+            this.publicTeam = this.teamStore.getPublicTeam();
+        })
     }
 
     async acceptUser(id: string, userTeam : IUserTeam){
@@ -188,61 +180,70 @@ export default class TeamsView extends Vue {
 
 
 <template>
-
-    <!--<div>
-        <custom-modal v-model="show" @confirm="confirm" @cancel="cancel">
-            <template v-slot:title>Hello, vue-final-modal</template>
-            <p>Vue Final Modal is a renderless, stackable, detachable and lightweight modal component.</p>
-        </custom-modal>
-
-        <v-button @click="show = true">Open modal</v-button>
-            <button type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm" data-original-title="" title="">
-        
-    </button>
-    </div>-->    
-
-    <RouterLink class="btn btn-success" to="/home">CONNECT TO PEOPLE</RouterLink>
-
-    <!--Create team to add persons in-->
-    <div class="container card mt-3">
+    
+    <!--Manage public team -->
+    <div v-if="publicTeam != null" class="container card mt-3">
         <div class="d-flex row">
-            <div class="float-left col"><h4><small>Teams</small></h4></div>
-            <button @click="addNewRow()" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm col-sm-4" data-original-title="" title="">
-                <i class="material-icons">ADD NEW</i>
-            </button>
+            <div class="float-left col"><h4><small>Manage public team connection</small></h4></div>
         </div>
-        <div @click="" draggable="true" class="table-responsive card shadow-lg" v-for="team in teamStore.getTeams" >
-            <table  class="table">
-                <thead v-if="team.isPublic == false">
-                    <tr>
-                        <th>Name</th>
-                        <th>Code</th>
-                    </tr>
-                </thead>
-                <tbody v-if="teamStore.getTeams.length != 0" >
-                    <!--TODO: fix cant find id null bug  -->
-                    <tr v-if="(team.id == null || team.id == editTeamId) && team.isPublic == false">
-                        <td><input v-model="team.name"  class="form-control" placeholder="Add new name"></td>
-                        <td><input v-model="team.code"  class="form-control" placeholder="Add new code"></td>
+        <div class="table-responsive">
+            <table class="table">
+                <tbody>
+                    <!-- Vertically centered modal -->
+                    <tr v-if="publicTeam.id == editTeamId && publicTeam.isPublic == true">
+                        <td><input v-model="publicTeam.name"  class="form-control" placeholder="Add new name"></td>
+                        <td><input v-model="publicTeam.code"  class="form-control" placeholder="Add new code"></td>
                         <td>
-                            <button @click="saveRow(team)" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm" data-original-title="" title="">
+                            <button @click="saveRow(publicTeam!)" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm" data-original-title="" title="">
                                 <i class="material-icons">SAVE</i>
                             </button>
-                            <button @click="cancelChange(team.id!)" type="button" rel="tooltip" class="btn btn-danger btn-just-icon btn-sm" data-original-title="" title="">
+                            <button @click="cancelChange(publicTeam!.id!)" type="button" rel="tooltip" class="btn btn-danger btn-just-icon btn-sm" data-original-title="" title="">
                                 <i class="material-icons">CANCEL</i>
                             </button>
                         </td>
                     </tr>
-                    <tr v-else-if="team.isPublic == false">
-                    
-                        <td>{{team.name}}</td>
-                        <td>{{team.code}}</td>
+                    <tr v-else-if="publicTeam.isPublic == true">
+                        <td>{{publicTeam.name}}</td>
+                        <td>{{publicTeam.code}}</td>
                         <td>
-                            <button @click="editRow(team.id!)" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm" data-original-title="" title="">
+                            <button @click="editRow(publicTeam!.id!)" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm" data-original-title="" title="">
                                 <i class="material-icons">EDIT</i>
                             </button>
-                            <button @click="deleteRow(team.id!)" type="button" rel="tooltip" class="btn btn-danger btn-just-icon btn-sm" data-original-title="" title="">
-                                <i class="material-icons">DELETE</i>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!--Accept person to public team -->
+    <div v-if="publicTeam?.userTeams != null" class="container card mt-3">
+        <div class="d-flex row">
+            <div class="float-left col"><h4><small>People in public teams</small></h4></div>
+        </div>
+        <div class="table-responsive" v-for="userTeam in publicTeam!.userTeams">
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>CODE</th>
+                        <th v-if="userTeam.accepted != null">USER</th>
+                        <th>ACCEPTED</th>
+                    </tr>
+                </thead>
+                <tbody >
+                    <tr>
+                        <td>{{publicTeam?.code}}</td>
+                        <td v-if="userTeam.accepted != null">{{userTeam.appUser?.userName}}</td>
+                        <td v-if="userTeam.accepted == false">NOT ACCEPTED</td>
+                        <td v-else-if="userTeam.accepted == true">ACCEPTED</td>
+                                           
+                        <td>
+                            <button v-if="userTeam.accepted == false" @click="acceptUser(userTeam.id!,userTeam)" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm" data-original-title="" title="">
+                                <i class="material-icons">ACCEPT</i>
+                            </button>
+                            <button v-else-if="userTeam.accepted == true" @click="removeUser(userTeam.id!,userTeam)" type="button" rel="tooltip" class="btn btn-danger btn-just-icon btn-sm" data-original-title="" title="">
+                                <i class="material-icons">CANCEL</i>
                             </button>
                         </td>
                     </tr>
