@@ -25,7 +25,8 @@ public class UserTeamRepository : BaseEntityRepository<DAL.App.DTO.UserTeam, Dom
     public async Task<DAL.App.DTO.UserTeam?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = true)
     {
         var query = CreateQuery(noTracking);
-        query = query.Where(m => m.AppUserId.Equals(userId) && m.Id.Equals(id))
+        query = query
+            .Where(m => m.AppUserId.Equals(userId) && m.Id.Equals(id))
             .Include(u => u.AppUser)
             .Where(m => m.AppUserId.Equals(userId));
         return Mapper.Map(await query.FirstOrDefaultAsync());

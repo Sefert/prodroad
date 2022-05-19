@@ -9,6 +9,7 @@ namespace BLL.App.DTO.Identity;
 /*TODO: fix firstname and lastname*/
 public class AppUser : BaseEntity //BaseUser
 {
+    public string? UserName { get; set; }
     [MaxLength(30)] public string? FirstName { get; set; }
     [MaxLength(30)] public string? LastName { get; set; }
     [MaxLength(30)] public string? PersonalCode { get; set; }

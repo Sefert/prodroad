@@ -8,7 +8,7 @@ namespace DAL.App.DTO;
 public class Team : BaseEntity
 {
     public Guid AppUserId { get; set; }
-    /*public AppUser? AppUser { get; set; }*/
+    public AppUser? AppUser { get; set; }
     
     [MaxLength(50)] 
     [Column(TypeName = "jsonb")] 

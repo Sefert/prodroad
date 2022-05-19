@@ -6,6 +6,7 @@ using Extensions.Base;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Public.App.DTO.v1;
+using Public.App.DTO.v1.Identity;
 
 namespace WebApp.ApiControllers
 {
@@ -39,7 +40,8 @@ namespace WebApp.ApiControllers
             {
                 Id = x.Id,
                 AppUserId = x.AppUserId,
-                TeamId = x.TeamId
+                TeamId = x.TeamId,
+                Accepted = x.Accepted
             }).ToList();
 
             var publicTeam = new Public.App.DTO.v1.Team()
@@ -68,6 +70,17 @@ namespace WebApp.ApiControllers
                             Name = x.Name,
                             Code = x.Code,
                             IsPublic = x.IsPublic,
+                            UserTeams = x.UserTeams != null ? 
+                                x.UserTeams.Select(ut => new Public.App.DTO.v1.UserTeam()
+                            {
+                                Id = ut.Id,
+                                AppUserId = ut.AppUserId,
+                                AppUser = new Public.App.DTO.v1.Identity.AppUser
+                                {
+                                    UserName = ut.AppUser?.UserName,
+                                },
+                                TeamId = ut.TeamId
+                            }).ToList() : new List<UserTeam>()
                         }).ToList();
             return dataList;
         }
