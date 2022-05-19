@@ -13,6 +13,8 @@ import { TeamService } from "../../services/TeamService";
 
 //import TestModal from "../../components/TestModal.vue"
 import CustomModal from "../../components/TestModal.vue"
+import { UserTeamService } from "@/services/UserTeamService";
+import type { IUserTeam } from "@/domain/IUserTeam";
 
 
 @Options({
@@ -28,6 +30,7 @@ export default class TeamsView extends Vue {
     identityStore = userStore();
     teamStore = teamStore();
     teamService = new TeamService();
+    userTeamService = new UserTeamService
     editTeamId : string | null = null;
     errorMsg: string | null = null;
     publicTeam: ITeam | null = null;
@@ -39,7 +42,7 @@ export default class TeamsView extends Vue {
       this.show = false;
     }
 
-    cancel(close) {
+    cancel() {
       // some code...
       close()
     }
@@ -142,6 +145,28 @@ export default class TeamsView extends Vue {
         })
     }
 
+    async acceptUser(id: string, userTeam : IUserTeam){
+        userTeam.accepted = true;
+        var res = await this.userTeamService.edit(id, userTeam);
+         if (res != null && typeof(res) != "undefined"){
+            if (res.status! >= 300) {
+                this.errorMsg = res.status + ' ' + res.errorMsg;
+                console.log(this.errorMsg);
+                } 
+        }
+    }
+
+    async removeUser(id: string, userTeam : IUserTeam){
+        userTeam.accepted = false;
+        var res = await this.userTeamService.edit(id, userTeam);
+         if (res != null && typeof(res) != "undefined"){
+            if (res.status! >= 300) {
+                this.errorMsg = res.status + ' ' + res.errorMsg;
+                console.log(this.errorMsg);
+                } 
+        }
+    }
+
 
     private async getTeams() : Promise<ITeam[]> {
         var res : IServiceResult<ITeam[]> = await this.teamService.getAll();
@@ -175,6 +200,7 @@ export default class TeamsView extends Vue {
         <v-button @click="show = true">Open modal</v-button>
     </div>-->
     
+    <!--Manage public team -->
     <div v-if="publicTeam != null" class="container card mt-3">
         <div class="d-flex row">
             <div class="float-left col"><h4><small>Manage public team connection</small></h4></div>
@@ -190,7 +216,7 @@ export default class TeamsView extends Vue {
                             <button @click="saveRow(publicTeam!)" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm" data-original-title="" title="">
                                 <i class="material-icons">SAVE</i>
                             </button>
-                            <button @click="cancelChange(publicTeam!.id)" type="button" rel="tooltip" class="btn btn-danger btn-just-icon btn-sm" data-original-title="" title="">
+                            <button @click="cancelChange(publicTeam!.id!)" type="button" rel="tooltip" class="btn btn-danger btn-just-icon btn-sm" data-original-title="" title="">
                                 <i class="material-icons">CANCEL</i>
                             </button>
                         </td>
@@ -199,7 +225,7 @@ export default class TeamsView extends Vue {
                         <td>{{publicTeam.name}}</td>
                         <td>{{publicTeam.code}}</td>
                         <td>
-                            <button @click="editRow(publicTeam!.id)" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm" data-original-title="" title="">
+                            <button @click="editRow(publicTeam!.id!)" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm" data-original-title="" title="">
                                 <i class="material-icons">EDIT</i>
                             </button>
                         </td>
@@ -209,7 +235,44 @@ export default class TeamsView extends Vue {
         </div>
     </div>
 
+    <!--Accept person to public team -->
+    <div v-if="publicTeam?.userTeams != null" class="container card mt-3">
+        <div class="d-flex row">
+            <div class="float-left col"><h4><small>People in public teams</small></h4></div>
+        </div>
+        <div class="table-responsive" v-for="userTeam in publicTeam!.userTeams">
+            <p>{{userTeam.appUser?.userName}}</p>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>CODE</th>
+                        <th v-if="userTeam.accepted != null">USER</th>
+                        <th>ACCEPTED</th>
+                    </tr>
+                </thead>
+                <tbody >
+                    <tr>
+                        <td>{{publicTeam?.code}}</td>
+                        <td v-if="userTeam.accepted != null">{{userTeam.appUser?.userName}}</td>
+                        <td v-if="userTeam.accepted == false">NOT ACCEPTED</td>
+                        <td v-else-if="userTeam.accepted == true">ACCEPTED</td>
+                                           
+                        <td>
+                            <button v-if="userTeam.accepted == false" @click="acceptUser(userTeam.id!,userTeam)" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm" data-original-title="" title="">
+                                <i class="material-icons">ACCEPT</i>
+                            </button>
+                            <button v-else-if="userTeam.accepted == true" @click="removeUser(userTeam.id!,userTeam)" type="button" rel="tooltip" class="btn btn-danger btn-just-icon btn-sm" data-original-title="" title="">
+                                <i class="material-icons">CANCEL</i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
+
+    <!--Create team to add persons in-->
     <div class="container card mt-3">
         <div class="d-flex row">
             <div class="float-left col"><h4><small>Teams</small></h4></div>

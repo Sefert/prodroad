@@ -151,7 +151,7 @@ export class BaseService<TEntity> {
     }
 
     async edit(id: string, entity: TEntity): Promise<IServiceResult<void>> {          
-        console.log("add");
+        console.log("edit");
 
         var response : AxiosResponse;
 

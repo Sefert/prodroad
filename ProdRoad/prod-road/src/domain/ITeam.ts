@@ -6,5 +6,5 @@ export interface ITeam {
     name: string | null,
     code: string | null,
     isPublic: boolean | null,
-    userTeams: IUserTeam[] | null
+    userTeams?: IUserTeam[] | null
 }
