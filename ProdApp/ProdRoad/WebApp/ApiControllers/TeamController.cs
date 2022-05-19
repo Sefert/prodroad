@@ -79,7 +79,8 @@ namespace WebApp.ApiControllers
                                 {
                                     UserName = ut.AppUser?.UserName,
                                 },
-                                TeamId = ut.TeamId
+                                TeamId = ut.TeamId,
+                                Accepted = ut.Accepted
                             }).ToList() : new List<UserTeam>()
                         }).ToList();
             return dataList;
