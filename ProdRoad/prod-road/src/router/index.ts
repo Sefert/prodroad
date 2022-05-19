@@ -3,6 +3,7 @@ import LoginView from '@/views/LoginView.vue';
 import UserProfileView from '@/views/user/UserProfileView.vue';
 import UserProfileEditView from '@/views/user/UserProfileEditView.vue';
 import TeamsView from '@/views/team/TeamsView.vue';
+import PublicTeamsView from '@/views/team/PublicTeamsView.vue';
 import HomeView from '@/views/HomeView.vue';
 import { userStore } from "../stores/identity";
 import {IdentityService } from "../services/identity/IdentityService";
@@ -21,7 +22,8 @@ const router = createRouter({
     {path: "/user/edit-profile", name: "EditProfile", component: UserProfileEditView},
     {path: "/user/connect-team", name: "ConnectTeam", component: UserProfileConnectToTeamVue},
 
-    {path: "/Team", name: "Teams", component: TeamsView},
+    {path: "/team", name: "Teams", component: TeamsView},
+    {path: "/team/publicTeam", name: "PublicTeams", component: PublicTeamsView},
   ]
 })
 

@@ -201,7 +201,7 @@ export default class TeamsView extends Vue {
     </button>
     </div>-->    
 
-    <RouterLink class="btn btn-success" to="/home">CONNECT TO PEOPLE</RouterLink>
+    <RouterLink class="btn btn-success" to="/team/publicTeam">CONNECT TO PEOPLE</RouterLink>
 
     <!--Create team to add persons in-->
     <div class="container card mt-3">
