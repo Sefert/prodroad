@@ -32,8 +32,11 @@
         
         //TODO: route if login succeeded and inform user       
         if (res.status == 200) {
-          this.saveStateData(res);
-          this.$router.push({name:'Profile'})      
+          await this.saveStateData(res).then(() => 
+          {
+            this.$router.push({name:'Profile'})
+            })
+                
         };
       };
 
@@ -49,8 +52,9 @@
 
           //TODO: route if register succeeded and inform user     
           if (res.status == 200) {
-            this.saveStateData(res);
-            this.$router.push({name:'Profile'})
+            await this.saveStateData(res).then(() =>{
+              this.$router.push({name:'Profile'})
+            });           
           };
         };
         
@@ -58,32 +62,32 @@
       };
 
       mounted(){
-        console.log(this.identityStore.$state.jwt);
-        if(this.identityStore.$state.jwt) {
+        //console.log(this.identityStore.$state.jwt);
+        /*if(this.identityStore.$state.jwt) {
           this.$router.push('Profile');
-        }
+        }*/
       }
 
       async saveStateData(result: IServiceResult<IJWTResponse>){
         if (result.data != null) {
-        this.identityStore.$state.jwt = result.data;
-        
-        var decoded = jwt_decode(result.data.token);
+          this.identityStore.$state.jwt = result.data;
+          
+          var decoded = await jwt_decode(result.data.token);
 
-        this.identityStore.$id = await decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
-        this.identityStore.$state.email = await decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
-        this.identityStore.$state.role = await decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-        this.identityStore.$state.jwtExp = await decoded["exp"];
+          this.identityStore.$id = await decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+          this.identityStore.$state.email = await decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
+          this.identityStore.$state.role = await decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+          this.identityStore.$state.jwtExp = await decoded["exp"];
 
-        console.log(this.identityStore.$state.jwt);
-        console.log(this.identityStore.$id);
-        console.log(this.identityStore.$state.email);
-        console.log(this.identityStore.$state.role);
-        console.log(this.identityStore.$state.jwtExp);
+          console.log(this.identityStore.$state.jwt);
+          console.log(this.identityStore.$id);
+          console.log(this.identityStore.$state.email);
+          console.log(this.identityStore.$state.role);
+          console.log(this.identityStore.$state.jwtExp);
 
-        //TODO: make more secure!!!!
-        window.localStorage.setItem("prodRoad-r", result.data.refreshToken);
-        window.localStorage.setItem("prodRoad-j", result.data.token);
+          //TODO: make more secure!!!!
+          window.localStorage.setItem("prodRoad-r", result.data.refreshToken);
+          window.localStorage.setItem("prodRoad-j", result.data.token);
         }
       }
     }

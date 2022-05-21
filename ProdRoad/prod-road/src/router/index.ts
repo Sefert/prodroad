@@ -4,12 +4,14 @@ import UserProfileView from '@/views/user/UserProfileView.vue';
 import UserProfileEditView from '@/views/user/UserProfileEditView.vue';
 import TeamsView from '@/views/team/TeamsView.vue';
 import PublicTeamsView from '@/views/team/PublicTeamsView.vue';
+import PersonsTeamsView from '@/views/team/PersonsTeamsView.vue';
 import HomeView from '@/views/HomeView.vue';
 import { userStore } from "../stores/identity";
 import {IdentityService } from "../services/identity/IdentityService";
 import jwt_decode from "jwt-decode";
 import type { IJWTResponse } from '@/domain/IJWTResponse';
 import UserProfileConnectToTeamVue from '@/views/user/UserProfileConnectToTeam.vue';
+import PersonsTeamsViewVue from '@/views/team/PersonsTeamsView.vue';
 
 
 const router = createRouter({
@@ -24,6 +26,7 @@ const router = createRouter({
 
     {path: "/team", name: "Teams", component: TeamsView},
     {path: "/team/publicTeam", name: "PublicTeams", component: PublicTeamsView},
+    {path: "/team/manageTeam", name: "ManageTeams", component: PersonsTeamsView, props:true},
   ]
 })
 

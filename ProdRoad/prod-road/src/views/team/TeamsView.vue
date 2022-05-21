@@ -15,6 +15,7 @@ import { TeamService } from "../../services/TeamService";
 import CustomModal from "../../components/TestModal.vue"
 import { UserTeamService } from "@/services/UserTeamService";
 import type { IUserTeam } from "@/domain/IUserTeam";
+import router from "@/router";
 
 
 @Options({
@@ -22,7 +23,9 @@ import type { IUserTeam } from "@/domain/IUserTeam";
         //TestModal,
         //CustomModal
     },
-    props: {},
+    props: {
+        
+    },
     emits: [],
 })
 
@@ -183,7 +186,8 @@ export default class TeamsView extends Vue {
     }
 
     manageTeam(team : ITeam){
-        console.log(team);
+        this.teamStore.$state.team = team
+        router.push({name: 'ManageTeams'});       
     }
 }
 

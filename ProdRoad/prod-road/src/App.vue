@@ -6,7 +6,7 @@ import TopNavBar from "./components/TopNavBar.vue";
 import RightBar from "./components/RightBar.vue";
   
 
-  @Options({
+@Options({
     components: {
         TopNavBar,
         RightBar
@@ -14,11 +14,13 @@ import RightBar from "./components/RightBar.vue";
     props: {},
     emits: [],
 })
-  export default class App extends Vue {
-    identityStore = userStore(); 
-    userManagerRole = this.identityStore.isInRole("manager");
+export default class App extends Vue {
+    identityStore = userStore();
+    userManagerRole: boolean = this.identityStore.isInRole("manager"); 
+    
+}
 
-  }
+  
 </script>
 
 <!--TODO:make protection better-->
@@ -28,7 +30,7 @@ import RightBar from "./components/RightBar.vue";
       <div style="width:calc(100% - 280px);">
         <RouterView />
       </div>    
-      <RightBar v-if="identityStore.$state.jwt != null && userManagerRole"/>
+      <RightBar v-if="identityStore.$state.jwt != null"/>
     </div>
     <!--<div class="modals"></div>-->
 </template>

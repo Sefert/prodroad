@@ -5,7 +5,7 @@ import { defineStore } from "pinia"
 
 export const userStore = defineStore({
   id: "",
-  state: () => ({
+   state: () => ({
     jwt: null as IJWTResponse | null,
     email: null as string | null,
     role: [] as string[],
@@ -19,6 +19,9 @@ export const userStore = defineStore({
   actions: {
     isInRole(access: string) : boolean {
       var exist : boolean = false;
+      console.log('exist2');
+      console.log(this.role);
+      console.log(this.email);
       if (typeof(this.role) == "string"){
         if (this.role == access){
           exist = true;
@@ -29,7 +32,8 @@ export const userStore = defineStore({
           exist = true;
         }
       }
-      
+      console.log('exist');
+      console.log(exist);
       return exist;
     },
     logOut(): void {

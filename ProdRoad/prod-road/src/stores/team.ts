@@ -6,6 +6,7 @@ export const teamStore = defineStore({
   id: "teams",
   state: () => ({
     teams: [] as ITeam[],
+    team: {} as ITeam
   }),
 
   getters: {
