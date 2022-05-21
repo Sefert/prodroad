@@ -77,6 +77,7 @@ namespace WebApp.ApiControllers
                                 AppUserId = ut.AppUserId,
                                 AppUser = new Public.App.DTO.v1.Identity.AppUser
                                 {
+                                    Id = ut.AppUserId,
                                     UserName = ut.AppUser?.UserName,
                                 },
                                 TeamId = ut.TeamId,
@@ -85,6 +86,8 @@ namespace WebApp.ApiControllers
                         }).ToList();
             return dataList;
         }
+        
+        
 
         // GET: api/Team/5
         [HttpGet("{id}")]
@@ -107,7 +110,6 @@ namespace WebApp.ApiControllers
                 IsPublic = bllTeam.IsPublic
             };
             
-
             return publicTeam;
         }
 
