@@ -2,10 +2,12 @@
 import { userStore } from "@/stores/identity";
 import { Options, Vue } from "vue-class-component";
 import TeamsView from "../views/team/TeamsView.vue";
+import PersonsView from "../views/user/PersonsView.vue";
 
 @Options({
     components: {
       TeamsView,
+      PersonsView,
     },
     props: {},
     emits: [],
@@ -17,6 +19,9 @@ export default class RightBar extends Vue{
     isActiveTest : boolean = false;
     isActiveTeams : boolean = false;
     isActiveLink : boolean = false;
+
+    isActiveDrop : string = 'Teams';
+
     
     isActive(active : string){
         console.log(active);
@@ -55,22 +60,27 @@ export default class RightBar extends Vue{
             <li class="nav-item">
                 <span v-bind:class="{active: isActiveTeams}" @click="isActive('Teams')" class="nav-link">Teams</span>               
             </li>
-            <!--<li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Dropdown</a>
-                <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#">Separated link</a></li>
-                </ul>
-            </li>-->
             <li class="nav-item">
                 <span v-bind:class="{active: isActiveLink}" @click="isActive('Link')" class="nav-link">Link</span> 
             </li>
         </ul>
-        <div v-if="isActiveTeams" class="container">
+
+        <ul v-if="isActiveTeams" class="nav">
+            <li class="nav-item dropdown">
+                 <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">{{isActiveDrop}}</a>
+                <ul class="dropdown-menu ">
+                    <li><a @click="isActiveDrop = 'Teams'" class="dropdown-item" href="#">Teams</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a @click="isActiveDrop = 'Persons'" class="dropdown-item" href="#">Persons</a></li>
+                </ul>
+            </li>
+        </ul>
+
+        <div v-if="isActiveTeams && isActiveDrop == 'Teams'" class="container">
             <TeamsView/>
+        </div>
+        <div v-else-if="isActiveTeams && isActiveDrop == 'Persons'" class="container">
+            <PersonsView/>
         </div>
         <!--<h4>Stuff</h4>
         <ul class="list-unstyled ps-0">

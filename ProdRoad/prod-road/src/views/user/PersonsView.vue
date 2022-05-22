@@ -11,35 +11,18 @@ import type { IServiceResult } from "../../services/contracts/IServiceResult";
 import { TeamService } from "../../services/TeamService";
 
 import { UserTeamService } from "@/services/UserTeamService";
-import draggable from 'vuedraggable'
 import type { IUserTeam } from "@/domain/IUserTeam";
 import router from "@/router";
 
 
 @Options({
     components: {
-        draggable
         //TestModal,
         //CustomModal
     },
     props: {
     },
     emits: [],
-    data() {
-        return {
-            drag: false,
-        }
-    },
-    computed: {
-        userTeams: {
-        get() : IUserTeam[]{
-            return teamStore().getUserTeams;
-        },
-        set(ut : IUserTeam) {
-            teamStore().addUserTeam(ut);
-        }
-    }
-  }
 })
 
 export default class TeamsView extends Vue {
@@ -139,7 +122,9 @@ export default class TeamsView extends Vue {
     }
 
     async mounted(): Promise<void> {
-        console.log('Team mounted'); 
+        console.log('Personsview mounted'); 
+
+        this.publicTeam = this.teamStore.getPublicTeam();
 
         if (!this.identityStore.isInRole("manager")){
             this.identityStore.logOut();
@@ -153,14 +138,26 @@ export default class TeamsView extends Vue {
 
 
 <template> 
-    <!--Create team to add persons in-->
-    <div class="d-flex row">
-        <div class="float-left col"><h4><small>Add people to team {{teamStore.team.name}}</small></h4></div>
+    <!--Accept person to public team -->
+     <div class="d-flex row">
+        <div class="float-left col"><h4><small>People in public teams</small></h4></div>
     </div>
-       <draggable v-model='teamStore.$state.userTeams'></draggable>
-    <div class="container card mt-3" v-for="userTeam in teamStore.$state.userTeams">
-        <div draggable="true" class="table-responsive card shadow-lg">
-
+    <div v-if="publicTeam?.userTeams != null" class="container mt-3">
+        <div class="container" v-for="userTeam in publicTeam!.userTeams">
+            <div v-if="userTeam.accepted == true" class="table-responsive card">
+                <table draggable="true" class="table">
+                    <thead>
+                        <tr>
+                            <th>USER</th>
+                        </tr>
+                    </thead>
+                    <tbody >
+                        <tr>
+                            <td>{{userTeam.appUser?.userName}}</td>                   
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </template>
