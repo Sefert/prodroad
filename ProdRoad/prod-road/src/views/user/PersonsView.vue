@@ -3,7 +3,7 @@
 import { Options, Vue } from "vue-class-component";
 
 import { userStore } from "../../stores/identity";
-import { teamStore } from "../../stores/team";
+import { teamStore }  from "../../stores/team";
 
 import type { ITeam } from "../../domain/ITeam";
 import type { IServiceResult } from "../../services/contracts/IServiceResult";
@@ -11,15 +11,18 @@ import type { IServiceResult } from "../../services/contracts/IServiceResult";
 import { TeamService } from "../../services/TeamService";
 
 import { UserTeamService } from "@/services/UserTeamService";
+import draggable from 'vuedraggable'
 import type { IUserTeam } from "@/domain/IUserTeam";
+import { mapState } from 'pinia'
 import router from "@/router";
 
 
 @Options({
     components: {
+        draggable
         //TestModal,
         //CustomModal
-    },
+    }, 
     props: {
     },
     emits: [],
@@ -34,8 +37,9 @@ export default class TeamsView extends Vue {
     errorMsg: string | null = null;
     publicTeam: ITeam | null = null;
 
-    show: boolean = false;
+    userTeams: IUserTeam[] | null = null;
 
+    show: boolean = false;
 
     addNewRow(){
         if (this.editTeamId == null){
@@ -125,6 +129,7 @@ export default class TeamsView extends Vue {
         console.log('Personsview mounted'); 
 
         this.publicTeam = this.teamStore.getPublicTeam();
+        this.userTeams = (this.publicTeam!.userTeams != null) ? this.publicTeam!.userTeams : [];
 
         if (!this.identityStore.isInRole("manager")){
             this.identityStore.logOut();
@@ -137,12 +142,37 @@ export default class TeamsView extends Vue {
 </script>
 
 
-<template> 
+<template v-if="userTeams != null"> 
     <!--Accept person to public team -->
      <div class="d-flex row">
-        <div class="float-left col"><h4><small>People in public teams</small></h4></div>
+        <div class="float-left col"><h4><small>People in public team</small></h4></div>
     </div>
-    <div v-if="publicTeam?.userTeams != null" class="container mt-3">
+    <draggable 
+        class="list-group"
+        :list= "userTeams"
+        :group="{ name: 'people' }"
+        :sort="false"
+        itemKey="id"
+    >
+        <template #item="{element}">
+            <div class="table-responsive card shadow-lg">
+            <table draggable="true" class="table">
+                    <thead>
+                        <tr>
+                            <th>USER</th>
+                        </tr>
+                    </thead>
+                    <tbody >
+                        <tr>
+                            <td>{{element.appUser?.userName}}</td>                   
+                        </tr>
+                    </tbody>
+                </table>
+                
+            </div>
+        </template> 
+    </draggable>
+    <!--<div v-if="publicTeam?.userTeams != null" class="container mt-3">
         <div class="container" v-for="userTeam in publicTeam!.userTeams">
             <div v-if="userTeam.accepted == true" class="table-responsive card">
                 <table draggable="true" class="table">
@@ -159,7 +189,7 @@ export default class TeamsView extends Vue {
                 </table>
             </div>
         </div>
-    </div>
+    </div>-->
 </template>
 
 <style scoped>  

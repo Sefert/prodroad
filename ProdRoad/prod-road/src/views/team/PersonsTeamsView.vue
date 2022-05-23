@@ -25,21 +25,6 @@ import router from "@/router";
     props: {
     },
     emits: [],
-    data() {
-        return {
-            drag: false,
-        }
-    },
-    computed: {
-        userTeams: {
-        get() : IUserTeam[]{
-            return teamStore().getUserTeams;
-        },
-        set(ut : IUserTeam) {
-            teamStore().addUserTeam(ut);
-        }
-    }
-  }
 })
 
 export default class TeamsView extends Vue {
@@ -51,6 +36,7 @@ export default class TeamsView extends Vue {
     errorMsg: string | null = null;
     publicTeam: ITeam | null = null;
 
+    userTeams: IUserTeam[] | null = null;
     show: boolean = false;
 
 
@@ -157,12 +143,32 @@ export default class TeamsView extends Vue {
     <div class="d-flex row">
         <div class="float-left col"><h4><small>Add people to team {{teamStore.team.name}}</small></h4></div>
     </div>
-       <draggable v-model='teamStore.$state.userTeams'></draggable>
-    <div class="container card mt-3" v-for="userTeam in teamStore.$state.userTeams">
-        <div draggable="true" class="table-responsive card shadow-lg">
 
-        </div>
-    </div>
+    <draggable 
+        class="list-group"
+        :list= "userTeams"
+        :group="{ name: 'people'}"
+        :sort="false"
+        itemKey="id"
+    >
+        <template #item="{element}">
+            <div class="table-responsive card shadow-lg">
+            <table draggable="true" class="table">
+                    <thead>
+                        <tr>
+                            <th>USER</th>
+                        </tr>
+                    </thead>
+                    <tbody >
+                        <tr>
+                            <td>{{element.appUser?.userName}}</td>                   
+                        </tr>
+                    </tbody>
+                </table>
+                
+            </div>
+        </template> 
+    </draggable>
 </template>
 
 <style scoped>  

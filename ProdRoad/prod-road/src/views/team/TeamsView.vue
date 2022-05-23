@@ -212,7 +212,7 @@ export default class TeamsView extends Vue {
     <RouterLink class="btn btn-success" to="/team/publicTeam">CONNECT TO PEOPLE</RouterLink>
 
     <!--Create team to add persons in-->
-    <div class="container card mt-3">
+    <div class="container card mt-3" >
         <div class="d-flex row">
             <div class="float-left col"><h4><small>Teams</small></h4></div>
             <button @click="addNewRow()" type="button" rel="tooltip" class="btn btn-success btn-just-icon btn-sm col-sm-4" data-original-title="" title="">
