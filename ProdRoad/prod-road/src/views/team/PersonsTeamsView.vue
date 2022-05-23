@@ -36,7 +36,7 @@ export default class TeamsView extends Vue {
     errorMsg: string | null = null;
     publicTeam: ITeam | null = null;
 
-    userTeams: IUserTeam[] | null = null;
+    userTeams: IUserTeam[] = [];
     show: boolean = false;
 
 
@@ -153,7 +153,7 @@ export default class TeamsView extends Vue {
     >
         <template #item="{element}">
             <div class="table-responsive card shadow-lg">
-            <table draggable="true" class="table">
+                <table class="table">
                     <thead>
                         <tr>
                             <th>USER</th>
@@ -163,6 +163,7 @@ export default class TeamsView extends Vue {
                         <tr>
                             <td>{{element.appUser?.userName}}</td>                   
                         </tr>
+                        
                     </tbody>
                 </table>
                 
