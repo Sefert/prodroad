@@ -1,4 +1,3 @@
-
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 
@@ -132,6 +131,14 @@ export default class TeamsView extends Vue {
         }
 
     }
+
+    async saveManagerTeam(){
+        
+    }
+
+    log(event : string){
+       window.console.log(event); 
+    }
 }
 
 
@@ -140,36 +147,49 @@ export default class TeamsView extends Vue {
 
 <template> 
     <!--Create team to add persons in-->
-    <div class="d-flex row">
+
+    <div class="d-flex container row">
         <div class="float-left col"><h4><small>Add people to team {{teamStore.team.name}}</small></h4></div>
     </div>
+    <br/>
 
-    <draggable 
-        class="list-group"
-        :list= "userTeams"
-        :group="{ name: 'people'}"
-        :sort="false"
-        itemKey="id"
-    >
-        <template #item="{element}">
-            <div class="table-responsive card shadow-lg">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>USER</th>
-                        </tr>
-                    </thead>
-                    <tbody >
-                        <tr>
-                            <td>{{element.appUser?.userName}}</td>                   
-                        </tr>
-                        
-                    </tbody>
-                </table>
-                
-            </div>
-        </template> 
-    </draggable>
+
+    <div class="container card mt-3 shadow-lg" >
+        <draggable 
+            class="list-group"
+            :list= "userTeams"
+            :group="{ name: 'people'}"
+            :sort="false"
+            itemKey="id"
+            @change="log"
+        >
+            <template #item="{element}">
+                <div class="table-responsive card shadow-lg">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>USER</th>
+                            </tr>
+                        </thead>
+                        <tbody >
+                            <tr>
+                                <td>{{element.appUser?.userName}}</td>                   
+                            </tr>      
+                        </tbody>
+                    </table>
+                    
+                </div>
+            </template> 
+        </draggable>
+        <div class="d-flex container row rounded border-light dashed-border">
+            <div class="float-left col"><h4 class="text-secondary"><small>Drag-drop people</small></h4></div>
+        </div>
+    </div>
+
+    <br/>
+
+    <!--TODO : show if team has changed-->
+    <button @click="saveManagerTeam()" type="button" class="btn btn-primary mt-1">SAVE TEAM</button>
 </template>
 
 <style scoped>  
@@ -235,4 +255,8 @@ body{
   font-size: 20px;
   text-align: center;
 }
+
+.dashed-border {
+    border: 1px dotted black;
+  }
 </style>

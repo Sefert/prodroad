@@ -156,7 +156,7 @@ export default class TeamsView extends Vue {
     >
         <template #item="{element}">
             <div class="table-responsive card shadow-lg">
-            <table draggable="true" class="table">
+            <table class="table">
                     <thead>
                         <tr>
                             <th>USER</th>
