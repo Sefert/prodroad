@@ -125,6 +125,34 @@ namespace WebApp.ApiControllers
                 id = userTeam.Id
             }, userTeam);
         }
+        
+        // POST: api/UserTeam
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /*[HttpPost]
+        [Authorize(Roles="admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<UserTeam>> PostUserTeams([FromBody] Public.App.DTO.v1.UserTeam[] userTeam)
+        {
+            List<BLL.App.DTO.UserTeam> bllUserTeams;
+
+            var bllUserTeam = new BLL.App.DTO.UserTeam()
+            {
+                Id = Guid.NewGuid(),
+                AppUserId = User.GetUserId(),
+                TeamId = userTeam.g,
+                Accepted = false,
+            };
+            
+            _bll.UserTeams.Add(bllUserTeam);
+            await _bll.SaveChangesAsync();
+
+            userTeam.Id = bllUserTeam.Id;
+
+            return CreatedAtAction("GetUserTeam", new
+            {
+                version = HttpContext.GetRequestedApiVersion()!.ToString(),
+                id = userTeam.Id
+            }, userTeam);
+        }*/
 
         // DELETE: api/UserTeam/5
         [HttpDelete("{id}")]
