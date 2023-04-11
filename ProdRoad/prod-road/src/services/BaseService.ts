@@ -1,5 +1,5 @@
-import type { ITeam } from './../domain/ITeam';
-import { useI18n } from 'vue-i18n';
+//import type { ITeam } from "./../domain/ITeam";
+import { useI18n } from "vue-i18n";
 import httpCLient from "@/http-client";
 import { userStore } from "@/stores/identity";
 import type { AxiosError, AxiosResponse } from "axios";
@@ -7,75 +7,149 @@ import { IdentityService } from "./identity/IdentityService";
 import type { IServiceResult } from "./contracts/IServiceResult";
 
 export class BaseService<TEntity> {
-    identityStore = userStore();
-    i18n= useI18n();
+  identityStore = userStore();
+  i18n = useI18n();
 
-    constructor(private path: string) {
-    }
+  constructor(private path: string) {}
 
-    async getAll(): Promise<IServiceResult<TEntity[]>> {
+  async getAll(): Promise<IServiceResult<TEntity[]>> {
+    //const i18n = useI18n();
+    console.log("getAll");
 
-        var i18n= useI18n();
-        console.log("getAll");
+    console.log(`${this.path}?culture=${this.i18n.locale}`);
+    let response: AxiosResponse;
+    //var respData : TEntity[] ;
+    let serviceResult: IServiceResult<TEntity[]> = {};
 
-        console.log(`${this.path}?culture=${this.i18n.locale}`);
-        var response : AxiosResponse;
-        //var respData : TEntity[] ;
-        var serviceResult : IServiceResult<TEntity[]> = {};
-        
-
-        try {
-            response = await httpCLient.get(`/${this.path}?culture=${this.i18n.locale}`, {
-                headers: {
-                    "Authorization": "bearer " + this.identityStore.$state.jwt?.token
-                }
-            });
-            
-            console.log(response);
-
-            serviceResult = {
-                status: response.status,
-                data: response.data as TEntity[]
-            }
-        } catch (e) {
-            response = (e as AxiosError).response!;
-            if (response.status == 401 && this.identityStore.jwt) {
-                let identityService = new IdentityService();
-                let refreshResponse = await identityService.refreshIdentity();
-                this.identityStore.$state.jwt = refreshResponse.data!;
-
-                if (!this.identityStore.$state.jwt) { 
-                    serviceResult = {
-                        status: response.status,
-                        errorMsg: response.data.error ,
-                    }
-                } else {
-                    try {
-                        response = await httpCLient.get(`/${this.path}?culture=${this.i18n.locale}`, {
-                            headers: {
-                                "Authorization": "bearer " + this.identityStore.$state.jwt?.token
-                            }
-                        });
-                        serviceResult = {
-                            status: response.status,
-                            data: response.data as TEntity[]
-                        }
-                    } catch (e) {
-                        response = (e as AxiosError).response!;
-                        serviceResult = {
-                            status: response.status,
-                            errorMsg: response.data.error,
-                        }
-                    }
-                    console.log(response);
-                }
-            }
-
+    try {
+      response = await httpCLient.get(
+        `/${this.path}?culture=${this.i18n.locale}`,
+        {
+          headers: {
+            Authorization: "bearer " + this.identityStore.$state.jwt?.token,
+          },
         }
-        return serviceResult;
-    }
+      );
 
-    /*async get(id: string): Promise<TEntity> {
+      console.log(response);
+
+      serviceResult = {
+        status: response.status,
+        data: response.data as TEntity[],
+      };
+    } catch (e) {
+      response = (e as AxiosError).response!;
+      if (response.status == 401 && this.identityStore.jwt) {
+        const identityService = new IdentityService();
+        const refreshResponse = await identityService.refreshIdentity();
+        this.identityStore.$state.jwt = refreshResponse.data!;
+
+        if (!this.identityStore.$state.jwt) {
+          serviceResult = {
+            status: response.status,
+            errorMsg: response.data.error,
+          };
+        } else {
+          try {
+            response = await httpCLient.get(
+              `/${this.path}?culture=${this.i18n.locale}`,
+              {
+                headers: {
+                  Authorization:
+                    "bearer " + this.identityStore.$state.jwt?.token,
+                },
+              }
+            );
+            serviceResult = {
+              status: response.status,
+              data: response.data as TEntity[],
+            };
+          } catch (e) {
+            response = (e as AxiosError).response!;
+            serviceResult = {
+              status: response.status,
+              errorMsg: response.data.error,
+            };
+          }
+          console.log(response);
+        }
+      }
+    }
+    return serviceResult;
+  }
+
+  async addMany(entity: TEntity[]): Promise<IServiceResult<TEntity[]>> {
+    console.log("add");
+
+    let response: AxiosResponse;
+
+    console.log(`/${this.path}?culture=${this.i18n.locale}`);
+    let serviceResult: IServiceResult<TEntity[]> = {};
+    try {
+      response = await httpCLient.post(
+        `/${this.path}?culture=${this.i18n.locale}`,
+        entity,
+        {
+          headers: {
+            Authorization: "bearer " + this.identityStore.$state.jwt?.token,
+          },
+        }
+      );
+
+      console.log(response);
+
+      serviceResult = {
+        status: response.status,
+        data: response.data as TEntity[],
+      };
+    } catch (e) {
+      response = (e as AxiosError).response!;
+      if (response.status == 401 && this.identityStore.jwt) {
+        const identityService = new IdentityService();
+        const refreshResponse = await identityService.refreshIdentity();
+        this.identityStore.$state.jwt = refreshResponse.data!;
+
+        if (!this.identityStore.$state.jwt) {
+          serviceResult = {
+            status: response.status,
+            errorMsg: response.data.error,
+          };
+        } else {
+          try {
+            response = await httpCLient.post(
+              `/${this.path}?culture=${this.i18n.locale}`,
+              entity,
+              {
+                headers: {
+                  Authorization:
+                    "bearer " + this.identityStore.$state.jwt?.token,
+                },
+              }
+            );
+            serviceResult = {
+              status: response.status,
+              data: response.data as TEntity[],
+            };
+          } catch (e) {
+            response = (e as AxiosError).response!;
+            serviceResult = {
+              status: response.status,
+              errorMsg: response.data.error,
+            };
+          }
+          console.log(response);
+        }
+      } else {
+        serviceResult = {
+          status: response.status,
+          errorMsg: response.data.error,
+        };
+      }
+    }
+    return serviceResult;
+  }
+
+  /*async get(id: string): Promise<TEntity> {
         console.log("get");
         let response = await httpCLient.get(`/${this.path}/${id}`);
         console.log(response);
@@ -83,200 +157,210 @@ export class BaseService<TEntity> {
         return res;
     }*/
 
-    async add(entity: TEntity): Promise<IServiceResult<TEntity>> {
-        console.log("add");
+  async add(entity: TEntity): Promise<IServiceResult<TEntity>> {
+    console.log("add");
 
-        var response : AxiosResponse;
-        
-        console.log(`/${this.path}?culture=${this.i18n.locale}`);
-        var serviceResult : IServiceResult<TEntity> = {};
-        try {
-            response = await httpCLient.post(`/${this.path}?culture=${this.i18n.locale}`, entity,
-                {
-                    headers: {
-                        "Authorization": "bearer " + this.identityStore.$state.jwt?.token
-                    }
-                }
-            );
-            
-            console.log(response);
+    let response: AxiosResponse;
 
-            serviceResult = {
-                status: response.status,
-                data : response.data as TEntity
-            }
-        } catch (e) {
-            response = (e as AxiosError).response!;
-            if (response.status == 401 && this.identityStore.jwt) {
-                let identityService = new IdentityService();
-                let refreshResponse = await identityService.refreshIdentity();
-                this.identityStore.$state.jwt = refreshResponse.data!;
-
-                if (!this.identityStore.$state.jwt) { 
-                    serviceResult = {
-                        status: response.status,
-                        errorMsg: response.data.error ,
-                    }
-                } else {
-                    try {
-                        response = await httpCLient.post(`/${this.path}?culture=${this.i18n.locale}`, entity,
-                            {
-                                headers: {
-                                    "Authorization": "bearer " + this.identityStore.$state.jwt?.token
-                                }
-                            }
-                        );
-                        serviceResult = {
-                            status: response.status,
-                            data : response.data as TEntity
-                        }
-                    } catch (e) {
-                        response = (e as AxiosError).response!;
-                        serviceResult = {
-                            status: response.status,
-                            errorMsg: response.data.error,
-                        }
-                    }
-                    console.log(response);
-                }
-            } else {
-                serviceResult = {
-                    status: response.status,
-                    errorMsg: response.data.error ,
-                }
-            }
-
+    console.log(`/${this.path}?culture=${this.i18n.locale}`);
+    let serviceResult: IServiceResult<TEntity> = {};
+    try {
+      response = await httpCLient.post(
+        `/${this.path}?culture=${this.i18n.locale}`,
+        entity,
+        {
+          headers: {
+            Authorization: "bearer " + this.identityStore.$state.jwt?.token,
+          },
         }
-        return serviceResult;
-    }
+      );
 
-    async edit(id: string, entity: TEntity): Promise<IServiceResult<void>> {          
-        console.log("edit");
+      console.log(response);
 
-        var response : AxiosResponse;
+      serviceResult = {
+        status: response.status,
+        data: response.data as TEntity,
+      };
+    } catch (e) {
+      response = (e as AxiosError).response!;
+      if (response.status == 401 && this.identityStore.jwt) {
+        const identityService = new IdentityService();
+        const refreshResponse = await identityService.refreshIdentity();
+        this.identityStore.$state.jwt = refreshResponse.data!;
 
-        var serviceResult : IServiceResult<void> = {};
-        
-        try {
-            response = await httpCLient.put(`/${this.path}/${id}?culture=${this.i18n.locale}`, entity,
-                {
-                    headers: {
-                        "Authorization": "bearer " + this.identityStore.$state.jwt?.token
-                    }
-                }
+        if (!this.identityStore.$state.jwt) {
+          serviceResult = {
+            status: response.status,
+            errorMsg: response.data.error,
+          };
+        } else {
+          try {
+            response = await httpCLient.post(
+              `/${this.path}?culture=${this.i18n.locale}`,
+              entity,
+              {
+                headers: {
+                  Authorization:
+                    "bearer " + this.identityStore.$state.jwt?.token,
+                },
+              }
             );
-            
-            console.log(response.status);
-
             serviceResult = {
-                status: response.status,
-            }
-        } catch (e) {
+              status: response.status,
+              data: response.data as TEntity,
+            };
+          } catch (e) {
             response = (e as AxiosError).response!;
-            if (response.status == 401 && this.identityStore.jwt) {
-                let identityService = new IdentityService();
-                let refreshResponse = await identityService.refreshIdentity();
-                this.identityStore.$state.jwt = refreshResponse.data!;
-
-                if (!this.identityStore.$state.jwt) { 
-                    serviceResult = {
-                        status: response.status,
-                        errorMsg: response.data.error ,
-                    }
-                } else {
-                    try {
-                        response = await httpCLient.put(`/${this.path}/${id}?culture=${this.i18n.locale}`, entity,
-                            {
-                                headers: {
-                                    "Authorization": "bearer " + this.identityStore.$state.jwt?.token
-                                }
-                            }
-                        );
-                        serviceResult = {
-                            status: response.status,
-                        }
-                    } catch (e) {
-                        response = (e as AxiosError).response!;
-                        serviceResult = {
-                            status: response.status,
-                            errorMsg: response.data.error,
-                        }
-                    }
-                    console.log(response);
-                }
-            }
-
+            serviceResult = {
+              status: response.status,
+              errorMsg: response.data.error,
+            };
+          }
+          console.log(response);
         }
-        return serviceResult;
+      } else {
+        serviceResult = {
+          status: response.status,
+          errorMsg: response.data.error,
+        };
+      }
     }
+    return serviceResult;
+  }
 
-    async delete(id: string): Promise<IServiceResult<void>> {
-        console.log("delete");
+  async edit(id: string, entity: TEntity): Promise<IServiceResult<void>> {
+    console.log("edit");
 
-        var response : AxiosResponse;
+    let response: AxiosResponse;
 
-        var serviceResult : IServiceResult<void> = {};
-        
-        try {
-            response = await httpCLient.delete(`/${this.path}/${id}?culture=${this.i18n.locale}`, 
-                {
-                    headers: {
-                        "Authorization": "bearer " + this.identityStore.$state.jwt?.token
-                    }
-                }
+    let serviceResult: IServiceResult<void> = {};
+
+    try {
+      response = await httpCLient.put(
+        `/${this.path}/${id}?culture=${this.i18n.locale}`,
+        entity,
+        {
+          headers: {
+            Authorization: "bearer " + this.identityStore.$state.jwt?.token,
+          },
+        }
+      );
+
+      console.log(response.status);
+
+      serviceResult = {
+        status: response.status,
+      };
+    } catch (e) {
+      response = (e as AxiosError).response!;
+      if (response.status == 401 && this.identityStore.jwt) {
+        const identityService = new IdentityService();
+        const refreshResponse = await identityService.refreshIdentity();
+        this.identityStore.$state.jwt = refreshResponse.data!;
+
+        if (!this.identityStore.$state.jwt) {
+          serviceResult = {
+            status: response.status,
+            errorMsg: response.data.error,
+          };
+        } else {
+          try {
+            response = await httpCLient.put(
+              `/${this.path}/${id}?culture=${this.i18n.locale}`,
+              entity,
+              {
+                headers: {
+                  Authorization:
+                    "bearer " + this.identityStore.$state.jwt?.token,
+                },
+              }
             );
-
-            console.log(response.status);
-
             serviceResult = {
-                status: response.status,
-            }
-        } catch (e) {
-            console.log('Here2');
+              status: response.status,
+            };
+          } catch (e) {
             response = (e as AxiosError).response!;
-            console.log(response);
-            console.log(response.status);
-            console.log((e as AxiosError).response!);
-            if (response.status == 401 && this.identityStore.jwt) {
-                let identityService = new IdentityService();
-                let refreshResponse = await identityService.refreshIdentity();
-                this.identityStore.$state.jwt = refreshResponse.data!;
-
-                if (!this.identityStore.$state.jwt) { 
-                    serviceResult = {
-                        status: response.status,
-                        errorMsg: response.data.error,
-                    }
-                } else {
-                    try {
-                        console.log('Here3');
-                        response = await httpCLient.put(`/${this.path}/${id}?culture=${this.i18n.locale}`,
-                            {
-                                headers: {
-                                    "Authorization": "bearer " + this.identityStore.$state.jwt?.token
-                                }
-                            }
-                        );
-                        serviceResult = {
-                            status: response.status,
-                        }
-                    } catch (e) {
-                        response = (e as AxiosError).response!;
-                        serviceResult = {
-                            status: response.status,
-                            errorMsg: response.data.error,
-                        }
-                    }
-                    console.log(response);
-                }
-            } else {
-                serviceResult = {
-                    status: response.status,
-                    errorMsg: response.data.error,
-                }
-            }
-
+            serviceResult = {
+              status: response.status,
+              errorMsg: response.data.error,
+            };
+          }
+          console.log(response);
         }
-        return serviceResult;
+      }
     }
+    return serviceResult;
+  }
+
+  async delete(id: string): Promise<IServiceResult<void>> {
+    console.log("delete");
+
+    let response: AxiosResponse;
+
+    let serviceResult: IServiceResult<void> = {};
+
+    try {
+      response = await httpCLient.delete(
+        `/${this.path}/${id}?culture=${this.i18n.locale}`,
+        {
+          headers: {
+            Authorization: "bearer " + this.identityStore.$state.jwt?.token,
+          },
+        }
+      );
+
+      console.log(response.status);
+
+      serviceResult = {
+        status: response.status,
+      };
+    } catch (e) {
+      console.log("Here2");
+      response = (e as AxiosError).response!;
+      console.log(response);
+      console.log(response.status);
+      console.log((e as AxiosError).response!);
+      if (response.status == 401 && this.identityStore.jwt) {
+        const identityService = new IdentityService();
+        const refreshResponse = await identityService.refreshIdentity();
+        this.identityStore.$state.jwt = refreshResponse.data!;
+
+        if (!this.identityStore.$state.jwt) {
+          serviceResult = {
+            status: response.status,
+            errorMsg: response.data.error,
+          };
+        } else {
+          try {
+            console.log("Here3");
+            response = await httpCLient.put(
+              `/${this.path}/${id}?culture=${this.i18n.locale}`,
+              {
+                headers: {
+                  Authorization:
+                    "bearer " + this.identityStore.$state.jwt?.token,
+                },
+              }
+            );
+            serviceResult = {
+              status: response.status,
+            };
+          } catch (e) {
+            response = (e as AxiosError).response!;
+            serviceResult = {
+              status: response.status,
+              errorMsg: response.data.error,
+            };
+          }
+          console.log(response);
+        }
+      } else {
+        serviceResult = {
+          status: response.status,
+          errorMsg: response.data.error,
+        };
+      }
+    }
+    return serviceResult;
+  }
 }

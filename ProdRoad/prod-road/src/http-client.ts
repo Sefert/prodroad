@@ -1,15 +1,12 @@
-import axios, { AxiosError } from "axios";
-import { useI18n } from 'vue-i18n'
-
-
+import axios from "axios";
+//import { useI18n } from "vue-i18n";
 
 export const httpClient = axios.create({
-    baseURL: "https://localhost:7222/api/v1",
-    headers: {
-        "Content-type": "application/json"
-        
-    }
-})
+  baseURL: "https://localhost:7222/api/v1",
+  headers: {
+    "Content-type": "application/json",
+  },
+});
 
 /*httpClient.interceptors.request.use((config) => {
   var i18n = useI18n();

@@ -6,6 +6,10 @@
         "repeat-password":"Korda parooli",
         "register-radio":"Registreeri",
         "sign-in-button":"Sisene",
-        "sign-up-button":"Registreeri"
+        "sign-up-button":"Registreeri"     
+    },
+    "ERRORS" :{
+        "login-fail-message":"Sisenemine ebaõnnestus!",
+        "passwords-do-not match":"Paroolid pole sarnased!"
     }
 }

@@ -1,23 +1,3 @@
-<script setup lang="ts">
-import TopNavBar from "../components/TopNavBar.vue"
-import RightBar from "../components/RightBar.vue"
+<script setup lang="ts"></script>
 
-import { Options, Vue } from "vue-class-component";
-
-
-
-/*@Options({
-    components: {
-      TopNavBar,
-      RightBar,
-    },
-    props: {},
-    emits: [],
-})
-export class HomeView extends Vue {}*/
-</script>
-
-<template>
-
-
-</template>
+<template>//</template>

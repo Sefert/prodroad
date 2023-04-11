@@ -1,17 +1,17 @@
 <script lang="ts">
-    export default {
-    name: 'CustomModal',
-    inheritAttrs: false
-    }
+export default {
+  name: "CustomModal",
+  inheritAttrs: false,
+};
 </script>
 
+<!--https://stackoverflow.com/questions/70834188/how-to-remove-deprecated-listeners-in-vue-3-->
 <template>
   <vue-final-modal
     v-slot="{ params, close }"
     v-bind="$attrs"
     classes="modal-container"
     content-class="modal-content"
-    v-on="$listeners"
   >
     <span class="modal__title">
       <slot name="title"></slot>

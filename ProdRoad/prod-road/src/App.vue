@@ -1,42 +1,41 @@
-<script  lang="ts">
-  import { Options, Vue } from "vue-class-component";
-  import { RouterLink, RouterView } from 'vue-router';
-  import { userStore } from "@/stores/identity";
+<script lang="ts">
+/*import { Options, Vue } from "vue-class-component";*/
+import { RouterLink, RouterView } from "vue-router";
+import { userStore } from "@/stores/identity";
 import TopNavBar from "./components/TopNavBar.vue";
 import RightBar from "./components/RightBar.vue";
-  
+//import { computed } from 'vue'
+import { ref } from "vue";
 
-@Options({
-    components: {
-        TopNavBar,
-        RightBar
-    },
-    props: {},
-    emits: [],
-})
-export default class App extends Vue {
-    identityStore = userStore();
-    userManagerRole: boolean = this.identityStore.isInRole("manager"); 
-    
-}
-
-  
+export default {
+  components: {
+    TopNavBar,
+    RightBar,
+  },
+  props: {},
+  emits: [],
+  setup() {
+    const identityStore = ref(userStore());
+    // const userManagerRole: boolean = identityStore.isInRole("manager");
+    return { identityStore };
+  },
+};
 </script>
 
 <!--TODO:make protection better-->
 <template>
-    <div class="app wrapper" >
-      <TopNavBar v-if="identityStore.$state.jwt != null"/>
-      <div style="width:calc(100% - 280px);">
-        <RouterView />
-      </div>    
-      <RightBar v-if="identityStore.$state.jwt != null"/>
+  <div class="app wrapper">
+    <TopNavBar v-if="identityStore.$state.jwt != null" />
+    <div style="width: calc(100% - 280px)">
+      <RouterView />
     </div>
-    <!--<div class="modals"></div>-->
+    <RightBar v-if="identityStore.$state.jwt != null" />
+  </div>
+  <!--<div class="modals"></div>-->
 </template>
 
 <style>
-@import '@/assets/base.css';
+@import "@/assets/base.css";
 
 #app {
   max-width: 1280px;
@@ -93,10 +92,8 @@ nav a:first-of-type {
 }
 
 @media (min-width: 1024px) {
- 
 }
 
- 
 .modals {
   width: 300px;
   padding: 30px;

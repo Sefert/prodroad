@@ -3,6 +3,9 @@
   "include": ["vite.config.*"],
   "compilerOptions": {
     "composite": true,
-    "types": ["node"]
-  }
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true,
+    "types": ["node", "vite/client"]
+  },
 }

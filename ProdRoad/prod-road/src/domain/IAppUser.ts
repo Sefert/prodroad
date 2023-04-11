@@ -1,4 +1,4 @@
 export interface IAppUser {
-    id?: string | null,
-    userName: string | null
+  id?: string | null;
+  userName: string | null;
 }

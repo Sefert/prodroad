@@ -1,11 +1,10 @@
-import type { IJWTResponse } from "@/domain/IJWTResponse"
+import type { IJWTResponse } from "@/domain/IJWTResponse";
 import router from "@/router";
-import { defineStore } from "pinia"
-
+import { defineStore } from "pinia";
 
 export const userStore = defineStore({
-  id: "",
-   state: () => ({
+  id: "" as string,
+  state: () => ({
     jwt: null as IJWTResponse | null,
     email: null as string | null,
     role: [] as string[],
@@ -14,42 +13,44 @@ export const userStore = defineStore({
   getters: {
     getJWT(): IJWTResponse | null {
       return this.jwt;
-    }
+    },
   },
   actions: {
-    isInRole(access: string) : boolean {
-      var exist : boolean = false;
-      console.log('exist2');
+    isInRole(access: string): boolean {
+      let exist = false;
+
+      console.log("exist2");
       console.log(this.role);
       console.log(this.email);
-      if (typeof(this.role) == "string"){
-        if (this.role == access){
+
+      if (typeof this.role == "string") {
+        if (this.role == access) {
           exist = true;
         }
       } else {
-        var index  = this.role.findIndex(role => role == access);
+        const index = this.role.findIndex((role) => role == access);
         if (index >= 0) {
           exist = true;
         }
       }
-      console.log('exist');
+
+      console.log("exist");
       console.log(exist);
       return exist;
     },
     logOut(): void {
-      console.log('logOut');
-      
+      console.log("logOut");
+
       window.localStorage.removeItem("prodRoad-r");
       window.localStorage.removeItem("prodRoad-j");
 
       this.$state.jwt = null;
-      this.$id = '';
+      this.$id = "";
       this.$state.email = null;
       this.$state.role = [];
       this.$state.jwtExp = null;
 
       router.push("Login");
-    }
+    },
   },
-
 });

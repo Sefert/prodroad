@@ -1,5 +1,5 @@
 export interface IServiceResult<TData> {
-    status?: number;
-    data?: TData;
-    errorMsg?: string;
+  status?: number;
+  data?: TData;
+  errorMsg?: string;
 }

@@ -7,6 +7,9 @@
         "register-radio":"Register",
         "sign-in-button":"Sign in",
         "sign-up-button":"Sign up"
+    } ,
+    "ERRORS" :{
+        "login-fail-message":"Login failed!",
+        "passwords-do-not match":"Passwords do not match!"
     }
-    
 }

@@ -1,4 +1,4 @@
 export interface IJWTResponse {
-    token: string | null,
-    refreshToken: string | null,
+  token: string | null;
+  refreshToken: string | null;
 }

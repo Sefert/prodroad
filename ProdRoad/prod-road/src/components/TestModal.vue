@@ -13,9 +13,7 @@
     @after-leave="afterLeave"
   >
     <div class="modals">
-      <p>
-        Hello
-      </p>
+      <p>Hello</p>
       <button class="btn btn-success btn-just-icon btn-sm" @click="closeModal">
         close
       </button>
@@ -24,34 +22,34 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref } from "vue";
 
 export default defineComponent({
-  setup () {
-    const isShow = ref(false)
+  setup() {
+    const isShow = ref(false);
 
-    function showModal () {
-      isShow.value = true
+    function showModal() {
+      isShow.value = true;
     }
 
-    function closeModal () {
-      isShow.value = false
+    function closeModal() {
+      isShow.value = false;
     }
 
-    function beforeEnter () {
-      console.log('before enter')
+    function beforeEnter() {
+      console.log("before enter");
     }
 
-    function afterEnter () {
-      console.log('after enter')
+    function afterEnter() {
+      console.log("after enter");
     }
 
-    function beforeLeave () {
-      console.log('before leave')
+    function beforeLeave() {
+      console.log("before leave");
     }
 
-    function afterLeave () {
-      console.log('after leave')
+    function afterLeave() {
+      console.log("after leave");
     }
 
     return {
@@ -61,9 +59,8 @@ export default defineComponent({
       beforeEnter,
       afterEnter,
       beforeLeave,
-      afterLeave
-    }
-  }
-})
+      afterLeave,
+    };
+  },
+});
 </script>
-
