@@ -9,7 +9,7 @@ export default {
     LangChange,
   },
 
-  sprops: {
+  props: {
     publicTeam: {
       type: null as unknown as PropType<string | null>,
       default: null,
@@ -32,13 +32,15 @@ export default {
 
   setup() {
     const identityStore = ref(userStore());
+    const userManagerRole = ref<string>("");
     return {
       identityStore,
+      userManagerRole,
     };
   },
 
   mounted() {
-    //const userManagerRole = this.identityStore.isInRole("manager");
+    //this.userManagerRole = this.identityStore.isInRole("manager");
   },
 
   methods: {
@@ -65,7 +67,12 @@ export default {
     <div class="d-flex">
       <RouterLink class="nav-link" to="/home">Home</RouterLink>
       <RouterLink class="nav-link" to="/user">Profile</RouterLink>
-      <!--<RouterLink v-if="userManagerRole"  class="nav-link" to="/team">Teams</RouterLink>-->
+      <RouterLink
+        v-if="identityStore.isInRole('manager')"
+        class="nav-link"
+        to="/team"
+        >Teams</RouterLink
+      ><!---->
 
       <a @click="logOutClicked()" class="nav-link" href="#">Logout</a>
 

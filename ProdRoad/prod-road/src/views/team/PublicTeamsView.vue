@@ -207,14 +207,14 @@ export default {
           <tr v-if="publicTeam.id == editTeamId && publicTeam.isPublic == true">
             <td>
               <input
-                @input="$emit('update:publicTeam', publicTeam!.name)"
+                v-model="publicTeam!.name"
                 class="form-control"
                 placeholder="Add new name"
               />
             </td>
             <td>
               <input
-                @input="$emit('update:publicTeam', publicTeam!.code)"
+                v-model="publicTeam!.code"
                 class="form-control"
                 placeholder="Add new code"
               />

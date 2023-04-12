@@ -11,31 +11,23 @@ export default defineComponent({
     PersonsView,
   },
 
-  props: {
-    isActiveTest: { type: Boolean, default: false },
-    isActiveTeams: { type: Boolean, default: false },
-    isActiveLink: { type: Boolean, default: false },
-    isActiveDrop: { type: String, default: "Teams" },
-    errorMsg: {
-      type: null as unknown as PropType<string | null>,
-      default: null,
-      required: true,
-    },
-  },
-
-  emits: [
-    "update:isActiveTest",
-    "update:isActiveTeams",
-    "update:isActiveLink",
-    "update:isActiveDrop",
-    "update:errorMsg",
-  ],
-
   setup() {
     const identityStore = ref(userStore());
 
+    const isActiveTest = ref<boolean>(false);
+    const isActiveTeams = ref<boolean>(false);
+    const isActiveLink = ref<boolean>(false);
+    const isActiveDrop = ref<string>("");
+
+    const errorMsg = ref<string | null>(null);
+
     return {
       identityStore,
+      isActiveTest,
+      isActiveTeams,
+      isActiveLink,
+      isActiveDrop,
+      errorMsg,
     };
   },
 
@@ -46,24 +38,24 @@ export default defineComponent({
       console.log(active);
       switch (active) {
         case "Test":
-          this.$emit("update:isActiveTest", !this.isActiveTest);
-          this.$emit("update:isActiveTeams", false);
-          this.$emit("update:isActiveLink", false);
+          this.isActiveTest = !this.isActiveTest;
+          this.isActiveTeams = false;
+          this.isActiveLink = false;
           break;
         case "Teams":
-          this.$emit("update:isActiveTest", false);
-          this.$emit("update:isActiveTeams", !this.isActiveTeams);
-          this.$emit("update:isActiveLink", false);
+          this.isActiveTest = false;
+          this.isActiveTeams = !this.isActiveTeams;
+          this.isActiveLink = false;
           break;
         case "Link":
-          this.$emit("update:isActiveTest", false);
-          this.$emit("update:isActiveTeams", false);
-          this.$emit("update:isActiveLink", !this.isActiveLink);
+          this.isActiveTest = false;
+          this.isActiveTeams = false;
+          this.isActiveLink = !this.isActiveLink;
           break;
         default:
-          this.$emit("update:isActiveTest", false);
-          this.$emit("update:isActiveTeams", false);
-          this.$emit("update:isActiveLink", false);
+          this.isActiveTest = false;
+          this.isActiveTeams = false;
+          this.isActiveLink = false;
       }
     },
   },
@@ -115,19 +107,13 @@ export default defineComponent({
         >
         <ul class="dropdown-menu">
           <li>
-            <a
-              @click="$emit('update:isActiveDrop', 'Teams')"
-              class="dropdown-item"
-              href="#"
+            <a @click="isActiveDrop = 'Teams'" class="dropdown-item" href="#"
               >Teams</a
             >
           </li>
           <li><hr class="dropdown-divider" /></li>
           <li>
-            <a
-              @click="$emit('update:isActiveDrop', 'Persons')"
-              class="dropdown-item"
-              href="#"
+            <a @click="isActiveDrop = 'Persons'" class="dropdown-item" href="#"
               >Persons</a
             >
           </li>
