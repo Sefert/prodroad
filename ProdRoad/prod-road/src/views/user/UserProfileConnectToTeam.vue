@@ -11,15 +11,14 @@ import ErrorParagraph from "../../components/errors/ErrorParagraph.vue";
 
 export default {
   components: {
-   //çErrorParagraph,
+   //ErrorParagraph,
   },
 
   //https://stackoverflow.com/questions/58241604/how-do-you-type-hint-vue-props-with-typescript-interfaces
-  props: {
+  /*props: {
     publicUserTeams: { type: Array as () => IUserTeam[], default: () => [] },
-  },
-
-  emits: ["update:publicUserTeams"],
+    emits: ["update:publicUserTeams"],
+  },*/
 
   setup() {
     const identityStore = ref(userStore());
@@ -30,6 +29,7 @@ export default {
     const errorMsg = ref<string | null>(null);
     const teamCode = ref<string | null>("");
     const askJoin = ref<boolean>(false);
+    const publicUserTeams = ref<IUserTeam[]>([]);
 
     return {
       identityStore,
@@ -39,6 +39,8 @@ export default {
       userTeamService,
       errorMsg,
       teamCode,
+      askJoin,
+      publicUserTeams,
     };
   },
 
@@ -58,9 +60,9 @@ export default {
             this.userteamStore.$state.teams.push(data!);
             const uT = this.userteamStore.$state.teams[0].userTeams;
             if (uT == null) {
-              this.$emit("update:publicUserTeams", []);
+              this.publicUserTeams = [];
             } else {
-              this.$emit("update:publicUserTeams", uT);
+              this.publicUserTeams = uT;
             }
             //this.publicUserTeams = uT == null ? [] : uT;
 
@@ -115,7 +117,7 @@ export default {
           this.errorMsg = "ERRORS.login-fail-message";
           console.log(this.errorMsg);
         } else {
-          this.$emit("update:publicUserTeams", []);
+          this.publicUserTeams = [];
         }
       }
     },

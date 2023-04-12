@@ -20,31 +20,8 @@ export default {
   components: {
     //TestModal,
     //CustomModal,
-    TopNavBar,
+    //TopNavBar,
   },
-  props: {
-    publicTeam: { type: Object as () => ITeam | null, default: () => null },
-    errorMsg: {
-      type: null as unknown as PropType<string | null>,
-      default: null,
-      required: true,
-    },
-    editTeamId: {
-      type: null as unknown as PropType<string | null>,
-      default: null,
-      required: true,
-    },
-    userTeams: { type: Array as () => IUserTeam[] | null, default: () => null },
-    show: { type: Boolean, default: false },
-  },
-
-  emits: [
-    "update:publicTeam",
-    "update:errorMsg",
-    "update:editTeamId",
-    "update:userTeams",
-    "update:show",
-  ],
 
   setup() {
     const identityStore = ref(userStore());
@@ -53,12 +30,23 @@ export default {
     const teamService = new TeamService();
     const userTeamService = new UserTeamService();
 
+    const errorMsg = ref<string | null>(null);
+    const editTeamId = ref<string | null>(null);
+    const publicTeam = ref<ITeam>();
+    const userTeams = ref<IUserTeam[] | null>(null);
+    const show = ref<boolean>(false);
+
     return {
       identityStore,
       userteamStore,
       identityService,
       teamService,
       userTeamService,
+      errorMsg,
+      editTeamId,
+      publicTeam,
+      userTeams,
+      show,
     };
   },
 
@@ -71,7 +59,7 @@ export default {
           code: null,
           isPublic: false,
         };
-        this.$emit("update:editTeamId", "newTeam");
+        this.editTeamId = "newTeam";
         this.userteamStore.add(team);
       }
     },
@@ -107,7 +95,7 @@ export default {
         console.log(res.status);
         if (res.status >= 300) {
           console.log("here-st2");
-          this.$emit("update:errorMsg", res.status + " " + res.errorMsg);
+          this.errorMsg = "ERRORS.please-try-again";
           console.log(this.errorMsg);
         } else if (res.status == 201) {
           const data = res.data;
@@ -118,11 +106,11 @@ export default {
         }
       }
 
-      this.$emit("update:editTeamId", null);
+      this.editTeamId = null;
     },
 
     editRow(id: string) {
-      this.$emit("update:editTeamId", id);
+      this.editTeamId = id;
     },
 
     /*async deleteRow(id : string){
@@ -143,7 +131,7 @@ export default {
       if (id == null) {
         this.userteamStore.delete(id);
       }
-      this.$emit("update:editTeamId", null);
+      this.editTeamId = null;
     },
 
     async mounted(): Promise<void> {
@@ -158,7 +146,7 @@ export default {
           this.userteamStore.$state.teams = data;
         })
         .then(() => {
-          this.$emit("update:publicTeam", this.userteamStore.getPublicTeam());
+          this.publicTeam = this.userteamStore.getPublicTeam();
         });
     },
 
@@ -167,7 +155,7 @@ export default {
       const res = await this.userTeamService.edit(id, userTeam);
       if (res.status != null && typeof res.status != "undefined") {
         if (res.status >= 300) {
-          this.$emit("update:errorMsg", res.status + " " + res.errorMsg);
+          this.errorMsg = "ERRORS.please-try-again";
           console.log(this.errorMsg);
         }
       }
@@ -178,7 +166,7 @@ export default {
       const res = await this.userTeamService.edit(id, userTeam);
       if (res.status != null && typeof res.status != "undefined") {
         if (res.status >= 300) {
-          this.$emit("update:errorMsg", res.status + " " + res.errorMsg);
+          this.errorMsg = "ERRORS.please-try-again";
           console.log(this.errorMsg);
         }
       }
@@ -189,7 +177,7 @@ export default {
       console.log(res);
       if (res.status != null && typeof res.status != "undefined") {
         if (res.status >= 300) {
-          this.$emit("update:errorMsg", res.status + " " + res.errorMsg);
+          this.errorMsg = "ERRORS.please-try-again";
           console.log(this.errorMsg);
         } else {
           const data = res.data;

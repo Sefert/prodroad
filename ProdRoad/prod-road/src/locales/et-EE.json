@@ -10,6 +10,7 @@
     },
     "ERRORS" :{
         "login-fail-message":"Sisenemine ebaõnnestus!",
-        "passwords-do-not match":"Paroolid pole sarnased!"
+        "passwords-do-not match":"Paroolid pole sarnased!",
+        "please-try-again":"Miskit läks valesti, proovige uuesti!"
     }
 }

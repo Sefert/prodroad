@@ -13,40 +13,16 @@ import type { IUserTeam } from "@/domain/IUserTeam";
 //import { mapState } from "pinia";
 //import router from "@/router";
 import { ref, type PropType } from "vue";
+import ErrorParagraph from "../../components/errors/ErrorParagraph.vue";
 import { IdentityService } from "@/services/identity/IdentityService";
 
 export default {
   components: {
+    //ErrorParagraph,
     //draggable,
     //TestModal,
     //CustomModal
   },
-
-  props: {
-    askJoin: { type: Boolean, default: false },
-    publicTeam: { type: Object as () => ITeam | null, default: () => null },
-    errorMsg: {
-      type: null as unknown as PropType<string | null>,
-      default: null,
-      required: true,
-    },
-    editTeamId: {
-      type: null as unknown as PropType<string | null>,
-      default: null,
-      required: true,
-    },
-    userTeams: { type: Array as () => IUserTeam[] | null, default: () => null },
-    show: { type: Boolean, default: false },
-  },
-
-  emits: [
-    "update:askJoin",
-    "update:errorMsg",
-    "update:publicTeam",
-    "update:editTeamId",
-    "update:userTeams",
-    "update:show",
-  ],
 
   setup() {
     const identityStore = ref(userStore());
@@ -55,12 +31,29 @@ export default {
     const teamService = new TeamService();
     const userTeamService = new UserTeamService();
 
+    const errorMsg = ref<string | null>(null);
+    const teamCode = ref<string | null>("");
+    const askJoin = ref<boolean>(false);
+    const publicUserTeams = ref<IUserTeam[]>([]);
+    const show = ref<boolean>(false);
+    const userTeams = ref<IUserTeam[] | null>(null);
+    const editTeamId = ref<string | null>(null);
+    const publicTeam = ref<ITeam>();
+
     return {
       identityStore,
       userteamStore,
       identityService,
       teamService,
       userTeamService,
+      errorMsg,
+      teamCode,
+      askJoin,
+      publicUserTeams,
+      show,
+      userTeams,
+      editTeamId,
+      publicTeam,
     };
   },
 
@@ -73,7 +66,7 @@ export default {
           code: null,
           isPublic: false,
         };
-        this.$emit("update:editTeamId", "newTeam");
+        this.editTeamId = "newTeam";
         this.userteamStore.add(team);
       }
     },
@@ -109,7 +102,7 @@ export default {
         console.log(res.status);
         if (res.status >= 300) {
           console.log("here-st2");
-          this.$emit("update:errorMsg", res.status + " " + res.errorMsg);
+          this.errorMsg = "ERRORS.please-try-again";
           console.log(this.errorMsg);
         } else if (res.status == 201) {
           const data = res.data;
@@ -120,11 +113,11 @@ export default {
         }
       }
 
-      this.$emit("update:editTeamId", null);
+      this.editTeamId = null;
     },
 
     editRow(id: string) {
-      this.$emit("update:editTeamId", id);
+      this.editTeamId = id;
     },
 
     async deleteRow(id: string) {
@@ -133,7 +126,8 @@ export default {
       console.log(res.status);
       if (res.status != null && typeof res.status != "undefined") {
         if (res.status >= 300) {
-          this.$emit("update:errorMsg", res.status + " " + res.errorMsg);
+          this.errorMsg = "ERRORS.please-try-again";
+          //this.$emit("update:errorMsg", res.status + " " + res.errorMsg);
           console.log(this.errorMsg);
         } else {
           this.userteamStore.delete(id);
@@ -145,20 +139,19 @@ export default {
       if (id == null) {
         this.userteamStore.delete(id);
       }
-      this.$emit("update:editTeamId", null);
+      this.editTeamId = null;
     },
 
     async mounted(): Promise<void> {
       console.log("Personsview mounted");
 
-      this.$emit("update:publicTeam", this.userteamStore.getPublicTeam());
+      this.publicTeam = this.userteamStore.getPublicTeam();
       if (this.publicTeam!.userTeams != null) {
-        this.$emit(
-          "update:userTeams",
-          this.publicTeam!.userTeams.filter((x) => x.accepted == true)
+        this.userTeams = this.publicTeam!.userTeams.filter(
+          (x) => x.accepted == true
         );
       } else {
-        this.$emit("update:userTeams", []);
+        this.userTeams = [];
       }
       /*this.userTeams =
         this.publicTeam!.userTeams != null
