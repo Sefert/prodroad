@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Domain.App;
 using Domain.App.Meta;
+using Domain.Base;
 
 namespace WebApp.DTO;
 
@@ -16,7 +17,7 @@ public class ActiveNotificationDTO : ModificationMeta
     public Team? Team { get; set; }
 
     [MaxLength(50)]
-    public string Head { get; set; } = default!;
-    [MaxLength(200)] public string Info { get; set; } = default!; 
+    public LangStr Head { get; set; } = default!;
+    [MaxLength(200)] public LangStr Info { get; set; } = default!; 
     public bool Active{ get; set; }
 }

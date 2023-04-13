@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
+using Extensions.Base;
+using WebApp.DTO;
 
 namespace WebApp.Areas.Admin.Controllers
 {
@@ -43,7 +45,6 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-
             return View(customer);
         }
 
@@ -59,17 +60,26 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AppUserId,Name,Registration,Id")] Customer customer)
+        
+        
+        public async Task<IActionResult> Create([Bind("AppUserId,Name,Registration,Id")] CustomerDTO customer)
         {
+            var dbcustomer = new Customer()
+            {
+                Id = Guid.NewGuid(),
+                AppUserId = customer.AppUserId
+            };
+            
             if (ModelState.IsValid)
             {
-                customer.Id = Guid.NewGuid();
-                _context.Add(customer);
+                dbcustomer.Name.SetTranslation(customer.Name);
+                dbcustomer.Registration!.SetTranslation(customer.Registration!);
+                _context.Add(dbcustomer);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", customer.AppUserId);
-            return View(customer);
+            return View(dbcustomer);
         }
 
         // GET: Admin/Customer/Edit/5
@@ -94,18 +104,26 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("AppUserId,Name,Registration,Id")] Customer customer)
+        public async Task<IActionResult> Edit(Guid id, [Bind("AppUserId,Name,Registration,Id")] CustomerDTO customer)
         {
             if (id != customer.Id)
             {
                 return NotFound();
             }
+            
+            var dbcustomer = new Customer()
+            {
+                Id = customer.Id,
+                AppUserId = customer.AppUserId
+            };
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(customer);
+                    dbcustomer.Name.SetTranslation(customer.Name);
+                    dbcustomer.Registration!.SetTranslation(customer.Registration!);
+                    _context.Update(dbcustomer);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -122,7 +140,7 @@ namespace WebApp.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", customer.AppUserId);
-            return View(customer);
+            return View(dbcustomer);
         }
 
         // GET: Admin/Customer/Delete/5

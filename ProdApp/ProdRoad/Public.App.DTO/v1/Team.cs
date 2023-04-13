@@ -6,7 +6,7 @@ namespace Public.App.DTO.v1;
 
 public class Team : BaseEntity
 {
-    public Guid AppUserId { get; set; }
+    public Guid? AppUserId { get; set; }
     public AppUser? AppUser { get; set; }
     
     [MaxLength(50)] public string Name { get; set; } = default!;
