@@ -16,6 +16,7 @@ import type { IUserTeam } from "@/domain/IUserTeam";
 import router from "@/router";
 import { ref, type PropType } from "vue";
 import { IdentityService } from "@/services/identity/IdentityService";
+import { uuid } from "vue-uuid";
 
 export default {
   components: {
@@ -87,12 +88,14 @@ export default {
       let res: IServiceResult<ITeam> | IServiceResult<void>;
       if (team.id == "newTeam" || team.id == "PublicTeam") {
         this.userteamStore.delete("newTeam");
-        //accepts with no id only
+        //accepts with no id
         const teamToAdd: ITeam = {
+          //id: uuid.v1(),
           name: team.name,
           code: team.code,
           isPublic: team.id == "PublicTeam" ? true : false,
         };
+        console.log(teamToAdd);
         res = await this.teamService.add(teamToAdd);
         console.log("here-st");
       } else {
@@ -244,7 +247,8 @@ export default {
       v-for="team in userteamStore.getTeams"
       :key="team.id!"
     >
-      <table @click="manageTeam(team)" class="table">
+    <!-- <table @click="manageTeam(team)" class="table"> -->
+      <table class="table">
         <thead v-if="team.isPublic == false">
           <tr>
             <th>Name</th>

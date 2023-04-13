@@ -16,14 +16,14 @@ export class BaseService<TEntity> {
     //const i18n = useI18n();
     console.log("getAll");
 
-    console.log(`${this.path}?culture=${this.i18n.locale}`);
+    console.log(`${this.path}?culture=${this.i18n.locale.value}`);
     let response: AxiosResponse;
     //var respData : TEntity[] ;
     let serviceResult: IServiceResult<TEntity[]> = {};
 
     try {
       response = await httpCLient.get(
-        `/${this.path}?culture=${this.i18n.locale}`,
+        `/${this.path}?culture=${this.i18n.locale.value}`,
         {
           headers: {
             Authorization: "bearer " + this.identityStore.$state.jwt?.token,
@@ -52,7 +52,7 @@ export class BaseService<TEntity> {
         } else {
           try {
             response = await httpCLient.get(
-              `/${this.path}?culture=${this.i18n.locale}`,
+              `/${this.path}?culture=${this.i18n.locale.value}`,
               {
                 headers: {
                   Authorization:
@@ -83,11 +83,11 @@ export class BaseService<TEntity> {
 
     let response: AxiosResponse;
 
-    console.log(`/${this.path}?culture=${this.i18n.locale}`);
+    console.log(`/${this.path}?culture=${this.i18n.locale.value}`);
     let serviceResult: IServiceResult<TEntity[]> = {};
     try {
       response = await httpCLient.post(
-        `/${this.path}?culture=${this.i18n.locale}`,
+        `/${this.path}?culture=${this.i18n.locale.value}`,
         entity,
         {
           headers: {
@@ -117,7 +117,7 @@ export class BaseService<TEntity> {
         } else {
           try {
             response = await httpCLient.post(
-              `/${this.path}?culture=${this.i18n.locale}`,
+              `/${this.path}?culture=${this.i18n.locale.value}`,
               entity,
               {
                 headers: {
@@ -162,11 +162,11 @@ export class BaseService<TEntity> {
 
     let response: AxiosResponse;
 
-    console.log(`/${this.path}?culture=${this.i18n.locale}`);
+    console.log(`/${this.path}?culture=${this.i18n.locale.value}`);
     let serviceResult: IServiceResult<TEntity> = {};
     try {
       response = await httpCLient.post(
-        `/${this.path}?culture=${this.i18n.locale}`,
+        `/${this.path}?culture=${this.i18n.locale.value}`,
         entity,
         {
           headers: {
@@ -196,7 +196,7 @@ export class BaseService<TEntity> {
         } else {
           try {
             response = await httpCLient.post(
-              `/${this.path}?culture=${this.i18n.locale}`,
+              `/${this.path}?culture=${this.i18n.locale.value}`,
               entity,
               {
                 headers: {
@@ -237,7 +237,7 @@ export class BaseService<TEntity> {
 
     try {
       response = await httpCLient.put(
-        `/${this.path}/${id}?culture=${this.i18n.locale}`,
+        `/${this.path}/${id}?culture=${this.i18n.locale.value}`,
         entity,
         {
           headers: {
@@ -266,7 +266,7 @@ export class BaseService<TEntity> {
         } else {
           try {
             response = await httpCLient.put(
-              `/${this.path}/${id}?culture=${this.i18n.locale}`,
+              `/${this.path}/${id}?culture=${this.i18n.locale.value}`,
               entity,
               {
                 headers: {
@@ -301,7 +301,7 @@ export class BaseService<TEntity> {
 
     try {
       response = await httpCLient.delete(
-        `/${this.path}/${id}?culture=${this.i18n.locale}`,
+        `/${this.path}/${id}?culture=${this.i18n.locale.value}`,
         {
           headers: {
             Authorization: "bearer " + this.identityStore.$state.jwt?.token,
@@ -334,7 +334,7 @@ export class BaseService<TEntity> {
           try {
             console.log("Here3");
             response = await httpCLient.put(
-              `/${this.path}/${id}?culture=${this.i18n.locale}`,
+              `/${this.path}/${id}?culture=${this.i18n.locale.value}`,
               {
                 headers: {
                   Authorization:

@@ -20,7 +20,7 @@ export class TeamService extends BaseService<ITeam> {
 
     try {
       response = await httpCLient.get(
-        `/Team/GetPublicTeam/${code}?culture=${this.i18n.locale}`,
+        `/Team/GetPublicTeam/${code}?culture=${this.i18n.locale.value}`,
         {
           headers: {
             Authorization: "bearer " + this.identityStore.$state.jwt?.token,
