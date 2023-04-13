@@ -17,7 +17,7 @@ export default defineComponent({
     const isActiveTest = ref<boolean>(false);
     const isActiveTeams = ref<boolean>(false);
     const isActiveLink = ref<boolean>(false);
-    const isActiveDrop = ref<string>("");
+    const isActiveDrop = ref<string>("Teams");
 
     const errorMsg = ref<string | null>(null);
 
