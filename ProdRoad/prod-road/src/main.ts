@@ -8,6 +8,7 @@ import et from "./locales/et-EE.json";
 
 import App from "@/App.vue";
 import router from "./router";
+import ganttastic from "@infectoone/vue-ganttastic";
 
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -42,5 +43,7 @@ app.use(createVfm);
 app.use(i18n);
 app.use(createPinia());
 app.use(router);
+//https://zunnzunn.github.io/vue-ganttastic/getting-started.html
+app.use(ganttastic);
 
 app.mount("#app");

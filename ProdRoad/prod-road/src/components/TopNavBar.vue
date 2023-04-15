@@ -72,7 +72,8 @@ export default {
         class="nav-link"
         to="/team"
         >Teams</RouterLink
-      ><!---->
+      >
+      <RouterLink class="nav-link" to="/schedule">Schedule</RouterLink>
 
       <a @click="logOutClicked()" class="nav-link" href="#">Logout</a>
 
