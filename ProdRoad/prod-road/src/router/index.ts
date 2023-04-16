@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import LoginView from "@/views/LoginView.vue";
 import UserProfileView from "@/views/user/UserProfileView.vue";
-import ScheduleView from "@/views/schedule/ScheduleView.vue"
+import ScheduleView from "@/views/schedule/ScheduleView.vue";
 import UserProfileEditView from "@/views/user/UserProfileEditView.vue";
 import TeamsView from "@/views/team/TeamsView.vue";
 import PublicTeamsView from "@/views/team/PublicTeamsView.vue";

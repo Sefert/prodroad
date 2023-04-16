@@ -3,8 +3,17 @@ import { ref } from "vue";
 //https://stackoverflow.com/questions/40616272/an-import-path-cannot-end-with-ts-nodejs-and-visual-code
 import type { IBar } from "@/domain/IBar";
 import { uuid } from "vue-uuid";
+//https://github.com/SashaJarvi/vue-inline-calendar/blob/main/README.md
+//https://sashajarvi.github.io/vue-inline-calendar/
+import VueInlineCalendar from "vue-inline-calendar";
+
+import "vue-inline-calendar/dist/style.css";
+import { useI18n } from "vue-i18n";
 
 const myBarList = ref<IBar[]>([]);
+const selectedDate = ref(null);
+const i18n = useI18n();
+
 const addNewBar = () => {
   const bar = {
     myBeginDate: "2021-04-17 17:00",
@@ -17,20 +26,34 @@ const addNewBar = () => {
   };
   //https://www.explainprogramming.com/typescript/never-type/
   myBarList.value.push(bar);
+  console.log(i18n.locale.value);
 };
 </script>
 
 <template>
+  <div style="height: 70px">
+    <vue-inline-calendar
+      @update:selected-date="selectedDate = $event"
+      :spec-min-date="new Date()"
+      enable-mousewheel-scroll
+      is-range
+      :itemWidth="50"
+      :itemsGap="1"
+      :show-year="false"
+      :scrollSpeed="10"
+      :locale="i18n.locale.value"
+    />
+  </div>
   <div class="scrollable">
     <g-gantt-chart
       chart-start="2021-04-17 00:00"
       chart-end="2021-04-21 23:59"
       precision="hour"
-      width="300%"
+      width="200%"
       bar-start="myBeginDate"
       bar-end="myEndDate"
-      grid="true"
-      row-height="60"
+      :grid="true"
+      :row-height="60"
     >
       <g-gantt-row label="Assembly" :bars="myBarList" />
       <g-gantt-row label="Assembly2" />
