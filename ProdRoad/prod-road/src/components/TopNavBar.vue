@@ -60,9 +60,10 @@ export default {
 };
 </script>
 
+<!-- bg-light-->
 <template v-if="identityStore.$state.jwt != null">
   <nav
-    class="navbar topnav navbar navbar-default navbar-fixed-top navbar-light bg-light"
+    class="navbar topnav navbar navbar-default navbar-fixed-top navbar-light user-nav"
   >
     <div class="d-flex">
       <RouterLink class="nav-link" to="/home">Home</RouterLink>
@@ -76,9 +77,8 @@ export default {
       <RouterLink class="nav-link" to="/schedule">Schedule</RouterLink>
 
       <a @click="logOutClicked()" class="nav-link" href="#">Logout</a>
-
-      <LangChange />
     </div>
+    <LangChange style="float" />
   </nav>
 </template>
 
@@ -89,5 +89,11 @@ export default {
   left: 0;
   background-color: #111; /* Black */
   padding-top: 20px;
+}
+.user-nav {
+  color: #577d86;
+  background-color: #F9F5EB;
+  font-variant: small-caps;
+  font-size: medium;
 }
 </style>

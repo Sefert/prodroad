@@ -183,7 +183,14 @@ https://dev.to/denisseab/how-to-emit-a-value-from-an-input-component-vue-3-1lla
   <div class="text-center">
     <div class="form-signin">
       <form>
-        <img class="mb-4" src="None" alt="" width="72" height="57" />
+        <img
+          style="visibility: hidden"
+          class="mb-4"
+          src="None"
+          alt=""
+          width="72"
+          height="57"
+        />
         <h1 class="h3 mb-3 fw-normal">{{ $t("LoginView.sign-in-sign") }}</h1>
         <div v-if="errorMsg != null">
           <ErrorParagraph v-model:error-msg="errorMsg" />
@@ -234,7 +241,7 @@ https://dev.to/denisseab/how-to-emit-a-value-from-an-input-component-vue-3-1lla
         <button
           v-if="isNotRegistered == false"
           @click="loginClicked()"
-          class="w-100 btn btn-lg btn-primary"
+          class="w-100 btn btn-lg btn-color"
           type="button"
         >
           {{ $t("LoginView.sign-in-button") }}
@@ -242,7 +249,7 @@ https://dev.to/denisseab/how-to-emit-a-value-from-an-input-component-vue-3-1lla
         <button
           v-if="isNotRegistered == true"
           @click="registerClicked()"
-          class="w-100 btn btn-lg btn-primary"
+          class="w-100 btn btn-lg btn-color"
           type="button"
         >
           {{ $t("LoginView.sign-up-button") }}
@@ -292,5 +299,13 @@ body {
   margin-bottom: 10px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
+}
+
+.btn-color {
+  background-color: #E4DCCF;
+}
+.btn:hover {
+  background-color: #F4B183;
+  box-shadow: inset 0px 10px 10px #DBE4C6;
 }
 </style>

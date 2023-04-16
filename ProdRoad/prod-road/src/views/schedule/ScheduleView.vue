@@ -54,6 +54,7 @@ const addNewBar = () => {
       bar-end="myEndDate"
       :grid="true"
       :row-height="60"
+      color-scheme="creamy"
     >
       <g-gantt-row label="Assembly" :bars="myBarList" />
       <g-gantt-row label="Assembly2" />
@@ -62,7 +63,7 @@ const addNewBar = () => {
   <button
     type="button"
     rel="tooltip"
-    class="btn btn-success btn-just-icon btn-sm col-sm-4 btnheight"
+    class="btn btn-just-icon btn-sm col-sm-4 btnheight btn-color"
     @click="addNewBar"
   >
     ADD
@@ -76,5 +77,13 @@ const addNewBar = () => {
 }
 .btnheigth {
   height: 300px;
+}
+.btn-color {
+  background-color: #E4DCCF;
+  box-shadow: 0px 5px 10px #DBE4C6;
+}
+.btn:hover {
+  background-color: #F4B183;
+  box-shadow: 0px 10px 10px #DBE4C6;
 }
 </style>

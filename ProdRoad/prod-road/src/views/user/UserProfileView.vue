@@ -42,12 +42,10 @@ export default {
                   <p class="text-muted font-size-sm">
                     CURRENT SERVICE ACCESS: not implemented
                   </p>
-                  <RouterLink
-                    class="btn btn-primary mt-1"
-                    to="/user/connect-team"
+                  <RouterLink class="btn btn-color" style="margin-bottom: 10px;" to="/user/connect-team"
                     >Connect to Team</RouterLink
                   >
-                  <button type="button" class="btn btn-primary mt-1">
+                  <button type="button" class="btn btn-color">
                     Update service level - not jet implemented
                   </button>
                   <!--<button class="btn btn-outline-primary">Message</button>-->
@@ -91,9 +89,7 @@ export default {
               <hr />
               <div class="row">
                 <div class="col-sm-12">
-                  <a class="btn btn-info" target="__blank" href=""
-                    ><RouterLink to="/user/edit-profile">Edit</RouterLink></a
-                  >
+                    <RouterLink class="btn btn-color" to="/user/edit-profile">Edit</RouterLink>
                 </div>
               </div>
             </div>
@@ -159,5 +155,19 @@ body {
 }
 .shadow-none {
   box-shadow: none !important;
+}
+
+.user-text {
+  color: #577d86;
+  font-variant: small-caps;
+}
+
+.btn-color {
+  background-color: #e4dccf;
+  box-shadow: 0px 5px 10px #DBE4C6;
+}
+.btn:hover {
+  background-color: #f4b183;
+  box-shadow: 0px 10px 10px #dbe4c6;
 }
 </style>

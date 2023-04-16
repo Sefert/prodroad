@@ -7,7 +7,7 @@ import PersonsView from "../views/user/PersonsView.vue";
 //https://blog.bitsrc.io/why-you-should-avoid-mutating-or-reassigning-props-in-vue-ed25f27be88d
 export default defineComponent({
   components: {
-    TeamsView,
+    //TeamsView,
     PersonsView,
   },
 
@@ -67,13 +67,13 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="sidenav p-3 bg-white text-start" style="width: 280px">
+  <div class="sidenav p-3 text-start" style="width: 280px">
     <ul class="nav nav-tabs">
       <li class="nav-item">
         <span
           v-bind:class="{ active: isActiveTest }"
           @click="isActive('Test')"
-          class="nav-link"
+          class="nav-link user-text"
           >Test</span
         >
       </li>
@@ -81,7 +81,7 @@ export default defineComponent({
         <span
           v-bind:class="{ active: isActiveTeams }"
           @click="isActive('Teams')"
-          class="nav-link"
+          class="nav-link user-text"
           >Teams</span
         >
       </li>
@@ -89,7 +89,7 @@ export default defineComponent({
         <span
           v-bind:class="{ active: isActiveLink }"
           @click="isActive('Link')"
-          class="nav-link"
+          class="nav-link user-text"
           >Link</span
         >
       </li>
@@ -98,7 +98,7 @@ export default defineComponent({
     <ul v-if="isActiveTeams" class="nav">
       <li class="nav-item dropdown">
         <a
-          class="nav-link dropdown-toggle"
+          class="nav-link dropdown-toggle user-text"
           data-bs-toggle="dropdown"
           href="#"
           role="button"
@@ -107,13 +107,19 @@ export default defineComponent({
         >
         <ul class="dropdown-menu">
           <li>
-            <a @click="isActiveDrop = 'Teams'" class="dropdown-item" href="#"
+            <a
+              @click="isActiveDrop = 'Teams'"
+              class="dropdown-item user-text"
+              href="#"
               >Teams</a
             >
           </li>
           <li><hr class="dropdown-divider" /></li>
           <li>
-            <a @click="isActiveDrop = 'Persons'" class="dropdown-item" href="#"
+            <a
+              @click="isActiveDrop = 'Persons'"
+              class="dropdown-item user-text"
+              href="#"
               >Persons</a
             >
           </li>
@@ -121,9 +127,11 @@ export default defineComponent({
       </li>
     </ul>
 
-    <div v-if="isActiveTeams && isActiveDrop == 'Teams'" class="container">
-      <TeamsView />
-    </div>
+    <div
+      v-if="isActiveTeams && isActiveDrop == 'Teams'"
+      class="container"
+    ></div>
+
     <div
       v-else-if="isActiveTeams && isActiveDrop == 'Persons'"
       class="container"
@@ -246,7 +254,7 @@ main {
 .btn-toggle:hover,
 .btn-toggle:focus {
   color: rgba(0, 0, 0, 0.85);
-  background-color: #d2f4ea;
+  background-color: #f9f5eb;
 }
 
 .btn-toggle::before {
@@ -273,7 +281,7 @@ main {
 }
 .btn-toggle-nav a:hover,
 .btn-toggle-nav a:focus {
-  background-color: #d2f4ea;
+  background-color: #f9f5eb;
 }
 
 .scrollarea {
@@ -308,9 +316,23 @@ main {
   /*z-index: 1;  Stay on top */
   top: 0; /* Stay at the top */
   right: 0;
-  background-color: #111; /* Black */
+  background-color: #f9f5eb; /* Black */
+  color: #577d86;
   overflow-x: hidden; /* Disable horizontal scroll */
   padding-top: 20px;
   box-shadow: 5px 10px 18px #888888;
+}
+
+.user-text {
+  color: #577d86;
+  font-variant: small-caps;
+}
+
+.btn-color {
+  background-color: #e4dccf;
+}
+.btn:hover {
+  background-color: #f4b183;
+  box-shadow: inset 0px 10px 10px #dbe4c6;
 }
 </style>

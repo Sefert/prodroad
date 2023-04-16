@@ -11,7 +11,7 @@ import ErrorParagraph from "../../components/errors/ErrorParagraph.vue";
 
 export default {
   components: {
-   //ErrorParagraph,
+    //ErrorParagraph,
   },
 
   //https://stackoverflow.com/questions/58241604/how-do-you-type-hint-vue-props-with-typescript-interfaces
@@ -147,11 +147,7 @@ export default {
             class="form-control"
             placeholder="Insert given CODE"
           />
-          <button
-            @click="getPublicTeam()"
-            type="button"
-            class="btn btn-primary"
-          >
+          <button @click="getPublicTeam()" type="button" class="btn btn-color">
             Search
           </button>
         </div>
@@ -194,3 +190,19 @@ export default {
     </div>
   </div>
 </template>
+
+<style scoped>
+.user-text {
+  color: #577d86;
+  font-variant: small-caps;
+}
+
+.btn-color {
+  background-color: #e4dccf;
+  box-shadow: 0px 5px 10px #DBE4C6;
+}
+.btn:hover {
+  background-color: #f4b183;
+  box-shadow: 0px 10px 10px #dbe4c6;
+}
+</style>

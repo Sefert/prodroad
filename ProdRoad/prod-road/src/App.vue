@@ -26,7 +26,10 @@ export default {
 <!--TODO:make protection better-->
 <template>
   <div class="app wrapper">
-    <TopNavBar v-if="identityStore.$state.jwt != null" />
+    <div style="width: calc(100% - 280px)">
+      <TopNavBar v-if="identityStore.$state.jwt != null" />
+    </div>
+
     <div style="width: calc(100% - 280px)">
       <RouterView />
     </div>
@@ -58,13 +61,13 @@ header {
 a,
 .green {
   text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
+  color: #D5B4B4;
   transition: 0.4s;
 }
 
 @media (hover: hover) {
   a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
+    background-color: #D5B4B4;
   }
 }
 
@@ -102,5 +105,10 @@ nav a:first-of-type {
   background-color: #fff;
   font-size: 20px;
   text-align: center;
+}
+
+.btn:hover {
+  background-color: #F4B183;
+  box-shadow: inset 0px 10px 10px #DBE4C6;
 }
 </style>

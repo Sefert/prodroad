@@ -22,9 +22,13 @@ export default {
 </script>
 
 <template>
-  <select @change="onChange()" class="form-select-sm" v-model="$i18n.locale">
-    <option value="en-GB">EN</option>
+  <select
+    @change="onChange()"
+    class="form-select-sm nav-link dropdown-toggle user-text"
+    v-model="$i18n.locale"
+  >
+    <option class="dropdown-item user-text" value="en-GB">EN</option>
     <!--selected="true"-->
-    <option value="et-EE">ET</option>
+    <option class="dropdown-item user-text" value="et-EE">ET</option>
   </select>
 </template>

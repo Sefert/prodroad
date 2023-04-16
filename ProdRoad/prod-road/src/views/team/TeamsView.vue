@@ -220,14 +220,14 @@ export default {
     </button>
     </div>-->
 
-  <RouterLink class="btn btn-success" to="/team/publicTeam"
+  <RouterLink class="btn btn-color" to="/team/publicTeam"
     >CONNECT TO PEOPLE</RouterLink
   >
 
   <!--Create team to add persons in 
   draggable="true"-->
-  <div class="container card mt-3">
-    <div class="d-flex row">
+  <div style="background-color: #FFF4E0;" class="container card mt-3">
+    <div style="padding-bottom: 10px;" class="d-flex row">
       <div class="float-left col">
         <h4><small>Teams</small></h4>
       </div>
@@ -235,7 +235,7 @@ export default {
         @click="addNewRow()"
         type="button"
         rel="tooltip"
-        class="btn btn-success btn-just-icon btn-sm col-sm-4"
+        class="btn btn-color success btn-just-icon btn-sm col-sm-4"
         data-original-title=""
         title=""
       >
@@ -248,7 +248,7 @@ export default {
       :key="team.id!"
     >
     <!-- <table @click="manageTeam(team)" class="table"> -->
-      <table class="table">
+      <table style="background-color: #FFFBF5" class="table">
         <thead v-if="team.isPublic == false">
           <tr>
             <th>Name</th>
@@ -282,7 +282,7 @@ export default {
                 @click="saveRow(team)"
                 type="button"
                 rel="tooltip"
-                class="btn btn-success btn-just-icon btn-sm"
+                class="btn btn-color btn-just-icon btn-sm"
                 data-original-title=""
                 title=""
               >
@@ -308,7 +308,7 @@ export default {
                 @click="editRow(team.id!)"
                 type="button"
                 rel="tooltip"
-                class="btn btn-success btn-just-icon btn-sm"
+                class="btn btn-color btn-just-icon btn-sm"
                 data-original-title=""
                 title=""
               >
@@ -396,5 +396,19 @@ body {
   background-color: #fff;
   font-size: 20px;
   text-align: center;
+}
+
+.user-text {
+  color: #577d86;
+  font-variant: small-caps;
+}
+
+.btn-color {
+  background-color: #e4dccf;
+  box-shadow: 0px 5px 10px #DBE4C6;
+}
+.btn:hover {
+  background-color: #f4b183;
+  box-shadow: 0px 10px 10px #dbe4c6;
 }
 </style>
