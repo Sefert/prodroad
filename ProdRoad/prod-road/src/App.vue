@@ -4,6 +4,7 @@ import { RouterLink, RouterView } from "vue-router";
 import { userStore } from "@/stores/identity";
 import TopNavBar from "./components/TopNavBar.vue";
 import RightBar from "./components/RightBar.vue";
+import { appStore } from "./stores/appStore";
 
 //import { computed } from 'vue'
 import { ref } from "vue";
@@ -13,12 +14,13 @@ export default {
     TopNavBar,
     RightBar,
   },
-  props: {},
-  emits: [],
-  setup() {
+
+  setup(props, { emit }) {
     const identityStore = ref(userStore());
+    const appState = ref(appStore());
+
     // const userManagerRole: boolean = identityStore.isInRole("manager");
-    return { identityStore };
+    return { identityStore, appState};
   },
 };
 </script>
@@ -26,11 +28,10 @@ export default {
 <!--TODO:make protection better-->
 <template>
   <div class="app wrapper">
-    <div style="width: calc(100% - 280px)">
+    <div :class="[appState.getIsExtended ? 'largeAppWidth' : 'smallAppWidth']">
       <TopNavBar v-if="identityStore.$state.jwt != null" />
     </div>
-
-    <div style="width: calc(100% - 280px)">
+    <div :class="[appState.getIsExtended ? 'largeAppWidth' : 'smallAppWidth']">
       <RouterView />
     </div>
     <RightBar v-if="identityStore.$state.jwt != null" />
@@ -61,13 +62,13 @@ header {
 a,
 .green {
   text-decoration: none;
-  color: #D5B4B4;
+  color: #d5b4b4;
   transition: 0.4s;
 }
 
 @media (hover: hover) {
   a:hover {
-    background-color: #D5B4B4;
+    background-color: #d5b4b4;
   }
 }
 
@@ -108,7 +109,15 @@ nav a:first-of-type {
 }
 
 .btn:hover {
-  background-color: #F4B183;
-  box-shadow: inset 0px 10px 10px #DBE4C6;
+  background-color: #f4b183;
+  box-shadow: inset 0px 10px 10px #dbe4c6;
+}
+
+.smallAppWidth {
+  width: calc(100% - 280px);
+}
+
+.largeAppWidth {
+  width: calc(100% - 30px);
 }
 </style>

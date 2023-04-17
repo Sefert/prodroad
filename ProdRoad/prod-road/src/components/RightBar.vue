@@ -1,8 +1,10 @@
 <script lang="ts">
 import { userStore } from "@/stores/identity";
+import type { HtmlAttributes } from "csstype";
 import { type PropType, ref, defineComponent } from "vue";
 import TeamsView from "../views/team/TeamsView.vue";
 import PersonsView from "../views/user/PersonsView.vue";
+import { appStore } from "@/stores/appStore";
 
 //https://blog.bitsrc.io/why-you-should-avoid-mutating-or-reassigning-props-in-vue-ed25f27be88d
 export default defineComponent({
@@ -18,8 +20,10 @@ export default defineComponent({
     const isActiveTeams = ref<boolean>(false);
     const isActiveLink = ref<boolean>(false);
     const isActiveDrop = ref<string>("Teams");
+    const appState = ref(appStore());
 
     const errorMsg = ref<string | null>(null);
+    const isNotHiddenSidebar = ref<boolean>(true);
 
     return {
       identityStore,
@@ -28,6 +32,11 @@ export default defineComponent({
       isActiveLink,
       isActiveDrop,
       errorMsg,
+      isNotHiddenSidebar,
+      hideClass: "hide-element",
+      showClass: "show-element",
+      showHide: "hide",
+      appState,
     };
   },
 
@@ -58,6 +67,11 @@ export default defineComponent({
           this.isActiveLink = false;
       }
     },
+    handleClick() {
+      this.isNotHiddenSidebar = !this.isNotHiddenSidebar;
+      this.showHide = this.showHide == "hide" ? "show" : "hide";
+      this.appState.setIsExtended(!this.isNotHiddenSidebar);
+    },
   },
 
   mounted() {
@@ -65,80 +79,94 @@ export default defineComponent({
   },
 });
 </script>
-
+<!--:class="[isHiddenSidebar ? hideClass : showClass]"
+    v-show="isNotHiddenSidebar"-->
 <template>
-  <div class="sidenav p-3 text-start" style="width: 280px">
-    <ul class="nav nav-tabs">
-      <li class="nav-item">
-        <span
-          v-bind:class="{ active: isActiveTest }"
-          @click="isActive('Test')"
-          class="nav-link user-text"
-          >Test</span
-        >
-      </li>
-      <li class="nav-item">
-        <span
-          v-bind:class="{ active: isActiveTeams }"
-          @click="isActive('Teams')"
-          class="nav-link user-text"
-          >Teams</span
-        >
-      </li>
-      <li class="nav-item">
-        <span
-          v-bind:class="{ active: isActiveLink }"
-          @click="isActive('Link')"
-          class="nav-link user-text"
-          >Link</span
-        >
-      </li>
-    </ul>
-
-    <ul v-if="isActiveTeams" class="nav">
-      <li class="nav-item dropdown">
-        <a
-          class="nav-link dropdown-toggle user-text"
-          data-bs-toggle="dropdown"
-          href="#"
-          role="button"
-          aria-expanded="false"
-          >{{ isActiveDrop }}</a
-        >
-        <ul class="dropdown-menu">
-          <li>
-            <a
-              @click="isActiveDrop = 'Teams'"
-              class="dropdown-item user-text"
-              href="#"
-              >Teams</a
-            >
-          </li>
-          <li><hr class="dropdown-divider" /></li>
-          <li>
-            <a
-              @click="isActiveDrop = 'Persons'"
-              class="dropdown-item user-text"
-              href="#"
-              >Persons</a
-            >
-          </li>
-        </ul>
-      </li>
-    </ul>
-
-    <div
-      v-if="isActiveTeams && isActiveDrop == 'Teams'"
-      class="container"
-    ></div>
-
-    <div
-      v-else-if="isActiveTeams && isActiveDrop == 'Persons'"
-      class="container"
+  <div
+    class="sidenav p-3 text-start"
+    :class="[isNotHiddenSidebar ? showClass : hideClass]"
+  >
+    <button
+      style="left: -50px; top: 50%"
+      class="btn btn-color"
+      @click="handleClick()"
     >
-      <PersonsView />
-    </div>
-    <!--<h4>Stuff</h4>
+      <i class="arrow" :class="[isNotHiddenSidebar ? 'right' : 'left']">{{
+        showHide
+      }}</i>
+    </button>
+    <div style="top: -50px">
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <span
+            v-bind:class="{ active: isActiveTest }"
+            @click="isActive('Test')"
+            class="nav-link user-text"
+            >Test</span
+          >
+        </li>
+        <li class="nav-item">
+          <span
+            v-bind:class="{ active: isActiveTeams }"
+            @click="isActive('Teams')"
+            class="nav-link user-text"
+            >Teams</span
+          >
+        </li>
+        <li class="nav-item">
+          <span
+            v-bind:class="{ active: isActiveLink }"
+            @click="isActive('Link')"
+            class="nav-link user-text"
+            >Link</span
+          >
+        </li>
+      </ul>
+
+      <ul v-if="isActiveTeams" class="nav">
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle user-text"
+            data-bs-toggle="dropdown"
+            href="#"
+            role="button"
+            aria-expanded="false"
+            >{{ isActiveDrop }}</a
+          >
+          <ul class="dropdown-menu">
+            <li>
+              <a
+                @click="isActiveDrop = 'Teams'"
+                class="dropdown-item user-text"
+                href="#"
+                >Teams</a
+              >
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <a
+                @click="isActiveDrop = 'Persons'"
+                class="dropdown-item user-text"
+                href="#"
+                >Persons</a
+              >
+            </li>
+          </ul>
+        </li>
+      </ul>
+
+      <div
+        v-if="isActiveTeams && isActiveDrop == 'Teams'"
+        class="container"
+      ></div>
+
+      <div
+        v-else-if="isActiveTeams && isActiveDrop == 'Persons'"
+        class="container"
+      >
+        <PersonsView />
+      </div>
+      <!--<h4>Stuff</h4>
         <ul class="list-unstyled ps-0">
             <li class="border-top my-3"></li>
             <li class="mb-1">
@@ -194,6 +222,7 @@ export default defineComponent({
                 </div>
             </li>
         </ul>-->
+    </div>
   </div>
 </template>
 
@@ -318,7 +347,7 @@ main {
   right: 0;
   background-color: #f9f5eb; /* Black */
   color: #577d86;
-  overflow-x: hidden; /* Disable horizontal scroll */
+  /* overflow-x: hidden; Disable horizontal scroll */
   padding-top: 20px;
   box-shadow: 5px 10px 18px #888888;
 }
@@ -333,6 +362,33 @@ main {
 }
 .btn:hover {
   background-color: #f4b183;
-  box-shadow: inset 0px 10px 10px #dbe4c6;
+  box-shadow: 0px 10px 10px #dbe4c6;
+}
+
+.arrow {
+  /*https://www.w3schools.com/howto/howto_css_arrows.asp*/
+  border: solid black;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+}
+
+.right {
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
+
+.left {
+  transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
+}
+
+.hide-element {
+  width: 10px;
+  transition: 0.3s display ease;
+}
+.show-element {
+  width: 280px;
+  transition: 0.3s display ease;
 }
 </style>
