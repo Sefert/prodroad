@@ -130,22 +130,6 @@ export default {
       this.editTeamId = null;
     },
 
-    async mounted(): Promise<void> {
-      console.log("Team mounted");
-
-      if (!this.identityStore.isInRole("manager")) {
-        this.identityStore.logOut();
-      }
-
-      await this.getTeams()
-        .then((data: ITeam[]) => {
-          this.userteamStore.$state.teams = data;
-        })
-        .then(() => {
-          this.publicTeam = this.userteamStore.getPublicTeam();
-        });
-    },
-
     async acceptUser(id: string, userTeam: IUserTeam) {
       userTeam.accepted = true;
       const res = await this.userTeamService.edit(id, userTeam);
@@ -185,11 +169,20 @@ export default {
     },
   },
 
-  async mounted() {
-    if (this.userteamStore.getTeams == null) {
-      this.userteamStore.$state.teams = await this.getTeams();
+  async mounted(): Promise<void> {
+    console.log("Team mounted");
+
+    if (!this.identityStore.isInRole("manager")) {
+      this.identityStore.logOut();
     }
-    this.publicTeam = this.userteamStore.getPublicTeam();
+    await this.getTeams()
+      .then((data: ITeam[]) => {
+        this.userteamStore.$state.teams = data;
+      })
+      .then(() => {
+        this.publicTeam = this.userteamStore.getPublicTeam();
+        console.log(this.publicTeam);
+      });
   },
 };
 </script>
