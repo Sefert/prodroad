@@ -242,13 +242,14 @@ export default {
         <i class="material-icons">ADD NEW</i>
       </button>
     </div>
+
     <div
       class="table-responsive card shadow-lg"
       v-for="team in userteamStore.getTeams"
       :key="team.id!"
     >
     <!-- <table @click="manageTeam(team)" class="table"> -->
-      <table style="background-color: #FFFBF5" class="table">
+      <table style="FFFBF5" class="table">
         <thead v-if="team.isPublic == false">
           <tr>
             <th>Name</th>
@@ -300,6 +301,7 @@ export default {
               </button>
             </td>
           </tr>
+
           <tr v-else-if="team.isPublic == false">
             <td>{{ team.name }}</td>
             <td>{{ team.code }}</td>

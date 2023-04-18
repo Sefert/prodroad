@@ -13,7 +13,7 @@ import { TeamService } from "../../services/TeamService";
 //import CustomModal from "../../components/TestModal.vue";
 import { UserTeamService } from "@/services/UserTeamService";
 import type { IUserTeam } from "@/domain/IUserTeam";
-import { ref, type PropType } from "vue";
+import { reactive, ref, type PropType } from "vue";
 import { IdentityService } from "@/services/identity/IdentityService";
 
 export default {
@@ -32,7 +32,14 @@ export default {
 
     const errorMsg = ref<string | null>(null);
     const editTeamId = ref<string | null>(null);
-    const publicTeam = ref<ITeam>();
+    const publicTeam = reactive<ITeam>({
+      id: "PublicTeam",
+      AppUserId: null,
+      name: "Insert",
+      code: "Insert",
+      isPublic: true,
+      userTeams: null,
+    });
     const userTeams = ref<IUserTeam[] | null>(null);
     const show = ref<boolean>(false);
 
@@ -51,29 +58,13 @@ export default {
   },
 
   methods: {
-    addNewRow() {
-      if (this.editTeamId == null) {
-        const team: ITeam = {
-          id: null,
-          name: null,
-          code: null,
-          isPublic: false,
-        };
-        this.editTeamId = "newTeam";
-        this.userteamStore.add(team);
-      }
-    },
-
     async saveRow(team: ITeam) {
       console.log("Save row");
-      //change because of html check
-      if (team.id == null) {
-        team.id = "newTeam";
-      }
 
       team.AppUserId = this.identityStore.$id;
 
-      let res: IServiceResult<ITeam> | IServiceResult<void>;
+      let res: IServiceResult<ITeam> | IServiceResult<void> | null = null;
+
       if (team.id == "newTeam" || team.id == "PublicTeam") {
         this.userteamStore.delete("newTeam");
         //accepts with no id only
@@ -83,26 +74,31 @@ export default {
           isPublic: team.id == "PublicTeam" ? true : false,
         };
         res = await this.teamService.add(teamToAdd);
+
         console.log("here-st");
       } else {
         //TODO: should reload when fail or revert back
-        res = await this.teamService.edit(team.id, team);
+        if (team.id != null) {
+          res = await this.teamService.edit(team.id, team);
+        }
       }
       console.log("here-st3");
-      if (res.status != null && typeof res.status != "undefined") {
-        console.log("here-st34");
-        console.log(res);
-        console.log(res.status);
-        if (res.status >= 300) {
-          console.log("here-st2");
-          this.errorMsg = "ERRORS.please-try-again";
-          console.log(this.errorMsg);
-        } else if (res.status == 201) {
-          const data = res.data;
-          if (data != null && typeof data != "undefined") {
-            this.userteamStore.add(data);
+      if (res != null) {
+        if (res.status != null && typeof res.status != "undefined") {
+          console.log("here-st34");
+          console.log(res);
+          console.log(res.status);
+          if (res.status >= 300) {
+            console.log("here-st2");
+            this.errorMsg = "ERRORS.please-try-again";
+            console.log(this.errorMsg);
+          } else if (res.status == 201) {
+            const data = res.data;
+            if (data != null && typeof data != "undefined") {
+              this.userteamStore.add(data);
+            }
+            this.cancelChange("newTeam");
           }
-          this.cancelChange("newTeam");
         }
       }
 
@@ -188,13 +184,19 @@ export default {
       return [];
     },
   },
+
+  async mounted() {
+    if (this.userteamStore.getTeams == null) {
+      this.userteamStore.$state.teams = await this.getTeams();
+    }
+    this.publicTeam = this.userteamStore.getPublicTeam();
+  },
 };
 </script>
 
 <template>
-  <TopNavBar />
   <!--Manage public team -->
-  <div v-if="publicTeam != null" class="container card mt-3">
+  <div class="container card mt-3">
     <div class="d-flex row">
       <div class="float-left col">
         <h4><small>Manage public team connection</small></h4>
@@ -207,14 +209,14 @@ export default {
           <tr v-if="publicTeam.id == editTeamId && publicTeam.isPublic == true">
             <td>
               <input
-                v-model="publicTeam!.name"
+                v-model="publicTeam.name"
                 class="form-control"
                 placeholder="Add new name"
               />
             </td>
             <td>
               <input
-                v-model="publicTeam!.code"
+                v-model="publicTeam.code"
                 class="form-control"
                 placeholder="Add new code"
               />
@@ -231,7 +233,7 @@ export default {
                 <i class="material-icons">SAVE</i>
               </button>
               <button
-                @click="cancelChange(publicTeam!.id!)"
+                @click="cancelChange(publicTeam.id!)"
                 type="button"
                 rel="tooltip"
                 class="btn btn-danger btn-just-icon btn-sm"

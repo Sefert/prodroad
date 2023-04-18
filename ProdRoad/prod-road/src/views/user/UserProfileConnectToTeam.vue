@@ -46,8 +46,13 @@ export default {
 
   methods: {
     async getPublicTeam(): Promise<void> {
+      let res = null;
+
       this.userteamStore.$state.teams = [];
-      const res = await this.teamService.getPublicTeam(this.teamCode!);
+
+      if (this.teamCode != null) {
+        res = await this.teamService.getPublicTeam(this.teamCode);
+      }
 
       if (res != null && typeof res != "undefined") {
         if (res.status != null && typeof res.status != "undefined") {
@@ -57,13 +62,16 @@ export default {
           } else {
             const data = res.data;
             console.log(data);
-            this.userteamStore.$state.teams.push(data!);
-            const uT = this.userteamStore.$state.teams[0].userTeams;
-            if (uT == null) {
-              this.publicUserTeams = [];
-            } else {
-              this.publicUserTeams = uT;
+            if (data != null) {
+              this.userteamStore.$state.teams.push(data);
+              const uT = this.userteamStore.$state.teams[0].userTeams;
+              if (uT == null) {
+                this.publicUserTeams = [];
+              } else {
+                this.publicUserTeams = uT;
+              }
             }
+
             //this.publicUserTeams = uT == null ? [] : uT;
 
             console.log(this.userteamStore.$state.teams);
@@ -91,11 +99,13 @@ export default {
           this.errorMsg = "ERRORS.login-fail-message";
           console.log(this.errorMsg);
         } else {
-          const data: IUserTeam = res.data!;
-          this.errorMsg = "ERRORS.login-fail-message";
+          if (res.data != null) {
+            const data: IUserTeam = res.data;
+            this.errorMsg = "ERRORS.login-fail-message";
+            console.log(data);
+          }
           console.log("Here");
           console.log(res);
-          console.log(data);
         }
       }
     },
@@ -136,7 +146,7 @@ export default {
 
 <template>
   <TopNavBar />
-  <div class="container">
+  <div class="container" style="margin-top: 10px">
     <div class="row height d-flex justify-content-center align-items-center">
       <div class="col-md-8">
         <div class="search">
@@ -199,7 +209,7 @@ export default {
 
 .btn-color {
   background-color: #e4dccf;
-  box-shadow: 0px 5px 10px #DBE4C6;
+  box-shadow: 0px 5px 10px #dbe4c6;
 }
 .btn:hover {
   background-color: #f4b183;

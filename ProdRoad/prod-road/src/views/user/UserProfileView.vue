@@ -15,16 +15,6 @@ export default {
 <template>
   <div class="container">
     <div class="main-body">
-      <!-- Breadcrumb
-      <nav aria-label="breadcrumb" class="main-breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-          <li class="breadcrumb-item"><a href="javascript:void(0)">User</a></li>
-          <li class="breadcrumb-item active" aria-current="page">User Profile</li>
-        </ol>
-      </nav>
-        /Breadcrumb -->
-
       <div class="row gutters-sm">
         <div class="col-md-4 mb-3">
           <div class="card">
@@ -42,7 +32,10 @@ export default {
                   <p class="text-muted font-size-sm">
                     CURRENT SERVICE ACCESS: not implemented
                   </p>
-                  <RouterLink class="btn btn-color" style="margin-bottom: 10px;" to="/user/connect-team"
+                  <RouterLink
+                    class="btn btn-color"
+                    style="margin-bottom: 10px"
+                    to="/user/connect-team"
                     >Connect to Team</RouterLink
                   >
                   <button type="button" class="btn btn-color">
@@ -89,7 +82,9 @@ export default {
               <hr />
               <div class="row">
                 <div class="col-sm-12">
-                    <RouterLink class="btn btn-color" to="/user/edit-profile">Edit</RouterLink>
+                  <RouterLink class="btn btn-color" to="/user/edit-profile"
+                    >Edit</RouterLink
+                  >
                 </div>
               </div>
             </div>
@@ -164,7 +159,7 @@ body {
 
 .btn-color {
   background-color: #e4dccf;
-  box-shadow: 0px 5px 10px #DBE4C6;
+  box-shadow: 0px 5px 10px #dbe4c6;
 }
 .btn:hover {
   background-color: #f4b183;
