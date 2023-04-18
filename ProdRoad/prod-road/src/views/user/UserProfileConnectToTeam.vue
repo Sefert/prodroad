@@ -135,10 +135,13 @@ export default {
     //TODO: ask for only public userteam
     async mounted() {
       console.log("connect to teams");
-      this.userteamStore.$state.teams = [];
-      /*this.teamStore.$state.teams= [];
-        var res = await this.userTeamService.getAll();
-        var userTeams : IUserTeam[] | null = res.data;*/
+      //
+      const res = await this.userTeamService.getAll();
+      if (res.data != null) {
+        this.userteamStore.$state.userTeams = res.data; /**/
+      } else {
+        this.userteamStore.$state.teams = [];
+      }
     },
   },
 };
