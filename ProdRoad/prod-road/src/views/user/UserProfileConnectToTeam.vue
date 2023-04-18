@@ -145,7 +145,6 @@ export default {
 </script>
 
 <template>
-  <TopNavBar />
   <div class="container" style="margin-top: 10px">
     <div class="row height d-flex justify-content-center align-items-center">
       <div class="col-md-8">
@@ -173,7 +172,7 @@ export default {
       "
       class="form-check form-switch"
     >
-      <p>Leave TEAM:</p>
+      <p style="left: -40px">Leave TEAM:</p>
       <input
         checked
         @change="leavePublicTeam(publicUserTeams![0].id!)"
@@ -188,7 +187,7 @@ export default {
       v-else-if="userteamStore.$state.teams.length != 0"
       class="form-check form-switch"
     >
-      <p>Join TEAM:</p>
+      <p style="left: -40px">Join TEAM:</p>
       <input
         @change="joinPublicTeam(userteamStore.$state.teams[0])"
         type="checkbox"

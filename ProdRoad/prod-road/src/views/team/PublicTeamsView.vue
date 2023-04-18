@@ -32,7 +32,7 @@ export default {
 
     const errorMsg = ref<string | null>(null);
     const editTeamId = ref<string | null>(null);
-    const publicTeam = reactive<ITeam>({
+    const publicTeam = ref<ITeam>({
       id: "PublicTeam",
       AppUserId: null,
       name: "Insert",

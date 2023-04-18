@@ -78,7 +78,7 @@ export default {
 
       <a @click="logOutClicked()" class="nav-link" href="#">Logout</a>
     </div>
-    <LangChange style="float" />
+    <LangChange style="float; margin-right:10px" />
   </nav>
 </template>
 
