@@ -31,4 +31,14 @@ public class UserTeamRepository : BaseEntityRepository<DAL.App.DTO.UserTeam, Dom
             .Where(m => m.AppUserId.Equals(userId));
         return Mapper.Map(await query.FirstOrDefaultAsync());
     }
+    
+    public async Task<DAL.App.DTO.UserTeam?> FirstOrDefaultTeamIdAsync(Guid userId, Guid id, bool noTracking = true)
+    {
+        var query = CreateQuery(noTracking);
+        query = query
+            .Where(m => m.AppUserId.Equals(userId) && m.Id.Equals(id))
+            .Include(u => u.AppUser)
+            .Where(m => m.AppUserId.Equals(userId));
+        return Mapper.Map(await query.FirstOrDefaultAsync());
+    }
 }

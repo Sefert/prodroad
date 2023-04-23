@@ -26,4 +26,9 @@ public class UserTeamService :
     {
         return Mapper.Map(await Repo.FirstOrDefaultAsync(userId,id,noTracking));
     }
+    
+    /*public async Task<UserTeam?> GetUserTeamByTeamIdAsync(Guid userId, Guid teamId, bool noTracking = true)
+    {
+        return Mapper.Map(await Repo.FirstOrDefaultAsync(userId,id,noTracking));
+    }*/
 }

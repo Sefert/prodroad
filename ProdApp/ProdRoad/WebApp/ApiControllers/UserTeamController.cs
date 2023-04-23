@@ -61,6 +61,30 @@ namespace WebApp.ApiControllers
             
             return publicUserTeam;
         }
+        
+        // GET: api/UserTeam/Team/5
+        [HttpGet("Team/{id}")]
+        [Authorize(Roles="user,admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<UserTeam>> GetUserTeamByTeamId(Guid id)
+        {
+            var userTeam  = await _bll.UserTeams.FirstOrDefaultAsync(User.GetUserId(),id);
+            
+            if (userTeam  == null)
+            {
+                return NotFound();
+            }
+        
+            var publicUserTeam = new Public.App.DTO.v1.UserTeam()
+            {
+                Id = userTeam.Id,
+                AppUserId = userTeam.AppUserId,
+                TeamId = userTeam.TeamId,
+                //Team = x.Team,
+                Accepted = userTeam.Accepted,
+            };
+            
+            return publicUserTeam;
+        }
 
         // PUT: api/UserTeam/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
