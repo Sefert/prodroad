@@ -20,7 +20,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("NpgsqlConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(connectionString!));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 /*Default entry
@@ -55,7 +55,7 @@ builder.Services.AddAuthentication()
         {
             ValidIssuer = builder.Configuration["JWT:Issuer"],
             ValidAudience = builder.Configuration["JWT:Issuer"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"])),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]!)),
             ClockSkew = TimeSpan.Zero // remove delay of token when expire
         };
     });
@@ -98,8 +98,8 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.SupportedUICultures = supportedCultures;
     // if nothing is found, use this
     options.DefaultRequestCulture =
-        new RequestCulture(builder.Configuration["DefaultCulture"], builder.Configuration["DefaultCulture"]);
-    options.SetDefaultCulture(builder.Configuration["DefaultCulture"]);
+        new RequestCulture(builder.Configuration["DefaultCulture"]!, builder.Configuration["DefaultCulture"]!);
+    options.SetDefaultCulture(builder.Configuration["DefaultCulture"]!);
 
     options.RequestCultureProviders = new List<IRequestCultureProvider>
     {

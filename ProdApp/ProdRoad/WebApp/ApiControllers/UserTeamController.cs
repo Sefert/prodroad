@@ -44,7 +44,12 @@ namespace WebApp.ApiControllers
         public async Task<ActionResult<UserTeam>> GetUserTeam(Guid id)
         {
             var userTeam  = await _bll.UserTeams.FirstOrDefaultAsync(User.GetUserId(),id);
-
+            
+            if (userTeam  == null)
+            {
+                return NotFound();
+            }
+        
             var publicUserTeam = new Public.App.DTO.v1.UserTeam()
             {
                 Id = userTeam.Id,
@@ -54,11 +59,6 @@ namespace WebApp.ApiControllers
                 Accepted = userTeam.Accepted,
             };
             
-            if (userTeam  == null)
-            {
-                return NotFound();
-            }
-
             return publicUserTeam;
         }
 
@@ -156,15 +156,15 @@ namespace WebApp.ApiControllers
 
         // DELETE: api/UserTeam/5
         [HttpDelete("{id}")]
-        [Authorize(Roles="user,admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(Roles="admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> DeleteUserTeam(Guid id)
         {
             var userid = User.GetUserId();
-            var userTeam = await _bll.UserTeams.FirstOrDefaultAsync(User.GetUserId(),id);
+            /* userTeam = await _bll.UserTeams.FirstOrDefaultAsync(User.GetUserId(),id);
             if (userTeam == null)
             {
                 return NotFound();
-            }
+            }*/
 
             await _bll.UserTeams.RemoveAsync(id);
             await _bll.SaveChangesAsync();

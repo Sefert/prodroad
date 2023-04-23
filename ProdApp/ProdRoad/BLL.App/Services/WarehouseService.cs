@@ -26,4 +26,6 @@ public class WarehouseService :
     {
         return Mapper.Map(await Repo.FirstOrDefaultAsync(userId,noTracking));
     }
+    
+    
 }
