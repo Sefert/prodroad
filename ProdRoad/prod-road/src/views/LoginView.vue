@@ -10,6 +10,8 @@ import { ref, toRef, watch } from "vue";
 import type { PropType } from "vue";
 import type { IJWT } from "@/domain/IJWT";
 import { useI18n } from "vue-i18n";
+import type { IUserTeam } from "@/domain/IUserTeam";
+import { teamStore } from "@/stores/team";
 
 export default {
   components: {
@@ -41,6 +43,8 @@ export default {
     //https://stackoverflow.com/questions/64775876/vue-3-pass-reactive-object-to-component-with-two-way-binding
     const identityStore = ref(userStore());
     const identityService = new IdentityService();
+    const userteamStore = ref(teamStore());
+
     const i18n = useI18n();
 
     const isNotRegistered = ref<boolean>(false);
@@ -94,7 +98,7 @@ export default {
 
       //TODO: route if login succeeded and inform user
       if (res.status == 200) {
-        await this.saveStateData(res).then(() => {
+        await this.saveStateData(res).then().then(() => {
           this.$router.push({ name: "Profile" });
         });
       } else {

@@ -43,6 +43,33 @@ export class IdentityService {
     }
   }
 
+  async logout(): Promise<IServiceResult<number>> {
+    try {
+      const logoutInfo = {
+        refreshToken: this.identityStore.$state.jwt?.refreshToken,
+      };
+      const response = await httpCLient.post(
+        "/Identity/Account/Logout",
+        logoutInfo
+      );
+
+      return {
+        status: response.status,
+      };
+    } catch (e) {
+      const response = {
+        status: (e as AxiosError).response!.status,
+        //errorMsg: (e as AxiosError).response!.data.error,
+      };
+
+      console.log(response);
+
+      console.log((e as AxiosError).response);
+
+      return response;
+    }
+  }
+
   async register(
     email: string,
     password: string

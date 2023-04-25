@@ -78,6 +78,72 @@ export class BaseService<TEntity> {
     return serviceResult;
   }
 
+  async getById(id: string): Promise<IServiceResult<TEntity[]>> {
+    //const i18n = useI18n();
+    console.log("getOne");
+
+    console.log(`${this.path}/${id}?culture=${this.i18n.locale.value}`);
+    let response: AxiosResponse;
+    //var respData : TEntity[] ;
+    let serviceResult: IServiceResult<TEntity[]> = {};
+
+    try {
+      response = await httpCLient.get(
+        `/${this.path}/${id}?culture=${this.i18n.locale.value}`,
+        {
+          headers: {
+            Authorization: "bearer " + this.identityStore.$state.jwt?.token,
+          },
+        }
+      );
+
+      console.log(response);
+
+      serviceResult = {
+        status: response.status,
+        data: response.data as TEntity[],
+      };
+    } catch (e) {
+      response = (e as AxiosError).response!;
+      if (response.status == 401 && this.identityStore.jwt) {
+        const identityService = new IdentityService();
+        const refreshResponse = await identityService.refreshIdentity();
+        this.identityStore.$state.jwt = refreshResponse.data!;
+
+        if (!this.identityStore.$state.jwt) {
+          serviceResult = {
+            status: response.status,
+            errorMsg: response.data.error,
+          };
+        } else {
+          try {
+            response = await httpCLient.get(
+              `/${this.path}/${id}?culture=${this.i18n.locale.value}`,
+              {
+                headers: {
+                  Authorization:
+                    "bearer " + this.identityStore.$state.jwt?.token,
+                },
+              }
+            );
+            serviceResult = {
+              status: response.status,
+              data: response.data as TEntity[],
+            };
+          } catch (e) {
+            response = (e as AxiosError).response!;
+            serviceResult = {
+              status: response.status,
+              errorMsg: response.data.error,
+            };
+          }
+          console.log(response);
+        }
+      }
+    }
+    return serviceResult;
+  }
+
   async addMany(entity: TEntity[]): Promise<IServiceResult<TEntity[]>> {
     console.log("add");
 

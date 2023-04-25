@@ -1,5 +1,6 @@
 <script lang="ts">
 import type { IUserTeam } from "@/domain/IUserTeam";
+import { IdentityService } from "@/services/identity/IdentityService";
 import { ref, type PropType } from "vue";
 import { userStore } from "../stores/identity";
 import LangChange from "./LangChange.vue";
@@ -15,11 +16,11 @@ export default {
       default: null,
       required: true,
     },
-    errorMsg: {
+    /*errorMsg: {
       type: null as unknown as PropType<string | null>,
       default: null,
       required: true,
-    },
+    },*/
     editTeamId: {
       type: null as unknown as PropType<string | null>,
       default: null,
@@ -33,9 +34,14 @@ export default {
   setup() {
     const identityStore = ref(userStore());
     const userManagerRole = ref<string>("");
+    const identityService = new IdentityService();
+    const errorMsg = ref<string | null>(null);
+
     return {
       identityStore,
       userManagerRole,
+      identityService,
+      errorMsg,
     };
   },
 
@@ -44,17 +50,26 @@ export default {
   },
 
   methods: {
-    logOutClicked(): void {
+    async logOutClicked(): Promise<void> {
       console.log("logOutClicked");
 
-      window.localStorage.removeItem("prodRoad-r");
-      window.localStorage.removeItem("prodRoad-j");
+      const res = await this.identityService.logout();
 
-      this.identityStore.$state.jwt = null;
-      this.identityStore.$id = "";
-      this.identityStore.$state.email = null;
-      this.identityStore.$state.role = [];
-      this.identityStore.$state.jwtExp = null;
+      //TODO: route if login succeeded and inform user
+      if (res.status == 200) {
+        window.localStorage.removeItem("prodRoad-r");
+        window.localStorage.removeItem("prodRoad-j");
+
+        this.identityStore.$state.jwt = null;
+        this.identityStore.$id = "";
+        this.identityStore.$state.email = null;
+        this.identityStore.$state.role = [];
+        this.identityStore.$state.jwtExp = null;
+      } else {
+        //TODO: how to propagate
+        this.errorMsg = "ERRORS.login-fail-message";
+        console.log(this.errorMsg);
+      }
     },
   },
 };
@@ -92,7 +107,7 @@ export default {
 }
 .user-nav {
   color: #577d86;
-  background-color: #F9F5EB;
+  background-color: #f9f5eb;
   font-variant: small-caps;
   font-size: medium;
 }

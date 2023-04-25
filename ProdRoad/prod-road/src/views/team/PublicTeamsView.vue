@@ -152,6 +152,17 @@ export default {
       }
     },
 
+    async declineRequest(id: string) {
+      console.log(id);
+      const res = await this.userTeamService.delete(id);
+      if (res.status != null && typeof res.status != "undefined") {
+        if (res.status >= 300) {
+          this.errorMsg = "ERRORS.please-try-again";
+          console.log(this.errorMsg);
+        }
+      }
+    },
+
     async getTeams(): Promise<ITeam[]> {
       const res: IServiceResult<ITeam[]> = await this.teamService.getAll();
       console.log(res);
@@ -310,6 +321,17 @@ export default {
                 title=""
               >
                 <i class="material-icons">CANCEL</i>
+              </button>
+              <button
+                v-if="userTeam.accepted == false"
+                @click="declineRequest(userTeam.id!)"
+                type="button"
+                rel="tooltip"
+                class="btn btn-danger btn-just-icon btn-sm"
+                data-original-title=""
+                title=""
+              >
+                <i class="material-icons">DELETE</i>
               </button>
             </td>
           </tr>

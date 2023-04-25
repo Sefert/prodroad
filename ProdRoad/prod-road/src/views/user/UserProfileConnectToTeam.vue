@@ -92,20 +92,32 @@ export default {
         accepted: false,
       };
 
-      const res = await this.userTeamService.add(userTeam);
+      if (team.id != null) {
+        /*check is joined*/
+        const isJoinedRes = await this.userTeamService.getById(team.id);
+        let res = null;
 
-      if (res.status != null && typeof res.status != "undefined") {
-        if (res.status >= 300) {
-          this.errorMsg = "ERRORS.login-fail-message";
-          console.log(this.errorMsg);
-        } else {
-          if (res.data != null) {
-            const data: IUserTeam = res.data;
-            this.errorMsg = "ERRORS.login-fail-message";
-            console.log(data);
+        if (isJoinedRes.status == 404) {
+          res = await this.userTeamService.add(userTeam);
+        } else if (userTeam.id != null) {
+          res = await this.userTeamService.edit(userTeam.id, userTeam);
+        }
+
+        if (res != null) {
+          if (res.status != null && typeof res.status != "undefined") {
+            if (res.status >= 300) {
+              this.errorMsg = "ERRORS.login-fail-message";
+              console.log(this.errorMsg);
+            } else {
+              if (res.data != null) {
+                const data: IUserTeam = res.data;
+                this.errorMsg = "ERRORS.login-fail-message";
+                console.log(data);
+              }
+              console.log("Here");
+              console.log(res);
+            }
           }
-          console.log("Here");
-          console.log(res);
         }
       }
     },
