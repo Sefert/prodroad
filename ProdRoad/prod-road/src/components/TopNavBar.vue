@@ -65,6 +65,8 @@ export default {
         this.identityStore.$state.email = null;
         this.identityStore.$state.role = [];
         this.identityStore.$state.jwtExp = null;
+
+        this.$router.push({ name: "Login" });
       } else {
         //TODO: how to propagate
         this.errorMsg = "ERRORS.login-fail-message";

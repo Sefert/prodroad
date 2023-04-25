@@ -50,7 +50,12 @@ export class IdentityService {
       };
       const response = await httpCLient.post(
         "/Identity/Account/Logout",
-        logoutInfo
+        logoutInfo,
+        {
+          headers: {
+            Authorization: "bearer " + this.identityStore.$state.jwt?.token,
+          },
+        }
       );
 
       return {
@@ -110,10 +115,18 @@ export class IdentityService {
       console.log("Here");
       console.log(this.identityStore.$state.jwt);
 
-      const response = await httpCLient.post("/identity/account/refreshtoken", {
-        token: this.identityStore.$state.jwt?.token,
-        refreshToken: this.identityStore.$state.jwt?.refreshToken,
-      });
+      const response = await httpCLient.post(
+        "/identity/account/refreshtoken",
+        {
+          token: this.identityStore.$state.jwt?.token,
+          refreshToken: this.identityStore.$state.jwt?.refreshToken,
+        },
+        {
+          headers: {
+            Authorization: "bearer " + this.identityStore.$state.jwt?.token,
+          },
+        }
+      );
       return {
         status: response.status,
         data: response.data as IJWTResponse,
