@@ -1,13 +1,15 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Domain.Base;
+using Domain.Base.Identity;
+
 //using Domain.Base.Identity;
 
 
 namespace BLL.App.DTO.Identity;
 
 /*TODO: fix firstname and lastname*/
-public class AppUser : BaseEntity //BaseUser
+public class AppUser : BaseUser //BaseEntity
 {
     public string? UserName { get; set; }
     [MaxLength(30)] public string? FirstName { get; set; }

@@ -3,13 +3,15 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using DAL.App.EF;
-using Domain.App.Identity;
+
+using Public.App.DTO.v1.Identity;
+using Public.App.DTO.v1.Error;
+
 using Extensions.Base;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebApp.DTO.Error;
-using WebApp.DTO.Identity;
+
 
 namespace WebApp.ApiControllers.Identity;
 
@@ -92,6 +94,7 @@ public class AccountController : ControllerBase
         
         //get claims based user
         var claimsPrincipal = await _signInManager.CreateUserPrincipalAsync(appUser);
+        
         if (claimsPrincipal == null)
         {
             _logger.LogWarning("Could not get ClaimsPrincipal for user {}", loginData.Email);
@@ -102,9 +105,9 @@ public class AccountController : ControllerBase
         //generate jwt
         var jwt = IdentityExtensions.GenerateJwt(
             claimsPrincipal.Claims,
-            _configuration["JWT:Key"],
-            _configuration["JWT:Issuer"],
-            _configuration["JWT:Issuer"],
+            _configuration["JWT:Key"]!,
+            _configuration["JWT:Issuer"]!,
+            _configuration["JWT:Issuer"]!,
             DateTime.Now.AddMinutes(_configuration.GetValue<int>("JWT:ExpireInMinutes"))
         );
 
