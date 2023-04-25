@@ -7,6 +7,7 @@ public class AutomapperConfig : Profile
 {
     public AutomapperConfig()
     {
+        CreateMap<DAL.App.DTO.Identity.AppRole, Domain.App.Identity.AppRole>().ReverseMap();
         CreateMap<DAL.App.DTO.Identity.AppUser, Domain.App.Identity.AppUser>().ReverseMap();
         CreateMap<DAL.App.DTO.Address, Domain.App.Address>().ReverseMap();
         CreateMap<DAL.App.DTO.Customer, Domain.App.Customer>().ReverseMap();

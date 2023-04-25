@@ -65,7 +65,8 @@ builder.Services.AddScoped<IAppBLL, BLL.App.BLL>();
 
 builder.Services.AddAutoMapper(
     typeof(DAL.App.EF.AutomapperConfig),
-    typeof(BLL.App.AutomapperConfig)
+    typeof(BLL.App.AutomapperConfig),
+    typeof(Public.App.AutomapperConfig)
 );
 
 builder.Services.AddControllersWithViews();

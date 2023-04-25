@@ -7,10 +7,9 @@ namespace Public.App.DTO.v1.Identity;
 /*TODO: fix firstname and lastname*/
 public class AppUser : BaseUser
 {
-    public string? UserName { get; set; }
-    public ICollection<RefreshToken>? RefreshTokens { get; set; }
+    /*public string? UserName { get; set; }*/
     
-    /*[MaxLength(30)] public string? FirstName { get; set; }
+    /**/[MaxLength(30)] public string? FirstName { get; set; }
     [MaxLength(30)] public string? LastName { get; set; }
     [MaxLength(30)] public string? PersonalCode { get; set; }
     
@@ -36,5 +35,7 @@ public class AppUser : BaseUser
     public ICollection<Procedure>? Procedures { get; set; }
     public ICollection<PriceGroup>? PriceGroups { get; set; }
     public ICollection<Customer>? Customers { get; set; }
-    public ICollection<Address>? Addresses { get; set; }*/
+    public ICollection<Address>? Addresses { get; set; }
+    
+    public ICollection<RefreshToken>? RefreshTokens { get; set; }
 }

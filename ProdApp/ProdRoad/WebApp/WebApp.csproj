@@ -31,6 +31,7 @@
       <ProjectReference Include="..\DAL.App.EF\DAL.App.EF.csproj" />
       <ProjectReference Include="..\Extensions.Base\Extensions.Base.csproj" />
       <ProjectReference Include="..\Public.App.DTO\Public.App.DTO.csproj" />
+        <ProjectReference Include="..\Public.App\Public.App.csproj" />
     </ItemGroup>
 
     <ItemGroup>

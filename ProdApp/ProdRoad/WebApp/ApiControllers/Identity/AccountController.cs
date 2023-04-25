@@ -3,14 +3,17 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using DAL.App.EF;
-
-using Public.App.DTO.v1.Identity;
 using Public.App.DTO.v1.Error;
 
 using Extensions.Base;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Public.App.DTO.v1.Identity;
+using AppUser = Domain.App.Identity.AppUser;
+using RefreshToken = Domain.App.Identity.RefreshToken;
 
 
 namespace WebApp.ApiControllers.Identity;
@@ -468,6 +471,50 @@ public class AccountController : ControllerBase
 
         return Ok(res);
     }
+    
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [HttpPost]
+    public async Task<ActionResult> Logout([FromBody] Logout logout)
+    {
+        // delete the refresh token - so user is kicked out after jwt expiration
+        // We do not invalidate the jwt - that would require pipeline modification and checking against db on every request
+        // so client can actually continue to use the jwt until it expires (keep the jwt expiration time short ~1 min)
+
+        var userId = User.GetUserId();
+
+        var appUser = await _context.Users
+            .Where(u => u.Id == userId)
+            .SingleOrDefaultAsync();
+        if (appUser == null)
+        {
+            var errorResponse = RequestResponse(HttpStatusCode.NotFound);
+            
+            errorResponse.Errors["user"] = new List<string>()
+            {
+                "User not found!"
+            };
+            return NotFound("Could not log out!!");
+        }
+        
+        await _context.Entry(appUser)
+            .Collection(u => u.RefreshTokens!)
+            .Query()
+            .Where(x =>
+                (x.Token == logout.RefreshToken) ||
+                (x.PreviousToken== logout.RefreshToken)
+            )
+            .ToListAsync();
+
+        foreach (var appRefreshToken in appUser.RefreshTokens!)
+        {
+            _context.RefreshTokens.Remove(appRefreshToken);
+        }
+
+        var deleteCount = await _context.SaveChangesAsync();
+
+        return Ok(new {TokenDeleteCount = deleteCount});
+    }
+
 
     private RestApiErrorResponse RequestResponse(HttpStatusCode code)
     {
@@ -496,4 +543,6 @@ public class AccountController : ControllerBase
 
         return errorResponse;
     }
+    
+    
 }
