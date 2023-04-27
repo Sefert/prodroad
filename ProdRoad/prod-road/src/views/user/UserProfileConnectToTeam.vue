@@ -48,6 +48,8 @@ export default {
     async getPublicTeam(): Promise<void> {
       let res = null;
 
+      console.log("NewTest");
+      console.log(this.userteamStore.$state.userTeams);
       this.userteamStore.$state.teams = [];
 
       if (this.teamCode != null) {
@@ -146,14 +148,16 @@ export default {
 
     //TODO: ask for only public userteam
     async mounted() {
-      console.log("connect to teams");
+      console.log("NewTest");
+      console.log(this.userteamStore.$state.userTeams);
+      /*console.log("connect to teams");
       //
       const res = await this.userTeamService.getAll();
       if (res.data != null) {
-        this.userteamStore.$state.userTeams = res.data; /**/
+        this.userteamStore.$state.userTeams = res.data;
       } else {
         this.userteamStore.$state.teams = [];
-      }
+      }*/
     },
   },
 };

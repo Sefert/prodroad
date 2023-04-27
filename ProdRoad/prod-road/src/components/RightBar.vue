@@ -35,7 +35,7 @@ export default defineComponent({
       isNotHiddenSidebar,
       hideClass: "hide-element",
       showClass: "show-element",
-      showHide: "hide",
+      showHide: "show",
       appState,
     };
   },
@@ -69,12 +69,15 @@ export default defineComponent({
     },
     handleClick() {
       this.isNotHiddenSidebar = !this.isNotHiddenSidebar;
-      this.showHide = this.showHide == "hide" ? "show" : "hide";
-      this.appState.setIsExtended(!this.isNotHiddenSidebar);
+      this.showHide = this.isNotHiddenSidebar == false ? "show" : "hide";
+      //this.showHide = this.showHide == "hide" ? "show" : "hide";
+      this.appState.setIsExtended(this.isNotHiddenSidebar);
     },
   },
 
   mounted() {
+    console.log(`is ex ${this.appState.isExtended}`);
+    this.isNotHiddenSidebar = this.appState.isExtended;
     //const userManagerRole = this.identityStore.isInRole("manager");
   },
 });

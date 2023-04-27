@@ -28,10 +28,10 @@ export default {
 <!--TODO:make protection better-->
 <template>
   <div class="app wrapper">
-    <div :class="[appState.getIsExtended ? 'largeAppWidth' : 'smallAppWidth']">
+    <div :class="[appState.getIsExtended ? 'smallAppWidth' : 'largeAppWidth']">
       <TopNavBar v-if="identityStore.$state.jwt != null" />
     </div>
-    <div :class="[appState.getIsExtended ? 'largeAppWidth' : 'smallAppWidth']">
+    <div :class="[appState.getIsExtended ? 'smallAppWidth' : 'largeAppWidth']">
       <RouterView />
     </div>
     <RightBar v-if="identityStore.$state.jwt != null" />

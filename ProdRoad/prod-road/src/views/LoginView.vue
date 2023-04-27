@@ -12,6 +12,7 @@ import type { IJWT } from "@/domain/IJWT";
 import { useI18n } from "vue-i18n";
 import type { IUserTeam } from "@/domain/IUserTeam";
 import { teamStore } from "@/stores/team";
+import { UserTeamService } from "@/services/UserTeamService";
 
 export default {
   components: {
@@ -44,6 +45,7 @@ export default {
     const identityStore = ref(userStore());
     const identityService = new IdentityService();
     const userteamStore = ref(teamStore());
+    const userTeamService = new UserTeamService();
 
     const i18n = useI18n();
 
@@ -78,6 +80,7 @@ export default {
     return {
       identityStore,
       identityService,
+      userteamStore,
       isNotRegistered,
       email,
       password,
@@ -86,6 +89,7 @@ export default {
       i18n,
       setEmail,
       setErrorMsg,
+      userTeamService,
     };
   },
 
@@ -98,9 +102,22 @@ export default {
 
       //TODO: route if login succeeded and inform user
       if (res.status == 200) {
-        await this.saveStateData(res).then().then(() => {
-          this.$router.push({ name: "Profile" });
-        });
+        await this.saveStateData(res)
+          .then(async () => {
+            console.log("connect to teams");
+            //
+            const uTres: IServiceResult<IUserTeam[]> =
+              await this.userTeamService.getAll();
+            if (uTres.data != null) {
+              this.userteamStore.$state.userTeams = uTres.data;
+            } else {
+              this.userteamStore.$state.teams = [];
+            }
+            console.log(this.userteamStore.$state.userTeams);
+          })
+          .then(() => {
+            this.$router.push({ name: "Profile" });
+          });
       } else {
         //TODO: how to propagate
         this.errorMsg = "ERRORS.login-fail-message";
@@ -306,10 +323,10 @@ body {
 }
 
 .btn-color {
-  background-color: #E4DCCF;
+  background-color: #e4dccf;
 }
 .btn:hover {
-  background-color: #F4B183;
-  box-shadow: inset 0px 10px 10px #DBE4C6;
+  background-color: #f4b183;
+  box-shadow: inset 0px 10px 10px #dbe4c6;
 }
 </style>

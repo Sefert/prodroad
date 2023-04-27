@@ -27,6 +27,9 @@ export const teamStore = defineStore({
     addUserTeam(ut: IUserTeam): void {
       this.userTeams.push(ut);
     },
+    changeUserTeamsState(uts: IUserTeam[]): void {
+      this.userTeams = [...uts];
+    },
     delete(id: string): void {
       this.teams.splice(
         this.teams.findIndex((team) => team.id == id),
