@@ -45,6 +45,8 @@ builder.Services
     .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<AppDbContext>();
 
+
+
 builder.Services.AddAuthentication()
     .AddCookie(options => { options.SlidingExpiration = true; })
     .AddJwtBearer(cfg =>

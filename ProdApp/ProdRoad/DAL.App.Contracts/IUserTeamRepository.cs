@@ -13,4 +13,5 @@ public interface IUserTeamRepositoryCustom<TEntity>
     //custom methods here (search, so on)
     Task<IEnumerable<TEntity>> GetAllAsync(Guid userId, bool noTracking = true);
     Task<TEntity?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = true);
+    
 }

@@ -17,7 +17,8 @@ public class UserTeamRepository : BaseEntityRepository<DAL.App.DTO.UserTeam, Dom
         var query = CreateQuery(noTracking);
         query = query
             .Include(u => u.AppUser)
-            .Where(m => m.AppUserId == userId);
+            .Where(m => m.AppUserId == userId)
+            .Include(u => u.Team);
 
         return (await query.ToListAsync()).Select(x => Mapper.Map(x)!);
     }
