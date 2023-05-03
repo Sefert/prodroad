@@ -11,6 +11,6 @@ public interface ITeamService : IEntityService<BLL.App.DTO.Team>,
 
     Task<BLL.App.DTO.Team?> FirstOrDefaultAsync(Guid userId, Guid id, bool noTracking = true);
 
-    Task<BLL.App.DTO.Team?> PublicTeamAsync(LangStr code, Guid id, bool noTracking = true);
+    Task<BLL.App.DTO.Team?> PublicTeamAsync(LangStr code, bool noTracking = true);
 }
 

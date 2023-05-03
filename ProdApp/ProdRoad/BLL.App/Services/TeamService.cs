@@ -28,8 +28,8 @@ public class TeamService :
         return Mapper.Map(await Repo.FirstOrDefaultAsync(userId,id,noTracking));
     }
     
-    public async Task<Team?> PublicTeamAsync(LangStr code, Guid id, bool noTracking = true)
+    public async Task<Team?> PublicTeamAsync(LangStr code, bool noTracking = true)
     {
-        return Mapper.Map(await Repo.PublicTeamAsync(code,id,noTracking));
+        return Mapper.Map(await Repo.PublicTeamAsync(code,noTracking));
     }
 }

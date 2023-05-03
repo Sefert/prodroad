@@ -29,7 +29,7 @@ namespace WebApp.ApiControllers
             var incomingTeam = new BLL.App.DTO.Team();
             incomingTeam.Code!.SetTranslation(code);
             //incomingTeam.Code!.SetTranslation(team.Code!);
-            var bllTeam = await _bll.Teams.PublicTeamAsync(code,User.GetUserId());
+            var bllTeam = await _bll.Teams.PublicTeamAsync(code);
 
             if (bllTeam == null)
             {
