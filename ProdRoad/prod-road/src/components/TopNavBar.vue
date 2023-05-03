@@ -4,6 +4,8 @@ import { IdentityService } from "@/services/identity/IdentityService";
 import { ref, type PropType } from "vue";
 import { userStore } from "../stores/identity";
 import LangChange from "./LangChange.vue";
+import { teamStore } from "@/stores/team";
+import type { ITeam } from "@/domain/ITeam";
 
 export default {
   components: {
@@ -33,12 +35,14 @@ export default {
 
   setup() {
     const identityStore = ref(userStore());
+    const userteamStore = ref(teamStore());
     const userManagerRole = ref<string>("");
     const identityService = new IdentityService();
     const errorMsg = ref<string | null>(null);
 
     return {
       identityStore,
+      userteamStore,
       userManagerRole,
       identityService,
       errorMsg,
@@ -60,11 +64,18 @@ export default {
         window.localStorage.removeItem("prodRoad-r");
         window.localStorage.removeItem("prodRoad-j");
 
+        /*TODO: make cleanup method in state*/
         this.identityStore.$state.jwt = null;
         this.identityStore.$id = "";
         this.identityStore.$state.email = null;
         this.identityStore.$state.role = [];
         this.identityStore.$state.jwtExp = null;
+        this.identityStore.$state.jwtExp = null;
+
+        this.userteamStore.teams = [];
+        this.userteamStore.team = {} as ITeam;
+        this.userteamStore.userTeams = [];
+        this.userteamStore.publicTeam = {} as ITeam;
 
         this.$router.push({ name: "Login" });
       } else {

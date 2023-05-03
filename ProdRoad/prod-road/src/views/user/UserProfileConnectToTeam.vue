@@ -186,9 +186,7 @@ export default {
     <br />
 
     <div
-      v-if="
-        publicUserTeams.values.length != 0
-      "
+      v-if="publicUserTeams.values.length != 0"
       class="form-check form-switch"
     >
       <p style="left: -40px">Leave TEAM:</p>
