@@ -187,7 +187,7 @@ export default {
 
     <div
       v-if="
-        publicUserTeams.length != 0 && userteamStore.$state.teams.length != 0
+        publicUserTeams.values.length != 0
       "
       class="form-check form-switch"
     >
