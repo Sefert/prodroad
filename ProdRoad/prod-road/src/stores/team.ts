@@ -9,9 +9,10 @@ export const teamStore = defineStore({
     teams: [] as ITeam[],
     team: {} as ITeam,
     userTeams: [] as IUserTeam[],
+    publicTeam: {} as ITeam,
   }),
 
-  getters: {
+  getters: { 
     getTeams(): ITeam[] {
       return this.teams;
     },
@@ -56,6 +57,12 @@ export const teamStore = defineStore({
       //console.log(team);
       //console.log("Getting public team");
       return team;
+    },
+
+    getAcceptedPublicTeam(): IUserTeam[] {
+      const userTeams = this.userTeams.filter((uT) => uT.accepted == true);
+      console.log(userTeams);
+      return userTeams;
     },
   },
 });
