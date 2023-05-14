@@ -58,9 +58,16 @@ export default {
       console.log("logOutClicked");
 
       const res = await this.identityService.logout();
+      console.log("HERE");
+      console.log(`HERE ${res.errorMsg}`);
 
       //TODO: route if login succeeded and inform user
-      if (res.status == 200) {
+      if (
+        res.status == 200 ||
+        res.status == 401 ||
+        res.status == 404 ||
+        res.status == 500
+      ) {
         window.localStorage.removeItem("prodRoad-r");
         window.localStorage.removeItem("prodRoad-j");
 

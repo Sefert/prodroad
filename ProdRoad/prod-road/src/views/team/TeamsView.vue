@@ -34,7 +34,7 @@ export default {
 
     const errorMsg = ref<string | null>(null);
     const editTeamId = ref<string | null>(null);
-    const publicTeam = ref<ITeam>();
+    const publicTeam = ref<ITeam | null>(null);
     const userTeams = ref<IUserTeam[] | null>(null);
     const show = ref<boolean>(false);
 

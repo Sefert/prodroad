@@ -29,7 +29,7 @@ export default {
     const errorMsg = ref<string | null>(null);
     const teamCode = ref<string | null>("");
     const askJoin = ref<boolean>(false);
-    const publicUserTeams = ref<IUserTeam[]>([]);
+    const publicUserTeam = ref<IUserTeam | null>(null);
 
     return {
       identityStore,
@@ -40,7 +40,7 @@ export default {
       errorMsg,
       teamCode,
       askJoin,
-      publicUserTeams,
+      publicUserTeam,
     };
   },
 
@@ -65,44 +65,52 @@ export default {
             const data = res.data;
             console.log(data);
             if (data != null) {
-              this.userteamStore.$state.teams.push(data);
-              const uT = this.userteamStore.$state.teams[0].userTeams;
-              if (uT == null) {
-                this.publicUserTeams = [];
+              this.userteamStore.$state.publicTeam = data;
+              //this.userteamStore.$state.teams.push(data);
+              //const uT = this.userteamStore.publicTeam;
+
+              //TODO: nver enters here
+              if (data.userTeams == null) {
+                this.publicUserTeam = null;
               } else {
-                this.publicUserTeams = uT;
+                if (data.userTeams.length == 1) {
+                  this.publicUserTeam = data.userTeams[0];
+                  console.log(`HERE ${this.publicUserTeam}`);
+                } else {
+                  //TODO: implent it
+                }
               }
             }
-
             //this.publicUserTeams = uT == null ? [] : uT;
 
             console.log(this.userteamStore.$state.teams);
-            console.log(this.publicUserTeams);
-            console.log(this.userteamStore.$state.teams[0]);
-            console.log(this.userteamStore.$state.teams[0].userTeams);
+            console.log(this.publicUserTeam);
           }
         }
       }
     },
 
-    async joinPublicTeam(team: ITeam): Promise<void> {
+    async joinPublicTeam(id: string): Promise<void> {
       //console.log(this.identity.$id);
-      console.log(team.id);
+      console.log(id);
       const userTeam: IUserTeam = {
         AppUserId: this.identityStore.$id,
-        TeamId: team.id,
+        TeamId: id,
         accepted: false,
       };
 
-      if (team.id != null) {
+      if (id != null) {
         /*check is joined*/
-        const isJoinedRes = await this.userTeamService.getById(team.id);
+        const isJoinedRes = await this.teamService.getPublicTeam(id); //await this.userTeamService.getByTeamId(id);
         let res = null;
 
-        if (isJoinedRes.status == 404) {
+        if (isJoinedRes.data?.userTeams == null) {
           res = await this.userTeamService.add(userTeam);
-        } else if (userTeam.id != null) {
-          res = await this.userTeamService.edit(userTeam.id, userTeam);
+        } else if (isJoinedRes.data?.userTeams[0]?.id != null) {
+          res = await this.userTeamService.edit(
+            isJoinedRes.data?.userTeams[0]?.id,
+            userTeam
+          );
         }
 
         if (res != null) {
@@ -113,7 +121,9 @@ export default {
             } else {
               if (res.data != null) {
                 const data: IUserTeam = res.data;
-                this.errorMsg = "ERRORS.login-fail-message";
+                this.userteamStore.addUserTeam(data);
+                this.publicUserTeam = data;
+                //this.errorMsg = "ERRORS.login-fail-message";
                 console.log(data);
               }
               console.log("Here");
@@ -141,7 +151,7 @@ export default {
           this.errorMsg = "ERRORS.login-fail-message";
           console.log(this.errorMsg);
         } else {
-          this.publicUserTeams = [];
+          this.publicUserTeam = null;
         }
       }
     },
@@ -185,33 +195,30 @@ export default {
     <br />
     <br />
 
-    <div
-      v-if="publicUserTeams.values.length != 0"
-      class="form-check form-switch"
-    >
+    <div v-if="publicUserTeam != null" class="form-check form-switch">
       <p style="left: -40px">Leave TEAM:</p>
       <input
         checked
-        @change="leavePublicTeam(publicUserTeams![0].id!)"
+        @change="leavePublicTeam(publicUserTeam.id!)"
         type="checkbox"
         class="form-check-input"
       />
       <label class="form-check-label" for="flexSwitchCheckDefault">{{
-        userteamStore.$state.teams[0].code
+        userteamStore.$state.publicTeam.code
       }}</label>
     </div>
     <div
-      v-else-if="userteamStore.$state.teams.length != 0"
+      v-else-if="userteamStore.$state.publicTeam.id != null"
       class="form-check form-switch"
     >
       <p style="left: -40px">Join TEAM:</p>
       <input
-        @change="joinPublicTeam(userteamStore.$state.teams[0])"
+        @change="joinPublicTeam(userteamStore.$state.publicTeam.id!)"
         type="checkbox"
         class="form-check-input"
       />
       <label class="form-check-label" for="flexSwitchCheckDefault">{{
-        userteamStore.$state.teams[0].code
+        userteamStore.$state.publicTeam.code
       }}</label>
     </div>
   </div>

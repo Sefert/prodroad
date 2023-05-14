@@ -12,7 +12,7 @@ export const teamStore = defineStore({
     publicTeam: {} as ITeam,
   }),
 
-  getters: { 
+  getters: {
     getTeams(): ITeam[] {
       return this.teams;
     },
@@ -59,7 +59,7 @@ export const teamStore = defineStore({
       return team;
     },
 
-    getAcceptedPublicTeam(): IUserTeam[] {
+    getAcceptedPublicUserTeam(): IUserTeam[] {
       const userTeams = this.userTeams.filter((uT) => uT.accepted == true);
       console.log(userTeams);
       return userTeams;

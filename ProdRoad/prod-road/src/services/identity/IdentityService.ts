@@ -57,20 +57,23 @@ export class IdentityService {
           },
         }
       );
-
       return {
         status: response.status,
       };
     } catch (e) {
-      const response = {
-        status: (e as AxiosError).response!.status,
-        //errorMsg: (e as AxiosError).response!.data.error,
+      let response = {
+        status: 401,
       };
+      console.log(e);
+      if ((e as AxiosError).code != "ERR_NETWORK") {
+        response = {
+          status: (e as AxiosError).response!.status,
+          //errorMsg: (e as AxiosError).response!.data.error,
+        };
+        console.log(response);
 
-      console.log(response);
-
-      console.log((e as AxiosError).response);
-
+        console.log((e as AxiosError).response);
+      }
       return response;
     }
   }
