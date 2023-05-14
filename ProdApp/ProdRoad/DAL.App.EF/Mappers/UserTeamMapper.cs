@@ -7,5 +7,6 @@ public class UserTeamMapper : BaseMapper<DAL.App.DTO.UserTeam,Domain.App.UserTea
 {
     public UserTeamMapper(IMapper mapper) : base(mapper)
     {
+        
     }
 }

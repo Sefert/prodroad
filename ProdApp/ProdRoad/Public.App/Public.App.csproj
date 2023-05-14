@@ -11,7 +11,10 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\BLL.App.Contracts\BLL.App.Contracts.csproj" />
+      <ProjectReference Include="..\BLL.Base\BLL.Base.csproj" />
       <ProjectReference Include="..\DAL.Base\DAL.Base.csproj" />
+      <ProjectReference Include="..\Public.App.Contracts\Public.App.Contracts.csproj" />
       <ProjectReference Include="..\Public.App.DTO\Public.App.DTO.csproj" />
         <ProjectReference Include="..\BLL.App.DTO\BLL.App.DTO.csproj" />
     </ItemGroup>

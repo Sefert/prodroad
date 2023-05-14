@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Public.App.Contracts.v1;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using WebApp;
 
@@ -64,11 +65,12 @@ builder.Services.AddAuthentication()
     
 builder.Services.AddScoped<IAppUnitOfWork, AppUOW>();
 builder.Services.AddScoped<IAppBLL, BLL.App.BLL>();
+builder.Services.AddScoped<IAppPublic, Public.App.v1.PublicV1>();
 
 builder.Services.AddAutoMapper(
     typeof(DAL.App.EF.AutomapperConfig),
     typeof(BLL.App.AutomapperConfig),
-    typeof(Public.App.AutomapperConfig)
+    typeof(Public.App.v1.AutomapperConfig)
 );
 
 builder.Services.AddControllersWithViews();

@@ -22,7 +22,11 @@ public class AutomapperConfig : Profile
         CreateMap<DAL.App.DTO.Process, Domain.App.Process>().ReverseMap();
         CreateMap<DAL.App.DTO.RoadMap, Domain.App.RoadMap>().ReverseMap();
         CreateMap<DAL.App.DTO.Team, Domain.App.Team>().ReverseMap();
-        CreateMap<DAL.App.DTO.UserTeam, Domain.App.UserTeam>().ReverseMap();
+        CreateMap<DAL.App.DTO.UserTeam, Domain.App.UserTeam>().
+            ForMember(uT => uT.Team,
+                options => 
+                    options.MapFrom(uT => uT.Team)
+            ).ReverseMap();
         CreateMap<DAL.App.DTO.Warehouse, Domain.App.Warehouse>().ReverseMap();
     }
 }

@@ -6,86 +6,79 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Public.App.DTO.v1;
+using Public.App.Contracts.v1;
+using Public.App.DTO.v1.UserTeamDTO;
 
 namespace WebApp.ApiControllers
 {
+    /// <summary>
+    /// UserTeamController contains all v1 userTeam many to many access REST methods
+    /// </summary>
     [ApiController]
     [ApiVersion( "1.0" )]
     [Route("api/v{version:apiVersion}/[controller]")]
     public class UserTeamController : ControllerBase
     {
-        private readonly IAppBLL _bll;
-
-        public UserTeamController(IAppBLL bll)
+        private readonly IAppPublic _v1;
+        
+        /// <summary>
+        /// Constructor for controller
+        /// </summary>
+        /// <param name="v1">Interface for accessing existing v1 layer service context</param>
+        public UserTeamController(IAppPublic v1)
         {
-            _bll = bll;
+            _v1 = v1;
         }
 
+        /// <summary>
+        /// GetUserTeams method is for accessing user allowed UserTeams
+        /// </summary>
+        /// <returns>List of all UserTeams</returns>
         // GET: api/UserTeam
         [Authorize(Roles="user,admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<IEnumerable<UserTeam>>> GetUserTeams()
         {
-            var dataList = (await _bll.UserTeams
-                    .GetAllAsync(User.GetUserId())).Select(x => new Public.App.DTO.v1.UserTeam()
-            {
-                Id = x.Id,
-                AppUserId = x.AppUserId,
-                TeamId = x.TeamId,
-                //Team = x.Team,
-                Accepted = x.Accepted,
-            }).ToList();
-            return dataList;
+            return (await _v1.UserTeams.GetAllAsync(User.GetUserId())).ToList();
+            //return dataList;
         }
         
+        /// <summary>
+        /// GetUserTeam method is for accessing UserTeam
+        /// </summary>
+        /// <param name="id">specific UserTeam id</param>
+        /// <returns>found UserTeam or NotFound 404</returns>
         // GET: api/UserTeam/5
         [HttpGet("{id}")]
         [Authorize(Roles="user,admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<UserTeam>> GetUserTeam(Guid id)
         {
-            var userTeam  = await _bll.UserTeams.FirstOrDefaultAsync(User.GetUserId(),id);
+            var userTeam = await _v1.UserTeams.FirstOrDefaultAsync(User.GetUserId(),id);
             
-            if (userTeam  == null)
-            {
-                return NotFound();
-            }
-        
-            var publicUserTeam = new Public.App.DTO.v1.UserTeam()
-            {
-                Id = userTeam.Id,
-                AppUserId = userTeam.AppUserId,
-                TeamId = userTeam.TeamId,
-                //Team = x.Team,
-                Accepted = userTeam.Accepted,
-            };
-            
-            return publicUserTeam;
+            return  userTeam != null ? userTeam : NotFound();
         }
         
+        /// <summary>
+        /// Method for accessing UserTeam by Team id which is connected to user
+        /// Method meant for User to send join request to public Team
+        /// </summary>
+        /// <param name="id">Team id</param>
+        /// <returns>UserTeam or Error Code 404</returns>
         // GET: api/UserTeam/Team/5
         [HttpGet("Team/{id}")]
         [Authorize(Roles="user,admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<UserTeam>> GetUserTeamByTeamId(Guid id)
         {
-            var userTeam  = await _bll.UserTeams.FirstOrDefaultAsync(User.GetUserId(),id);
+            var userTeam  = await _v1.UserTeams.FirstOrDefaultAsync(User.GetUserId(),id);
             
-            if (userTeam  == null)
-            {
-                return NotFound();
-            }
-        
-            var publicUserTeam = new Public.App.DTO.v1.UserTeam()
-            {
-                Id = userTeam.Id,
-                AppUserId = userTeam.AppUserId,
-                TeamId = userTeam.TeamId,
-                //Team = x.Team,
-                Accepted = userTeam.Accepted,
-            };
-            
-            return publicUserTeam;
+            return  userTeam != null ? userTeam : NotFound();
         }
 
+        /// <summary>
+        /// Method for modifying UserTeam and only manager can modify
+        /// </summary>
+        /// <param name="id">UserTeam id</param>
+        /// <param name="userTeam">UserTeam object itself</param>
+        /// <returns>Code 204</returns>
         // PUT: api/UserTeam/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         //[HttpPut("[action]/{id}")]
@@ -93,25 +86,21 @@ namespace WebApp.ApiControllers
         [Authorize(Roles="admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> PutUserTeam(Guid id, Public.App.DTO.v1.UserTeam userTeam)
         {
-            if (id != userTeam.Id)
-            {
-                return BadRequest();
-            }
+            if (id != userTeam.Id) {return BadRequest();}
 
-            var bllUserTeam = await _bll.UserTeams.FirstOrDefaultAsync(id);
+            var bllUserTeam = await _v1.UserTeams.FirstOrDefaultAsync(id);
 
             if (bllUserTeam == null) {return NotFound();}
-
-            bllUserTeam.Accepted = userTeam.Accepted;
-            _bll.UserTeams.ModifyState(bllUserTeam);
+            
+            _v1.UserTeams.ModifyState(bllUserTeam);
 
             try
             {
-                await _bll.SaveChangesAsync();
+                await _v1.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserTeamExists(id))
+                if (!_v1.UserTeams.Exists(id))
                 {
                     return NotFound();
                 }
@@ -124,24 +113,19 @@ namespace WebApp.ApiControllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Method for adding new UserTeam. Add connection to Team and User
+        /// </summary>
+        /// <param name="userTeam">UserTeam object</param>
+        /// <returns>UserTeam with new generated and saved Guid key</returns>
         // POST: api/UserTeam
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [Authorize(Roles="user,admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ActionResult<UserTeam>> PostUserTeam([FromBody] Public.App.DTO.v1.UserTeam userTeam)
+        public async Task<ActionResult<UserTeam>> PostUserTeam([FromBody] UserTeam userTeam)
         {
-            var bllUserTeam = new BLL.App.DTO.UserTeam()
-            {
-                Id = Guid.NewGuid(),
-                AppUserId = User.GetUserId(),
-                TeamId = userTeam.TeamId,
-                Accepted = false,
-            };
-            
-            _bll.UserTeams.Add(bllUserTeam);
-            await _bll.SaveChangesAsync();
-
-            userTeam.Id = bllUserTeam.Id;
+            _v1.UserTeams.Add(userTeam);
+            await _v1.SaveChangesAsync();
 
             return CreatedAtAction("GetUserTeam", new
             {
@@ -149,56 +133,21 @@ namespace WebApp.ApiControllers
                 id = userTeam.Id
             }, userTeam);
         }
-        
-        // POST: api/UserTeam
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        /*[HttpPost]
-        [Authorize(Roles="admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ActionResult<UserTeam>> PostUserTeams([FromBody] Public.App.DTO.v1.UserTeam[] userTeam)
-        {
-            List<BLL.App.DTO.UserTeam> bllUserTeams;
 
-            var bllUserTeam = new BLL.App.DTO.UserTeam()
-            {
-                Id = Guid.NewGuid(),
-                AppUserId = User.GetUserId(),
-                TeamId = userTeam.g,
-                Accepted = false,
-            };
-            
-            _bll.UserTeams.Add(bllUserTeam);
-            await _bll.SaveChangesAsync();
-
-            userTeam.Id = bllUserTeam.Id;
-
-            return CreatedAtAction("GetUserTeam", new
-            {
-                version = HttpContext.GetRequestedApiVersion()!.ToString(),
-                id = userTeam.Id
-            }, userTeam);
-        }*/
-
+        /// <summary>
+        /// Delete userTeams and only manager can delete Team User Connections
+        /// </summary>
+        /// <param name="id">UserTeam id for finding UserTeam to delete</param>
+        /// <returns>Code 204</returns>
         // DELETE: api/UserTeam/5
         [HttpDelete("{id}")]
         [Authorize(Roles="admin,manager",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> DeleteUserTeam(Guid id)
         {
-            var userid = User.GetUserId();
-            /* userTeam = await _bll.UserTeams.FirstOrDefaultAsync(User.GetUserId(),id);
-            if (userTeam == null)
-            {
-                return NotFound();
-            }*/
-
-            await _bll.UserTeams.RemoveAsync(id);
-            await _bll.SaveChangesAsync();
+            await _v1.UserTeams.RemoveAsync(id);
+            await _v1.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool UserTeamExists(Guid id)
-        {
-            return _bll.UserTeams.Exists(id);
         }
     }
 }

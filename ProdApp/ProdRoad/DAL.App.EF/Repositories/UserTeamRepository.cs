@@ -1,6 +1,5 @@
 using Base.Contracts;
 using DAL.App.Contracts;
-using DAL.App.EF.Migrations;
 using DAL.Base.EF;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,11 +13,9 @@ public class UserTeamRepository : BaseEntityRepository<DAL.App.DTO.UserTeam, Dom
 
     public async Task<IEnumerable<DAL.App.DTO.UserTeam>> GetAllAsync(Guid userId, bool noTracking = true)
     {
-        var query = CreateQuery(noTracking);
-        query = query
-            .Include(u => u.AppUser)
-            .Where(m => m.AppUserId == userId)
-            .Include(u => u.Team);
+        var query = CreateQuery(false);
+        query = query.Where(uT =>uT.AppUserId == userId)
+            .Include(uT => uT.Team);
 
         return (await query.ToListAsync()).Select(x => Mapper.Map(x)!);
     }

@@ -36,7 +36,7 @@ namespace WebApp.ApiControllers
                 return NotFound();
             }
             
-            var publicUserTeams = bllTeam.UserTeams?.Select(x => new Public.App.DTO.v1.UserTeam()
+            var publicUserTeams = bllTeam.UserTeams?.Where(ut => ut.AppUserId == User.GetUserId()).Select(x => new Public.App.DTO.v1.UserTeam()
             {
                 Id = x.Id,
                 AppUserId = x.AppUserId,
