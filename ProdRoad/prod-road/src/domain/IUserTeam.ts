@@ -7,5 +7,5 @@ export interface IUserTeam {
   TeamId?: string | null;
   accepted: boolean | null;
   appUser?: IAppUser | null;
-  teams?: ITeam[] | null;
+  team: ITeam | null;
 }

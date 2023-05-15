@@ -20,26 +20,6 @@ export default {
     ErrorParagraph,
   },
 
-  /*TODO: make an interface for it */
-  /*props: {
-    email: { type: String, default: "" },
-    password: { type: String, default: "" },
-    repeatedPassword: { type: String, default: "" },
-    //https://stackoverflow.com/questions/59125043/vuejs-using-prop-type-validation-with-null-and-undefined-values
-    errorMsg: {
-      type: null as unknown as PropType<string | null>,
-      default: null,
-    },
-  },*/
-
-  /*emits: [
-    "update:email",
-    "update:password",
-    "update:repeatedPassword",
-    "update:errorMsg",
-    "update:isNotRegistered",
-  ],*/
-
   setup(props, context) {
     //https://stackoverflow.com/questions/64775876/vue-3-pass-reactive-object-to-component-with-two-way-binding
     const identityStore = ref(userStore());
@@ -55,14 +35,6 @@ export default {
     const repeatedPassword = ref<string>("");
     const errorMsg = ref<string | null>(null);
 
-    /*const register = () => {
-      context.emit("update:isNotRegistered", !props.isNotRegistered);
-      console.log(props.isNotRegistered);
-    }; */
-
-    /*const register = () => {
-      isNotRegistered.value = !isNotRegistered.value;
-    };*/
     const setEmail = (message: string) => {
       email.value = message;
       console.log(message);
@@ -70,12 +42,6 @@ export default {
     const setErrorMsg = (message: string) => {
       errorMsg.value = message;
     };
-
-    //https://stackoverflow.com/questions/66753488/vue-3-call-emit-on-variable-change
-    /*watch(props, (newVal) => {
-      context.emit("update:isNotRegistered", { newVal });
-      console.log(props.isNotRegistered);
-    }); */
 
     return {
       identityStore,

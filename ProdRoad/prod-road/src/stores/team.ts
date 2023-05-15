@@ -59,10 +59,13 @@ export const teamStore = defineStore({
       return team;
     },
 
-    getAcceptedPublicUserTeam(): IUserTeam[] {
-      const userTeams = this.userTeams.filter((uT) => uT.accepted == true);
-      console.log(userTeams);
-      return userTeams;
+    getPublicUserTeam(): IUserTeam | null {
+      const userTeam: IUserTeam = this.userTeams.filter(
+        (uT) => uT.team?.isPublic == true
+      )[0];
+      return userTeam != null && typeof userTeam != "undefined"
+        ? userTeam
+        : null;
     },
   },
 });

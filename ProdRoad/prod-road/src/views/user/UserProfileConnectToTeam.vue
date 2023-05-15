@@ -30,6 +30,7 @@ export default {
     const teamCode = ref<string | null>("");
     const askJoin = ref<boolean>(false);
     const publicUserTeam = ref<IUserTeam | null>(null);
+    const publicUserTeams = ref<IUserTeam[]>([]);
 
     return {
       identityStore,
@@ -41,6 +42,7 @@ export default {
       teamCode,
       askJoin,
       publicUserTeam,
+      publicUserTeams,
     };
   },
 
@@ -97,6 +99,7 @@ export default {
         AppUserId: this.identityStore.$id,
         TeamId: id,
         accepted: false,
+        team: null,
       };
 
       if (id != null) {
@@ -155,20 +158,12 @@ export default {
         }
       }
     },
+  },
 
-    //TODO: ask for only public userteam
-    async mounted() {
-      console.log("NewTest");
-      console.log(this.userteamStore.$state.userTeams);
-      /*console.log("connect to teams");
-      //
-      const res = await this.userTeamService.getAll();
-      if (res.data != null) {
-        this.userteamStore.$state.userTeams = res.data;
-      } else {
-        this.userteamStore.$state.teams = [];
-      }*/
-    },
+  //TODO: ask for only public userteam
+  mounted() {
+    console.log("NewTest");
+    this.publicUserTeam = this.userteamStore.getPublicUserTeam();
   },
 };
 </script>
