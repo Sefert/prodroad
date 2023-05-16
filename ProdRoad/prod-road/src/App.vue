@@ -8,6 +8,10 @@ import { appStore } from "./stores/appStore";
 
 //import { computed } from 'vue'
 import { ref } from "vue";
+import { UserTeamService } from "./services/UserTeamService";
+import type { IServiceResult } from "./services/contracts/IServiceResult";
+import type { IUserTeam } from "./domain/IUserTeam";
+import { teamStore } from "./stores/team";
 
 export default {
   components: {
@@ -18,9 +22,24 @@ export default {
   setup(props, { emit }) {
     const identityStore = ref(userStore());
     const appState = ref(appStore());
+    const userTeamService = new UserTeamService();
+    const userteamStore = ref(teamStore());
 
     // const userManagerRole: boolean = identityStore.isInRole("manager");
-    return { identityStore, appState};
+    return { identityStore, appState, userTeamService, userteamStore };
+  },
+
+  async updated() {
+    console.log('A_P_P');
+    const uTres: IServiceResult<IUserTeam[]> =
+      await this.userTeamService.getAll();
+    if (uTres.data != null) {
+      this.userteamStore.$state.userTeams = uTres.data;
+    } else {
+      this.userteamStore.$state.teams = [];
+    }
+    console.log(this.userteamStore.$state.userTeams);
+    console.log('A_P_P2');
   },
 };
 </script>

@@ -19,7 +19,6 @@ export const userStore = defineStore({
     isInRole(access: string): boolean {
       let exist = false;
 
-      console.log("exist2");
       console.log(this.role);
       console.log(this.email);
 
@@ -33,9 +32,6 @@ export const userStore = defineStore({
           exist = true;
         }
       }
-
-      console.log("exist");
-      console.log(exist);
       return exist;
     },
     logOut(): void {

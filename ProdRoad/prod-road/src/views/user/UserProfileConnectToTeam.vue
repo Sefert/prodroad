@@ -161,9 +161,10 @@ export default {
   },
 
   //TODO: ask for only public userteam
-  mounted() {
+  async mounted() {
     console.log("NewTest");
     this.publicUserTeam = this.userteamStore.getPublicUserTeam();
+    console.log(this.userteamStore.$state.userTeams);
   },
 };
 </script>
