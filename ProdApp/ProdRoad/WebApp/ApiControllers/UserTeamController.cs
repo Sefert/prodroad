@@ -1,6 +1,5 @@
 #nullable enable
 
-using BLL.App.Contracts;
 using Extensions.Base;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -88,11 +87,13 @@ namespace WebApp.ApiControllers
         {
             if (id != userTeam.Id) {return BadRequest();}
 
-            var bllUserTeam = await _v1.UserTeams.FirstOrDefaultAsync(id);
+            var v1UserTeam = await _v1.UserTeams.FirstOrDefaultAsync(id);
 
-            if (bllUserTeam == null) {return NotFound();}
+            if (v1UserTeam == null) {return NotFound();}
             
-            _v1.UserTeams.ModifyState(bllUserTeam);
+            v1UserTeam.Accepted = userTeam.Accepted;
+            
+            _v1.UserTeams.ModifyState(v1UserTeam);
 
             try
             {

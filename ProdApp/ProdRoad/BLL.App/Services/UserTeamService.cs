@@ -17,7 +17,6 @@ public class UserTeamService :
 
     public async Task<IEnumerable<UserTeam>> GetAllAsync(Guid userId, bool noTracking = true)
     {
-
         return (await Repo.GetAllAsync(userId,noTracking)).Select(x => Mapper.Map(x)!);
     }
 
@@ -25,6 +24,7 @@ public class UserTeamService :
     {
         return Mapper.Map(await Repo.FirstOrDefaultAsync(userId,id,noTracking));
     }
+    
     
     /*public async Task<UserTeam?> GetUserTeamByTeamIdAsync(Guid userId, Guid teamId, bool noTracking = true)
     {
