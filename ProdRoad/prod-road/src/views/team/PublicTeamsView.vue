@@ -181,19 +181,21 @@ export default {
   },
 
   async mounted(): Promise<void> {
-    console.log("Team mounted");
+    console.log("PublicTeamsView mounted");
 
     if (!this.identityStore.isInRole("manager")) {
       this.identityStore.logOut();
     }
-    await this.getTeams()
-      .then((data: ITeam[]) => {
-        this.userteamStore.$state.teams = data;
-      })
-      .then(() => {
-        this.publicTeam = this.userteamStore.getPublicTeam();
-        console.log(this.publicTeam);
-      });
+    if (this.userteamStore.getPublicTeam().id == "PublicTeam") {
+      await this.getTeams()
+        .then((data: ITeam[]) => {
+          this.userteamStore.$state.teams = data;
+        })
+        .then(() => {
+          this.publicTeam = this.userteamStore.getPublicTeam();
+          console.log(this.publicTeam);
+        });
+    }
   },
 };
 </script>

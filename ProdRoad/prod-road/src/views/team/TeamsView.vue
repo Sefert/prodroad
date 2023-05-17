@@ -204,6 +204,22 @@ export default {
       router.push({ name: "ManageTeams" });
     },
   },
+
+  async mounted(): Promise<void> {
+    console.log("Team mounted");
+
+    if (!this.identityStore.isInRole("manager")) {
+      this.identityStore.logOut();
+    }
+    await this.getTeams()
+      .then((data: ITeam[]) => {
+        this.userteamStore.$state.teams = data;
+      })
+      .then(() => {
+        this.publicTeam = this.userteamStore.getPublicTeam();
+        console.log(this.publicTeam);
+      });
+  },
 };
 </script>
 
