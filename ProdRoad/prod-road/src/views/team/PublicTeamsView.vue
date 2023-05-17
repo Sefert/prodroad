@@ -137,6 +137,9 @@ export default {
         if (res.status >= 300) {
           this.errorMsg = "ERRORS.please-try-again";
           console.log(this.errorMsg);
+        } else if (res.status == 204) {
+          userTeam.accepted = true;
+          console.log(this.userteamStore.getTeams);
         }
       }
     },
