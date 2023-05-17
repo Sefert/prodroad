@@ -206,19 +206,21 @@ export default {
   },
 
   async mounted(): Promise<void> {
-    console.log("Team mounted");
+    console.log("TeamsView mounted");
 
     if (!this.identityStore.isInRole("manager")) {
       this.identityStore.logOut();
     }
-    await this.getTeams()
-      .then((data: ITeam[]) => {
-        this.userteamStore.$state.teams = data;
-      })
-      .then(() => {
-        this.publicTeam = this.userteamStore.getPublicTeam();
-        console.log(this.publicTeam);
-      });
+    if (this.userteamStore.getUserTeams) {
+      await this.getTeams()
+        .then((data: ITeam[]) => {
+          this.userteamStore.$state.teams = data;
+        })
+        .then(() => {
+          this.publicTeam = this.userteamStore.getPublicTeam();
+          console.log(this.publicTeam);
+        });
+    }
   },
 };
 </script>
