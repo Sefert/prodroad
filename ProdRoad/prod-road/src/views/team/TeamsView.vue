@@ -211,7 +211,7 @@ export default {
     if (!this.identityStore.isInRole("manager")) {
       this.identityStore.logOut();
     }
-    if (this.userteamStore.getUserTeams) {
+    if (this.userteamStore.getTeams.length == 0) {
       await this.getTeams()
         .then((data: ITeam[]) => {
           this.userteamStore.$state.teams = data;
@@ -220,6 +220,9 @@ export default {
           this.publicTeam = this.userteamStore.getPublicTeam();
           console.log(this.publicTeam);
         });
+    } else {
+      this.publicTeam = this.userteamStore.getPublicTeam();
+      console.log(this.publicTeam);
     }
   },
 };

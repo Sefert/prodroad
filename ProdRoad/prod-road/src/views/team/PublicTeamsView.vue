@@ -195,6 +195,9 @@ export default {
           this.publicTeam = this.userteamStore.getPublicTeam();
           console.log(this.publicTeam);
         });
+    } else {
+      this.publicTeam = this.userteamStore.getPublicTeam();
+      console.log(this.publicTeam);
     }
   },
 };
