@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ProdRoad.Domain;
 
@@ -10,6 +11,7 @@ public class Price : BaseEntity
     public DateTime From { get; set; }
     public DateTime? Until { get; set; }
     
+    [Column(TypeName = "decimal(18,2)")]
     public decimal Cost { get; set; } = default!;
     
     [MaxLength(80)] public string Region { get; set; } = default!;

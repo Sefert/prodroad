@@ -1,0 +1,64 @@
+@model ProdRoad.Domain.Process
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Process</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="RoadMapId" class="control-label"></label>
+                <select asp-for="RoadMapId" class="form-control" asp-items="ViewBag.RoadMapId"></select>
+                <span asp-validation-for="RoadMapId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TeamId" class="control-label"></label>
+                <select asp-for="TeamId" class="form-control" asp-items="ViewBag.TeamId"></select>
+                <span asp-validation-for="TeamId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StartAt" class="control-label"></label>
+                <input asp-for="StartAt" class="form-control" />
+                <span asp-validation-for="StartAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EndAt" class="control-label"></label>
+                <input asp-for="EndAt" class="form-control" />
+                <span asp-validation-for="EndAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RealStartAt" class="control-label"></label>
+                <input asp-for="RealStartAt" class="form-control" />
+                <span asp-validation-for="RealStartAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RealEndAt" class="control-label"></label>
+                <input asp-for="RealEndAt" class="form-control" />
+                <span asp-validation-for="RealEndAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UpdatedAt" class="control-label"></label>
+                <input asp-for="UpdatedAt" class="form-control" />
+                <span asp-validation-for="UpdatedAt" class="text-danger"></span>
+            </div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

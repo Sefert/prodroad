@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace ProdRoad.Domain;
 
 public class OrderRow : BaseEntity
@@ -10,7 +12,9 @@ public class OrderRow : BaseEntity
     
     public DateTime Deadline { get; set; }
     
+    [Column(TypeName = "decimal(18,2)")]
     public decimal Quantity { get; set; }
+    [Column(TypeName = "decimal(18,2)")]
     public decimal Cost { get; set; }
     
     public ICollection<ItemProcess> ItemProcesses { get; set; } = default!;
