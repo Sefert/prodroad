@@ -6,7 +6,7 @@ namespace ProdRoad.Domain;
 public class Customer : BaseEntity
 {
     public Guid AppUserId { get; set; }
-    public AppUser AppUser { get; set; } = default!;
+    public AppUser? AppUser { get; set; } = default!;
 
     [MaxLength(50)] public string Name { get; set; } = default!;
     [MaxLength(50)] public string? Registration { get; set; }
