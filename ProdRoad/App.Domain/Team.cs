@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
+using App.Domain.Identity;
 using Base.Domain;
-using WebApp.Domain.Identity;
 
-namespace WebApp.Domain;
+namespace App.Domain;
 
 public class Team : BaseEntity
 {

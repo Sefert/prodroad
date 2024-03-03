@@ -115,6 +115,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\App.Domain\App.Domain.csproj" />
       <ProjectReference Include="..\Base.Domain\Base.Domain.csproj" />
     </ItemGroup>
 

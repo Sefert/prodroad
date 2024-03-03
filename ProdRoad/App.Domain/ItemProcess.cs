@@ -1,6 +1,6 @@
 using Base.Domain;
 
-namespace WebApp.Domain;
+namespace App.Domain;
 
 public class ItemProcess : BaseEntity
 {

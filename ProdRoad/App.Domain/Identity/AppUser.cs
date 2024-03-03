@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 
-namespace WebApp.Domain.Identity;
+namespace App.Domain.Identity;
 
 public class AppUser : IdentityUser<Guid>
 {

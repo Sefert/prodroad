@@ -1,10 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using App.Domain.Identity;
 using Base.Domain;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using WebApp.Domain.Identity;
 
-namespace WebApp.Domain;
+namespace App.Domain;
 
 public class Item : BaseEntity
 {

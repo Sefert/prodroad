@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Base.Domain;
 
-namespace WebApp.Domain;
+namespace App.Domain;
 
 public class Price : BaseEntity
 {
