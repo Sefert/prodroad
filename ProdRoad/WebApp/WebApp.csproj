@@ -114,4 +114,8 @@
       <Content Include="Views\Shared\.DS_Store" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Base.Domain\Base.Domain.csproj" />
+    </ItemGroup>
+
 </Project>

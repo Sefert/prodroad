@@ -119,7 +119,7 @@ namespace WebApp.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("WebApp.Domain.Address", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.Address", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -170,7 +170,7 @@ namespace WebApp.Migrations
                     b.ToTable("Addresses");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.Customer", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.Customer", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -195,7 +195,7 @@ namespace WebApp.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.CustomerPrice", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.CustomerPrice", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -219,7 +219,7 @@ namespace WebApp.Migrations
                     b.ToTable("CustomerPrices");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.Identity.AppRole", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.Identity.AppRole", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -246,7 +246,7 @@ namespace WebApp.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
-            modelBuilder.Entity("WebApp.Domain.Identity.AppUser", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.Identity.AppUser", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -323,7 +323,7 @@ namespace WebApp.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("WebApp.Domain.Item", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.Item", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -357,7 +357,7 @@ namespace WebApp.Migrations
                     b.ToTable("Items");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.ItemProcess", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.ItemProcess", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -392,7 +392,7 @@ namespace WebApp.Migrations
                     b.ToTable("ItemProcesses");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.Order", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.Order", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -416,7 +416,7 @@ namespace WebApp.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.OrderRow", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.OrderRow", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -446,7 +446,7 @@ namespace WebApp.Migrations
                     b.ToTable("OrderRows");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.Price", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.Price", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -476,7 +476,7 @@ namespace WebApp.Migrations
                     b.ToTable("Prices");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.Process", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.Process", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -517,7 +517,7 @@ namespace WebApp.Migrations
                     b.ToTable("Processes");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.RoadMap", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.RoadMap", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -546,7 +546,7 @@ namespace WebApp.Migrations
                     b.ToTable("RoadMaps");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.Team", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.Team", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -572,7 +572,7 @@ namespace WebApp.Migrations
                     b.ToTable("Teams");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.UserTeam", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.UserTeam", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -595,7 +595,7 @@ namespace WebApp.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.HasOne("WebApp.Domain.Identity.AppRole", null)
+                    b.HasOne("WebApp.Base.Domain.Identity.AppRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -604,7 +604,7 @@ namespace WebApp.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("WebApp.Domain.Identity.AppUser", null)
+                    b.HasOne("WebApp.Base.Domain.Identity.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -613,7 +613,7 @@ namespace WebApp.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("WebApp.Domain.Identity.AppUser", null)
+                    b.HasOne("WebApp.Base.Domain.Identity.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -622,13 +622,13 @@ namespace WebApp.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.HasOne("WebApp.Domain.Identity.AppRole", null)
+                    b.HasOne("WebApp.Base.Domain.Identity.AppRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebApp.Domain.Identity.AppUser", null)
+                    b.HasOne("WebApp.Base.Domain.Identity.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -637,20 +637,20 @@ namespace WebApp.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("WebApp.Domain.Identity.AppUser", null)
+                    b.HasOne("WebApp.Base.Domain.Identity.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WebApp.Domain.Address", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.Address", b =>
                 {
-                    b.HasOne("WebApp.Domain.Identity.AppUser", "AppUser")
+                    b.HasOne("WebApp.Base.Domain.Identity.AppUser", "AppUser")
                         .WithMany("Addresses")
                         .HasForeignKey("AppUserId");
 
-                    b.HasOne("WebApp.Domain.Customer", "Customer")
+                    b.HasOne("WebApp.Base.Domain.Customer", "Customer")
                         .WithMany("Addresses")
                         .HasForeignKey("CustomerId");
 
@@ -659,9 +659,9 @@ namespace WebApp.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.Customer", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.Customer", b =>
                 {
-                    b.HasOne("WebApp.Domain.Identity.AppUser", "AppUser")
+                    b.HasOne("WebApp.Base.Domain.Identity.AppUser", "AppUser")
                         .WithMany("Customers")
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -670,15 +670,15 @@ namespace WebApp.Migrations
                     b.Navigation("AppUser");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.CustomerPrice", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.CustomerPrice", b =>
                 {
-                    b.HasOne("WebApp.Domain.Customer", "Customer")
+                    b.HasOne("WebApp.Base.Domain.Customer", "Customer")
                         .WithMany("CustomerPrice")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebApp.Domain.Item", "Item")
+                    b.HasOne("WebApp.Base.Domain.Item", "Item")
                         .WithMany("CustomerPrices")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -689,9 +689,9 @@ namespace WebApp.Migrations
                     b.Navigation("Item");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.Item", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.Item", b =>
                 {
-                    b.HasOne("WebApp.Domain.Identity.AppUser", "AppUser")
+                    b.HasOne("WebApp.Base.Domain.Identity.AppUser", "AppUser")
                         .WithMany("Items")
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -700,17 +700,17 @@ namespace WebApp.Migrations
                     b.Navigation("AppUser");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.ItemProcess", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.ItemProcess", b =>
                 {
-                    b.HasOne("WebApp.Domain.Item", "Item")
+                    b.HasOne("WebApp.Base.Domain.Item", "Item")
                         .WithMany("ItemProcesses")
                         .HasForeignKey("ItemId");
 
-                    b.HasOne("WebApp.Domain.OrderRow", "OrderRow")
+                    b.HasOne("WebApp.Base.Domain.OrderRow", "OrderRow")
                         .WithMany("ItemProcesses")
                         .HasForeignKey("OrderRowId");
 
-                    b.HasOne("WebApp.Domain.Process", "Process")
+                    b.HasOne("WebApp.Base.Domain.Process", "Process")
                         .WithMany("ItemProcesses")
                         .HasForeignKey("ProcessId");
 
@@ -721,15 +721,15 @@ namespace WebApp.Migrations
                     b.Navigation("Process");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.Order", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.Order", b =>
                 {
-                    b.HasOne("WebApp.Domain.Identity.AppUser", "AppUser")
+                    b.HasOne("WebApp.Base.Domain.Identity.AppUser", "AppUser")
                         .WithMany("Orders")
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebApp.Domain.Customer", "Customer")
+                    b.HasOne("WebApp.Base.Domain.Customer", "Customer")
                         .WithMany("Order")
                         .HasForeignKey("CustomerId");
 
@@ -738,15 +738,15 @@ namespace WebApp.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.OrderRow", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.OrderRow", b =>
                 {
-                    b.HasOne("WebApp.Domain.Item", "Item")
+                    b.HasOne("WebApp.Base.Domain.Item", "Item")
                         .WithMany("OrderRows")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebApp.Domain.Order", "Order")
+                    b.HasOne("WebApp.Base.Domain.Order", "Order")
                         .WithMany("OrderRows")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -757,9 +757,9 @@ namespace WebApp.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.Price", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.Price", b =>
                 {
-                    b.HasOne("WebApp.Domain.Item", "Item")
+                    b.HasOne("WebApp.Base.Domain.Item", "Item")
                         .WithMany("Prices")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -768,19 +768,19 @@ namespace WebApp.Migrations
                     b.Navigation("Item");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.Process", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.Process", b =>
                 {
-                    b.HasOne("WebApp.Domain.Identity.AppUser", null)
+                    b.HasOne("WebApp.Base.Domain.Identity.AppUser", null)
                         .WithMany("Processes")
                         .HasForeignKey("AppUserId");
 
-                    b.HasOne("WebApp.Domain.RoadMap", "RoadMap")
+                    b.HasOne("WebApp.Base.Domain.RoadMap", "RoadMap")
                         .WithMany("Processes")
                         .HasForeignKey("RoadMapId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebApp.Domain.Team", "Team")
+                    b.HasOne("WebApp.Base.Domain.Team", "Team")
                         .WithMany("Processes")
                         .HasForeignKey("TeamId");
 
@@ -789,9 +789,9 @@ namespace WebApp.Migrations
                     b.Navigation("Team");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.RoadMap", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.RoadMap", b =>
                 {
-                    b.HasOne("WebApp.Domain.Identity.AppUser", "AppUser")
+                    b.HasOne("WebApp.Base.Domain.Identity.AppUser", "AppUser")
                         .WithMany("RoadMaps")
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -800,9 +800,9 @@ namespace WebApp.Migrations
                     b.Navigation("AppUser");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.Team", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.Team", b =>
                 {
-                    b.HasOne("WebApp.Domain.Identity.AppUser", "AppUser")
+                    b.HasOne("WebApp.Base.Domain.Identity.AppUser", "AppUser")
                         .WithMany("Teams")
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -811,15 +811,15 @@ namespace WebApp.Migrations
                     b.Navigation("AppUser");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.UserTeam", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.UserTeam", b =>
                 {
-                    b.HasOne("WebApp.Domain.Identity.AppUser", "AppUser")
+                    b.HasOne("WebApp.Base.Domain.Identity.AppUser", "AppUser")
                         .WithMany("UserTeams")
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebApp.Domain.Team", "Team")
+                    b.HasOne("WebApp.Base.Domain.Team", "Team")
                         .WithMany("UserTeams")
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -830,7 +830,7 @@ namespace WebApp.Migrations
                     b.Navigation("Team");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.Customer", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.Customer", b =>
                 {
                     b.Navigation("Addresses");
 
@@ -839,7 +839,7 @@ namespace WebApp.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.Identity.AppUser", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.Identity.AppUser", b =>
                 {
                     b.Navigation("Addresses");
 
@@ -858,7 +858,7 @@ namespace WebApp.Migrations
                     b.Navigation("UserTeams");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.Item", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.Item", b =>
                 {
                     b.Navigation("CustomerPrices");
 
@@ -869,27 +869,27 @@ namespace WebApp.Migrations
                     b.Navigation("Prices");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.Order", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.Order", b =>
                 {
                     b.Navigation("OrderRows");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.OrderRow", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.OrderRow", b =>
                 {
                     b.Navigation("ItemProcesses");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.Process", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.Process", b =>
                 {
                     b.Navigation("ItemProcesses");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.RoadMap", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.RoadMap", b =>
                 {
                     b.Navigation("Processes");
                 });
 
-            modelBuilder.Entity("WebApp.Domain.Team", b =>
+            modelBuilder.Entity("WebApp.Base.Domain.Team", b =>
                 {
                     b.Navigation("Processes");
 

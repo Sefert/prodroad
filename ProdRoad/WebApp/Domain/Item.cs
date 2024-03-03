@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Base.Domain;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using WebApp.Domain.Identity;
 

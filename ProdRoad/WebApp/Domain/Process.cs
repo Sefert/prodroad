@@ -1,3 +1,5 @@
+using Base.Domain;
+
 namespace WebApp.Domain;
 
 public class Process : BaseEntity

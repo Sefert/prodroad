@@ -1,4 +1,4 @@
-namespace WebApp.Domain;
+namespace Base.Domain;
 
 public abstract class BaseEntity
 {
