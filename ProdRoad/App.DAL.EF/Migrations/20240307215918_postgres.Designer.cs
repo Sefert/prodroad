@@ -5,161 +5,67 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace WebApp.Migrations
+namespace App.DAL.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240226002805_Initial")]
-    partial class Initial
+    [Migration("20240307215918_postgres")]
+    partial class postgres
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.2");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "8.0.2")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetRoleClaims", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AspNetUserClaims", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
-                {
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ProviderKey")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("LoginProvider", "ProviderKey");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AspNetUserLogins", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetUserRoles", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Value")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("UserId", "LoginProvider", "Name");
-
-                    b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("WebApp.Base.Domain.Address", b =>
+            modelBuilder.Entity("App.Domain.Address", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("AppUserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("City")
                         .HasMaxLength(40)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(40)");
 
                     b.Property<string>("Code")
                         .HasMaxLength(30)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(30)");
 
                     b.Property<string>("Country")
                         .HasMaxLength(30)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(30)");
 
                     b.Property<Guid?>("CustomerId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Email")
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<DateTime>("From")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Phone")
                         .HasMaxLength(20)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(20)");
 
                     b.Property<string>("Street")
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<DateTime?>("Until")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -170,23 +76,23 @@ namespace WebApp.Migrations
                     b.ToTable("Addresses");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.Customer", b =>
+            modelBuilder.Entity("App.Domain.Customer", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("AppUserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("Registration")
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
@@ -195,20 +101,20 @@ namespace WebApp.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.CustomerPrice", b =>
+            modelBuilder.Entity("App.Domain.CustomerPrice", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<decimal>("Cost")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid>("CustomerId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("ItemId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -219,23 +125,23 @@ namespace WebApp.Migrations
                     b.ToTable("CustomerPrices");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.Identity.AppRole", b =>
+            modelBuilder.Entity("App.Domain.Identity.AppRole", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
@@ -246,70 +152,70 @@ namespace WebApp.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.Identity.AppUser", b =>
+            modelBuilder.Entity("App.Domain.Identity.AppUser", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("FirstName")
                         .HasMaxLength(30)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(30)");
 
                     b.Property<string>("LastName")
                         .HasMaxLength(30)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(30)");
 
                     b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("PersonalCode")
                         .HasMaxLength(30)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(30)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
@@ -323,19 +229,34 @@ namespace WebApp.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.Item", b =>
+            modelBuilder.Entity("App.Domain.Identity.AppUserRole", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("App.Domain.Item", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("AppUserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(80)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(80)");
 
                     b.Property<decimal>("Quantity")
                         .HasColumnType("decimal(18,2)");
@@ -343,12 +264,12 @@ namespace WebApp.Migrations
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(30)");
 
                     b.Property<string>("Unit")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(30)");
 
                     b.HasKey("Id");
 
@@ -357,29 +278,29 @@ namespace WebApp.Migrations
                     b.ToTable("Items");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.ItemProcess", b =>
+            modelBuilder.Entity("App.Domain.ItemProcess", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("ItemId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("OrderRowId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("ProcessId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<decimal>("Quantity")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("numeric");
 
                     b.Property<bool>("Save")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("UsedCreated")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
@@ -392,20 +313,20 @@ namespace WebApp.Migrations
                     b.ToTable("ItemProcesses");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.Order", b =>
+            modelBuilder.Entity("App.Domain.Order", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("AppUserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("CustomerId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("Deadline")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -416,23 +337,23 @@ namespace WebApp.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.OrderRow", b =>
+            modelBuilder.Entity("App.Domain.OrderRow", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<decimal>("Cost")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("Deadline")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("ItemId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("OrderId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<decimal>("Quantity")
                         .HasColumnType("decimal(18,2)");
@@ -446,28 +367,28 @@ namespace WebApp.Migrations
                     b.ToTable("OrderRows");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.Price", b =>
+            modelBuilder.Entity("App.Domain.Price", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<decimal>("Cost")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("From")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("ItemId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Region")
                         .IsRequired()
                         .HasMaxLength(80)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(80)");
 
                     b.Property<DateTime?>("Until")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -476,35 +397,35 @@ namespace WebApp.Migrations
                     b.ToTable("Prices");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.Process", b =>
+            modelBuilder.Entity("App.Domain.Process", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("AppUserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("EndAt")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("RealEndAt")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("RealStartAt")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("RoadMapId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("StartAt")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid?>("TeamId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -517,27 +438,27 @@ namespace WebApp.Migrations
                     b.ToTable("Processes");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.RoadMap", b =>
+            modelBuilder.Entity("App.Domain.RoadMap", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("AppUserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Line")
                         .HasMaxLength(3)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(3)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(30)");
 
                     b.Property<string>("Position")
                         .HasMaxLength(2)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(2)");
 
                     b.HasKey("Id");
 
@@ -546,24 +467,24 @@ namespace WebApp.Migrations
                     b.ToTable("RoadMaps");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.Team", b =>
+            modelBuilder.Entity("App.Domain.Team", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("AppUserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(30)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(30)");
 
                     b.HasKey("Id");
 
@@ -572,17 +493,17 @@ namespace WebApp.Migrations
                     b.ToTable("Teams");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.UserTeam", b =>
+            modelBuilder.Entity("App.Domain.UserTeam", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("AppUserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("TeamId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -595,62 +516,99 @@ namespace WebApp.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.HasOne("WebApp.Base.Domain.Identity.AppRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("WebApp.Base.Domain.Identity.AppUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("WebApp.Base.Domain.Identity.AppUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("text");
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
-                {
-                    b.HasOne("WebApp.Base.Domain.Identity.AppRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("text");
 
-                    b.HasOne("WebApp.Base.Domain.Identity.AppUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("WebApp.Base.Domain.Identity.AppUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("text");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.Address", b =>
+            modelBuilder.Entity("App.Domain.Address", b =>
                 {
-                    b.HasOne("WebApp.Base.Domain.Identity.AppUser", "AppUser")
+                    b.HasOne("App.Domain.Identity.AppUser", "AppUser")
                         .WithMany("Addresses")
                         .HasForeignKey("AppUserId");
 
-                    b.HasOne("WebApp.Base.Domain.Customer", "Customer")
+                    b.HasOne("App.Domain.Customer", "Customer")
                         .WithMany("Addresses")
                         .HasForeignKey("CustomerId");
 
@@ -659,9 +617,9 @@ namespace WebApp.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.Customer", b =>
+            modelBuilder.Entity("App.Domain.Customer", b =>
                 {
-                    b.HasOne("WebApp.Base.Domain.Identity.AppUser", "AppUser")
+                    b.HasOne("App.Domain.Identity.AppUser", "AppUser")
                         .WithMany("Customers")
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -670,15 +628,15 @@ namespace WebApp.Migrations
                     b.Navigation("AppUser");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.CustomerPrice", b =>
+            modelBuilder.Entity("App.Domain.CustomerPrice", b =>
                 {
-                    b.HasOne("WebApp.Base.Domain.Customer", "Customer")
+                    b.HasOne("App.Domain.Customer", "Customer")
                         .WithMany("CustomerPrice")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebApp.Base.Domain.Item", "Item")
+                    b.HasOne("App.Domain.Item", "Item")
                         .WithMany("CustomerPrices")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -689,9 +647,24 @@ namespace WebApp.Migrations
                     b.Navigation("Item");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.Item", b =>
+            modelBuilder.Entity("App.Domain.Identity.AppUserRole", b =>
                 {
-                    b.HasOne("WebApp.Base.Domain.Identity.AppUser", "AppUser")
+                    b.HasOne("App.Domain.Identity.AppRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("App.Domain.Identity.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("App.Domain.Item", b =>
+                {
+                    b.HasOne("App.Domain.Identity.AppUser", "AppUser")
                         .WithMany("Items")
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -700,17 +673,17 @@ namespace WebApp.Migrations
                     b.Navigation("AppUser");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.ItemProcess", b =>
+            modelBuilder.Entity("App.Domain.ItemProcess", b =>
                 {
-                    b.HasOne("WebApp.Base.Domain.Item", "Item")
+                    b.HasOne("App.Domain.Item", "Item")
                         .WithMany("ItemProcesses")
                         .HasForeignKey("ItemId");
 
-                    b.HasOne("WebApp.Base.Domain.OrderRow", "OrderRow")
+                    b.HasOne("App.Domain.OrderRow", "OrderRow")
                         .WithMany("ItemProcesses")
                         .HasForeignKey("OrderRowId");
 
-                    b.HasOne("WebApp.Base.Domain.Process", "Process")
+                    b.HasOne("App.Domain.Process", "Process")
                         .WithMany("ItemProcesses")
                         .HasForeignKey("ProcessId");
 
@@ -721,15 +694,15 @@ namespace WebApp.Migrations
                     b.Navigation("Process");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.Order", b =>
+            modelBuilder.Entity("App.Domain.Order", b =>
                 {
-                    b.HasOne("WebApp.Base.Domain.Identity.AppUser", "AppUser")
+                    b.HasOne("App.Domain.Identity.AppUser", "AppUser")
                         .WithMany("Orders")
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebApp.Base.Domain.Customer", "Customer")
+                    b.HasOne("App.Domain.Customer", "Customer")
                         .WithMany("Order")
                         .HasForeignKey("CustomerId");
 
@@ -738,15 +711,15 @@ namespace WebApp.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.OrderRow", b =>
+            modelBuilder.Entity("App.Domain.OrderRow", b =>
                 {
-                    b.HasOne("WebApp.Base.Domain.Item", "Item")
+                    b.HasOne("App.Domain.Item", "Item")
                         .WithMany("OrderRows")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebApp.Base.Domain.Order", "Order")
+                    b.HasOne("App.Domain.Order", "Order")
                         .WithMany("OrderRows")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -757,9 +730,9 @@ namespace WebApp.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.Price", b =>
+            modelBuilder.Entity("App.Domain.Price", b =>
                 {
-                    b.HasOne("WebApp.Base.Domain.Item", "Item")
+                    b.HasOne("App.Domain.Item", "Item")
                         .WithMany("Prices")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -768,19 +741,19 @@ namespace WebApp.Migrations
                     b.Navigation("Item");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.Process", b =>
+            modelBuilder.Entity("App.Domain.Process", b =>
                 {
-                    b.HasOne("WebApp.Base.Domain.Identity.AppUser", null)
+                    b.HasOne("App.Domain.Identity.AppUser", null)
                         .WithMany("Processes")
                         .HasForeignKey("AppUserId");
 
-                    b.HasOne("WebApp.Base.Domain.RoadMap", "RoadMap")
+                    b.HasOne("App.Domain.RoadMap", "RoadMap")
                         .WithMany("Processes")
                         .HasForeignKey("RoadMapId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebApp.Base.Domain.Team", "Team")
+                    b.HasOne("App.Domain.Team", "Team")
                         .WithMany("Processes")
                         .HasForeignKey("TeamId");
 
@@ -789,9 +762,9 @@ namespace WebApp.Migrations
                     b.Navigation("Team");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.RoadMap", b =>
+            modelBuilder.Entity("App.Domain.RoadMap", b =>
                 {
-                    b.HasOne("WebApp.Base.Domain.Identity.AppUser", "AppUser")
+                    b.HasOne("App.Domain.Identity.AppUser", "AppUser")
                         .WithMany("RoadMaps")
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -800,9 +773,9 @@ namespace WebApp.Migrations
                     b.Navigation("AppUser");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.Team", b =>
+            modelBuilder.Entity("App.Domain.Team", b =>
                 {
-                    b.HasOne("WebApp.Base.Domain.Identity.AppUser", "AppUser")
+                    b.HasOne("App.Domain.Identity.AppUser", "AppUser")
                         .WithMany("Teams")
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -811,15 +784,15 @@ namespace WebApp.Migrations
                     b.Navigation("AppUser");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.UserTeam", b =>
+            modelBuilder.Entity("App.Domain.UserTeam", b =>
                 {
-                    b.HasOne("WebApp.Base.Domain.Identity.AppUser", "AppUser")
+                    b.HasOne("App.Domain.Identity.AppUser", "AppUser")
                         .WithMany("UserTeams")
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebApp.Base.Domain.Team", "Team")
+                    b.HasOne("App.Domain.Team", "Team")
                         .WithMany("UserTeams")
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -830,7 +803,43 @@ namespace WebApp.Migrations
                     b.Navigation("Team");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.Customer", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
+                {
+                    b.HasOne("App.Domain.Identity.AppRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+                {
+                    b.HasOne("App.Domain.Identity.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+                {
+                    b.HasOne("App.Domain.Identity.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+                {
+                    b.HasOne("App.Domain.Identity.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("App.Domain.Customer", b =>
                 {
                     b.Navigation("Addresses");
 
@@ -839,7 +848,7 @@ namespace WebApp.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.Identity.AppUser", b =>
+            modelBuilder.Entity("App.Domain.Identity.AppUser", b =>
                 {
                     b.Navigation("Addresses");
 
@@ -858,7 +867,7 @@ namespace WebApp.Migrations
                     b.Navigation("UserTeams");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.Item", b =>
+            modelBuilder.Entity("App.Domain.Item", b =>
                 {
                     b.Navigation("CustomerPrices");
 
@@ -869,27 +878,27 @@ namespace WebApp.Migrations
                     b.Navigation("Prices");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.Order", b =>
+            modelBuilder.Entity("App.Domain.Order", b =>
                 {
                     b.Navigation("OrderRows");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.OrderRow", b =>
+            modelBuilder.Entity("App.Domain.OrderRow", b =>
                 {
                     b.Navigation("ItemProcesses");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.Process", b =>
+            modelBuilder.Entity("App.Domain.Process", b =>
                 {
                     b.Navigation("ItemProcesses");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.RoadMap", b =>
+            modelBuilder.Entity("App.Domain.RoadMap", b =>
                 {
                     b.Navigation("Processes");
                 });
 
-            modelBuilder.Entity("WebApp.Base.Domain.Team", b =>
+            modelBuilder.Entity("App.Domain.Team", b =>
                 {
                     b.Navigation("Processes");
 
