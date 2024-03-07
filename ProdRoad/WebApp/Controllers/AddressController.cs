@@ -1,16 +1,16 @@
+using App.DAL.EF;
 using App.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using WebApp.Data;
 
 namespace WebApp.Controllers
 {
     public class AddressController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
 
-        public AddressController(ApplicationDbContext context)
+        public AddressController(AppDbContext context)
         {
             _context = context;
         }
@@ -18,8 +18,8 @@ namespace WebApp.Controllers
         // GET: Address
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Addresses.Include(a => a.AppUser).Include(a => a.Customer);
-            return View(await applicationDbContext.ToListAsync());
+            var AppDbContext = _context.Addresses.Include(a => a.AppUser).Include(a => a.Customer);
+            return View(await AppDbContext.ToListAsync());
         }
 
         // GET: Address/Details/5

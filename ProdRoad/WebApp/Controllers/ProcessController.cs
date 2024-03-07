@@ -2,19 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using App.DAL.EF;
 using App.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using WebApp.Data;
 
 namespace WebApp.Controllers
 {
     public class ProcessController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
 
-        public ProcessController(ApplicationDbContext context)
+        public ProcessController(AppDbContext context)
         {
             _context = context;
         }
@@ -22,8 +22,8 @@ namespace WebApp.Controllers
         // GET: Process
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Processes.Include(p => p.RoadMap).Include(p => p.Team);
-            return View(await applicationDbContext.ToListAsync());
+            var AppDbContext = _context.Processes.Include(p => p.RoadMap).Include(p => p.Team);
+            return View(await AppDbContext.ToListAsync());
         }
 
         // GET: Process/Details/5

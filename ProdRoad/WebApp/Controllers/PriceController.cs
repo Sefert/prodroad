@@ -2,19 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using App.DAL.EF;
 using App.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using WebApp.Data;
 
 namespace WebApp.Controllers
 {
     public class PriceController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
 
-        public PriceController(ApplicationDbContext context)
+        public PriceController(AppDbContext context)
         {
             _context = context;
         }
@@ -22,8 +22,8 @@ namespace WebApp.Controllers
         // GET: Price
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Prices.Include(p => p.Item);
-            return View(await applicationDbContext.ToListAsync());
+            var AppDbContext = _context.Prices.Include(p => p.Item);
+            return View(await AppDbContext.ToListAsync());
         }
 
         // GET: Price/Details/5

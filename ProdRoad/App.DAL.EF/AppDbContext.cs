@@ -3,9 +3,9 @@ using App.Domain.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace WebApp.Data;
+namespace App.DAL.EF;
 
-public class ApplicationDbContext : IdentityDbContext<AppUser,AppRole,Guid>
+public class AppDbContext : IdentityDbContext<AppUser,AppRole,Guid>
 {
     public DbSet<Address> Addresses { get; set; } = default!;
     public DbSet<Customer> Customers { get; set; } = default!;
@@ -19,7 +19,7 @@ public class ApplicationDbContext : IdentityDbContext<AppUser,AppRole,Guid>
     public DbSet<RoadMap> RoadMaps { get; set; } = default!;
     public DbSet<Team> Teams{ get; set; } = default!;
     public DbSet<UserTeam> UserTeams { get; set; } = default!;
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
     {}
 }

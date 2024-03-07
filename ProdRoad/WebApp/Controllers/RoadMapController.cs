@@ -2,19 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using App.DAL.EF;
 using App.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using WebApp.Data;
 
 namespace WebApp.Controllers
 {
     public class RoadMapController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
 
-        public RoadMapController(ApplicationDbContext context)
+        public RoadMapController(AppDbContext context)
         {
             _context = context;
         }
@@ -22,8 +22,8 @@ namespace WebApp.Controllers
         // GET: RoadMap
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.RoadMaps.Include(r => r.AppUser);
-            return View(await applicationDbContext.ToListAsync());
+            var AppDbContext = _context.RoadMaps.Include(r => r.AppUser);
+            return View(await AppDbContext.ToListAsync());
         }
 
         // GET: RoadMap/Details/5
