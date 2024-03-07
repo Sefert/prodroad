@@ -1,11 +1,14 @@
 ﻿using App.Domain;
 using App.Domain.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace App.DAL.EF;
 
-public class AppDbContext : IdentityDbContext<AppUser,AppRole,Guid>
+/*Overriding Guid to string conversion - no string setup*/
+public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid, IdentityUserClaim<Guid>, AppUserRole,
+    IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>
 {
     public DbSet<Address> Addresses { get; set; } = default!;
     public DbSet<Customer> Customers { get; set; } = default!;
