@@ -1,0 +1,22 @@
+#docker compose up
+services:
+  sql:
+    #image location ..........
+    image: postgres:16
+    container_name: prod_road
+    ports:
+      # external: internal
+      - 7890:5432
+    volumes:
+      - sql-volume:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=kfQTt2-bk4'4]2&p_Yu)org^'l@dwzy]-f87bD=@m#5t.{K1Y~
+      - POSTGRES_USER=prodroad
+    restart: on-failure
+    logging:
+      options:
+        max-size: 10m
+        max-file: 3
+
+volumes:
+  sql-volume:
