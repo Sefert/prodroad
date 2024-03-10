@@ -1,4 +1,5 @@
 using App.DAL.EF;
+using App.Data;
 using App.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,8 @@ builder.Services.AddIdentity<AppUser,AppRole>(options =>
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+await AppData.SetupAppData(app,app.Configuration);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
