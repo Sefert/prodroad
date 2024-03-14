@@ -11,7 +11,7 @@ public class BaseEntityRepository
     }
 }
 
-public class BaseEntityRepository<TKey, TDbContext, TDomainEntity, TDalEntity>
+public class BaseEntityRepository<TKey, TDbContext, TDomainEntity>
     where TKey : IEquatable<TKey>
     where TDbContext : DbContext
     where TDomainEntity : class, IDomainEntityId
