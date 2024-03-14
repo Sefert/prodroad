@@ -10,5 +10,5 @@ public interface IDomainAppUser<TKey, TUser>
     where TKey : IEquatable<TKey>
     where TUser : class
 {
-    
+    public TUser? AppUser { get; set; }
 }
