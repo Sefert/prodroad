@@ -1,4 +1,6 @@
+using App.Contracts.DAL;
 using App.DAL.EF;
+using App.DAL.EF.Repositories;
 using App.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,17 +11,19 @@ namespace WebApp.Controllers
     public class AddressController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IAddressRepository _repo;
 
         public AddressController(AppDbContext context)
         {
             _context = context;
+            _repo = new AddressRepository(context);
         }
 
         // GET: Address
         public async Task<IActionResult> Index()
         {
-            var AppDbContext = _context.Addresses.Include(a => a.AppUser).Include(a => a.Customer);
-            return View(await AppDbContext.ToListAsync());
+            var response = await _repo.GetAllAsync();
+            return View(response);
         }
 
         // GET: Address/Details/5
@@ -30,10 +34,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var address = await _context.Addresses
-                .Include(a => a.AppUser)
-                .Include(a => a.Customer)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var address = await _repo.FirstOrDefaultAsync(id.Value);
             if (address == null)
             {
                 return NotFound();
@@ -45,8 +46,8 @@ namespace WebApp.Controllers
         // GET: Address/Create
         public IActionResult Create()
         {
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id");
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id");
+            //ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["CustomerId"] = new SelectList(_repo.GetAll(), "Id", "Id");
             return View();
         }
 
@@ -55,17 +56,17 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AppUserId,CustomerId,Country,City,Street,Code,Phone,Email,From,Until,Id")] Address address)
+        public async Task<IActionResult> Create(Address address)
         {
             if (ModelState.IsValid)
             {
                 address.Id = Guid.NewGuid();
-                _context.Add(address);
-                await _context.SaveChangesAsync();
+                _repo.Add(address);
+                //await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", address.AppUserId);
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id", address.CustomerId);
+            //ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", address.AppUserId);
+            ViewData["CustomerId"] = new SelectList(await _repo.GetAllAsync(), "Id", "Id", address.CustomerId);
             return View(address);
         }
 
@@ -77,13 +78,13 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var address = await _context.Addresses.FindAsync(id);
+            var address = await _repo.FirstOrDefaultAsync(id.Value);
             if (address == null)
             {
                 return NotFound();
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", address.AppUserId);
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id", address.CustomerId);
+            //ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", address.AppUserId);
+            ViewData["CustomerId"] = new SelectList( await _repo.GetAllAsync(), "Id", "Id", address.CustomerId);
             return View(address);
         }
 
@@ -92,7 +93,7 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("AppUserId,CustomerId,Country,City,Street,Code,Phone,Email,From,Until,Id")] Address address)
+        public async Task<IActionResult> Edit(Guid id, Address address)
         {
             if (id != address.Id)
             {
@@ -103,12 +104,12 @@ namespace WebApp.Controllers
             {
                 try
                 {
-                    _context.Update(address);
-                    await _context.SaveChangesAsync();
+                    _repo.Update(address);
+                    //wait _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!AddressExists(address.Id))
+                    if (!await AddressExists(address.Id))
                     {
                         return NotFound();
                     }
@@ -119,8 +120,8 @@ namespace WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", address.AppUserId);
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id", address.CustomerId);
+            //ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", address.AppUserId);
+            ViewData["CustomerId"] = new SelectList( await _repo.GetAllAsync(), "Id", "Id", address.CustomerId);
             return View(address);
         }
 
@@ -132,10 +133,8 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var address = await _context.Addresses
-                .Include(a => a.AppUser)
-                .Include(a => a.Customer)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var address = await _repo
+                .FirstOrDefaultAsync(id.Value);
             if (address == null)
             {
                 return NotFound();
@@ -149,19 +148,19 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var address = await _context.Addresses.FindAsync(id);
+            var address = await _repo.FirstOrDefaultAsync(id);
             if (address != null)
             {
-                _context.Addresses.Remove(address);
+                await _repo.RemoveAsync(address);
             }
 
-            await _context.SaveChangesAsync();
+            //await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool AddressExists(Guid id)
+        private async Task<bool> AddressExists(Guid id)
         {
-            return _context.Addresses.Any(e => e.Id == id);
+            return await _repo.ExistsAsync(id);
         }
     }
 }
