@@ -3,7 +3,7 @@ using Base.Contracts.DAL;
 
 namespace App.Contracts.DAL;
 
-public interface ITeamRepository : IEntityRepository<Address>
+public interface ITeamRepository : IEntityRepository<Team>
 {
     
 }
