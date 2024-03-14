@@ -1,13 +1,16 @@
+using Base.Contracts.DAL;
 using Base.Contracts.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace Base.DAL.EF;
 
-public class BaseEntityRepository
+public class BaseEntityRepository<TDbContext, TDomainEntity> : BaseEntityRepository<Guid, TDbContext, TDomainEntity>,
+    IEntityRepository<TDomainEntity>
+    where TDbContext : DbContext
+    where TDomainEntity : class, IDomainEntityId
 {
-    public BaseEntityRepository(DbContext dbContext)
+    public BaseEntityRepository(TDbContext dbContext) : base(dbContext)
     {
-        
     }
 }
 
