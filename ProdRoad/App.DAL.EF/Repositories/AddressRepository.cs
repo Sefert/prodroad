@@ -4,7 +4,7 @@ using Base.DAL.EF;
 
 namespace App.DAL.EF.Repositories;
 
-public class AddressRepository : BaseEntityRepository<Guid,AppDbContext,Address>, IAddressRepository
+public class AddressRepository : BaseEntityRepository<AppDbContext,Address>, IAddressRepository
 {
     public AddressRepository(AppDbContext dbContext) : base(dbContext)
     {

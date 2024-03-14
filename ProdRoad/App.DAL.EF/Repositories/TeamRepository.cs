@@ -4,7 +4,7 @@ using Base.DAL.EF;
 
 namespace App.DAL.EF.Repositories;
 
-public class TeamRepository : BaseEntityRepository<Guid,AppDbContext,Team>, ITeamRepository
+public class TeamRepository : BaseEntityRepository<AppDbContext,Team>, ITeamRepository
 {
     public TeamRepository(AppDbContext dbContext) : base(dbContext)
     {
