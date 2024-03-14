@@ -1,6 +1,9 @@
+using App.Domain;
+using Base.Contracts.DAL;
+
 namespace App.Contracts.DAL;
 
-public interface ITeamRepository
+public interface ITeamRepository : IEntityRepository<Address>
 {
     
 }
