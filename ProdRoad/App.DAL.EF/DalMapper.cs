@@ -1,6 +1,8 @@
+using App.Contracts.DAL;
+
 namespace App.DAL.EF;
 
-public class DalMapper<TLeftObject, TRightObject>
+public class DalMapper<TLeftObject, TRightObject> : IDalMapper<TLeftObject,TRightObject>
     where TLeftObject : class 
     where TRightObject : class
 {
