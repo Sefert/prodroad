@@ -4,9 +4,9 @@ using Base.DAL.EF;
 
 namespace App.DAL.EF.Repositories;
 
-public class AddressRepository : BaseEntityRepository<AppDbContext,Address>, IAddressRepository
+public class AddressRepository : BaseEntityRepository<AppDbContext,Address,Address>, IAddressRepository
 {
-    public AddressRepository(AppDbContext dbContext) : base(dbContext)
+    public AddressRepository(AppDbContext dbContext) : base(dbContext, new DalMapper<Address, Address>())
     {
     }
 }

@@ -1,32 +1,38 @@
+using App.Contracts.DAL;
 using Base.Contracts.DAL;
 using Base.Contracts.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace Base.DAL.EF;
 
-public class BaseEntityRepository<TDbContext, TDomainEntity> : BaseEntityRepository<Guid, TDbContext, TDomainEntity>,
-    IEntityRepository<TDomainEntity>
+public class BaseEntityRepository<TDbContext, TDomainEntity, TDalEntity> : 
+    BaseEntityRepository<Guid, TDbContext, TDomainEntity, TDalEntity>, IEntityRepository<TDalEntity>
     where TDbContext : DbContext
     where TDomainEntity : class, IDomainEntityId
+    where TDalEntity : class, IDomainEntityId
 {
-    public BaseEntityRepository(TDbContext dbContext) : base(dbContext)
+    public BaseEntityRepository(TDbContext dbContext, 
+            IDalMapper<TDomainEntity, TDalEntity> dalMapper) : 
+            base(dbContext, dalMapper)
     {
     }
 }
 
-public class BaseEntityRepository<TKey, TDbContext, TDomainEntity>
+public class BaseEntityRepository<TKey, TDbContext, TDomainEntity, TDalEntity>
     where TKey : IEquatable<TKey>
     where TDbContext : DbContext
     where TDomainEntity : class, IDomainEntityId
-    //where TDalEntity : class, IDomainEntityId
+    where TDalEntity : class, IDomainEntityId
 {
     protected readonly TDbContext RepoDbContext;
     protected readonly DbSet<TDomainEntity> RepoDbSet;
+    protected readonly IDalMapper<TDomainEntity, TDalEntity> Mapper;
 
-    public BaseEntityRepository(TDbContext dbContext)
+    public BaseEntityRepository(TDbContext dbContext, IDalMapper<TDomainEntity, TDalEntity> dalMapper)
     {
         RepoDbContext = dbContext;
         RepoDbSet = RepoDbContext.Set<TDomainEntity>();
+        Mapper = dalMapper;
     }
 
     protected virtual IQueryable<TDomainEntity> CreateQuery(TKey? userId = default, bool noTracking = true)
@@ -58,39 +64,53 @@ public class BaseEntityRepository<TKey, TDbContext, TDomainEntity>
     }
     
     //GET-ALL
-    public virtual IEnumerable<TDomainEntity> GetAll(TKey userId = default, bool noTracking = true)
+    public virtual IEnumerable<TDalEntity> GetAll(TKey userId = default, bool noTracking = true)
     {
-        return CreateQuery(userId, noTracking).ToList();
+        return CreateQuery(userId, noTracking).ToList().Select(de => Mapper.MapLR(de))!;
     }
-    public virtual async Task<IEnumerable<TDomainEntity>> GetAllAsync(TKey userId = default, bool noTracking = true)
+    public virtual async Task<IEnumerable<TDalEntity>> GetAllAsync(TKey userId = default, bool noTracking = true)
     {
-        return await CreateQuery(userId, noTracking).ToListAsync();
+        return (await CreateQuery(userId, noTracking).ToListAsync()).Select(de => Mapper.MapLR(de))!;
     }
     
     //GET-FIRST
-    public TDomainEntity? FirstOrDefault(TKey id, TKey userId = default, bool noTracking = true)
+    public TDalEntity? FirstOrDefault(TKey id, TKey userId = default, bool noTracking = true)
     {
-        return CreateQuery(userId, noTracking).FirstOrDefault(m => m.Id.Equals(id));
+        return Mapper.MapLR(CreateQuery(userId, noTracking).FirstOrDefault(m => m.Id.Equals(id)));
     }
 
-    public async Task<TDomainEntity?> FirstOrDefaultAsync(TKey id, TKey userId = default, bool noTracking = true)
+    public async Task<TDalEntity?> FirstOrDefaultAsync(TKey id, TKey userId = default, bool noTracking = true)
     {
-        return await CreateQuery(userId, noTracking).FirstOrDefaultAsync(m => m.Id.Equals(id));
+        return Mapper.MapLR(await CreateQuery(userId, noTracking).FirstOrDefaultAsync(m => m.Id.Equals(id)));
     }
     
     //ADD
-    public virtual TDomainEntity Add(TDomainEntity entity)
+    public virtual TDalEntity Add(TDalEntity entity)
     {
-        return RepoDbSet.Add(entity).Entity!;
+        return Mapper.MapLR(RepoDbSet.Add(Mapper.MapRL(entity)!).Entity)!;
     }
 
     //UPDATE
-    public virtual TDomainEntity Update(TDomainEntity entity)
+    public virtual TDalEntity Update(TDalEntity entity)
     {
-        return RepoDbSet.Update(entity).Entity!;
+        return Mapper.MapLR(RepoDbSet.Update(Mapper.MapRL(entity)!).Entity)!;
+    }
+
+    //DELETE
+    public virtual int Remove(TDalEntity entity,  TKey userId = default)
+    {
+        if (userId == null)
+        {
+            return RepoDbSet
+                .Where(e => e.Id.Equals(entity.Id))
+                .ExecuteDelete();
+        }
+
+        return CreateQuery(userId)
+            .Where(e => e.Id.Equals(entity.Id))
+            .ExecuteDelete();
     }
     
-    //DELETE
     public virtual int Remove(TKey id, TKey userId = default)
     {
         if (userId == null)
@@ -104,7 +124,8 @@ public class BaseEntityRepository<TKey, TDbContext, TDomainEntity>
             .Where(e => e.Id.Equals(id))
             .ExecuteDelete();
     }
-    public virtual async Task<int> RemoveAsync(TDomainEntity entity, TKey userId = default)
+    
+    public virtual async Task<int> RemoveAsync(TDalEntity entity, TKey userId = default)
     {
         if (userId == null)
         {
