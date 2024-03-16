@@ -63,7 +63,7 @@ namespace WebApp.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(await _repo.GetAllAsync(), "Id", "Id", customer.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", customer.AppUserId);
             return View(customer);
         }
 
@@ -80,7 +80,7 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-            ViewData["AppUserId"] = new SelectList(await _repo.GetAllAsync(), "Id", "Id", customer.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", customer.AppUserId);
             return View(customer);
         }
 
@@ -101,7 +101,7 @@ namespace WebApp.Controllers
                 try
                 {
                     _repo.Update(customer);
-                    //await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -116,7 +116,7 @@ namespace WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(await _repo.GetAllAsync(), "Id", "Id", customer.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", customer.AppUserId);
             return View(customer);
         }
 
@@ -145,10 +145,10 @@ namespace WebApp.Controllers
             var customer = await _repo.FirstOrDefaultAsync(id);
             if (customer != null)
             {
-                _context.Customers.Remove(customer);
+                _repo.Remove(id);
             }
 
-            //await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

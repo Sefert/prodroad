@@ -45,7 +45,7 @@ namespace WebApp.Controllers
         // GET: Team/Create
         public IActionResult Create()
         {
-            ViewData["AppUserId"] = new SelectList( _repo.GetAll(), "Id", "Id");
+            ViewData["AppUserId"] = new SelectList( _context.Users, "Id", "Id");
             return View();
         }
 
@@ -60,10 +60,10 @@ namespace WebApp.Controllers
             {
                 team.Id = Guid.NewGuid();
                 _repo.Add(team);
-                //await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_repo.GetAll(), "Id", "Id", team.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", team.AppUserId);
             return View(team);
         }
 
@@ -80,7 +80,7 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-            ViewData["AppUserId"] = new SelectList(_repo.GetAll(), "Id", "Id", team.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", team.AppUserId);
             return View(team);
         }
 
@@ -101,7 +101,7 @@ namespace WebApp.Controllers
                 try
                 {
                     _repo.Update(team);
-                    //await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -116,7 +116,7 @@ namespace WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_repo.GetAll(), "Id", "Id", team.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", team.AppUserId);
             return View(team);
         }
 
@@ -148,7 +148,7 @@ namespace WebApp.Controllers
                 _repo.Remove(id);
             }
 
-            //await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

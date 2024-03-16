@@ -46,8 +46,8 @@ namespace WebApp.Controllers
         // GET: Address/Create
         public IActionResult Create()
         {
-            //ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id");
-            ViewData["CustomerId"] = new SelectList(_repo.GetAll(), "Id", "Id");
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id");
             return View();
         }
 
@@ -65,8 +65,8 @@ namespace WebApp.Controllers
                 //await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", address.AppUserId);
-            ViewData["CustomerId"] = new SelectList(await _repo.GetAllAsync(), "Id", "Id", address.CustomerId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", address.AppUserId);
+            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id", address.CustomerId);
             return View(address);
         }
 
@@ -83,8 +83,8 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-            //ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", address.AppUserId);
-            ViewData["CustomerId"] = new SelectList( await _repo.GetAllAsync(), "Id", "Id", address.CustomerId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", address.AppUserId);
+            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id", address.CustomerId);
             return View(address);
         }
 
@@ -105,7 +105,7 @@ namespace WebApp.Controllers
                 try
                 {
                     _repo.Update(address);
-                    //wait _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -120,8 +120,8 @@ namespace WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", address.AppUserId);
-            ViewData["CustomerId"] = new SelectList( await _repo.GetAllAsync(), "Id", "Id", address.CustomerId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", address.AppUserId);
+            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id", address.CustomerId);
             return View(address);
         }
 
@@ -133,8 +133,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var address = await _repo
-                .FirstOrDefaultAsync(id.Value);
+            var address = await _repo.FirstOrDefaultAsync(id.Value);
             if (address == null)
             {
                 return NotFound();
@@ -151,10 +150,10 @@ namespace WebApp.Controllers
             var address = await _repo.FirstOrDefaultAsync(id);
             if (address != null)
             {
-                await _repo.RemoveAsync(address);
+                _repo.Remove(id);
             }
 
-            //await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
