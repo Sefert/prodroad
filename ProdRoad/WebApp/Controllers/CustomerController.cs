@@ -1,4 +1,6 @@
+using App.Contracts.DAL;
 using App.DAL.EF;
+using App.DAL.EF.Repositories;
 using App.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,17 +11,18 @@ namespace WebApp.Controllers
     public class CustomerController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly ICustomerRepository _repo;
 
         public CustomerController(AppDbContext context)
         {
             _context = context;
+            _repo = new CustomerRepository(_context);
         }
 
         // GET: Customer
         public async Task<IActionResult> Index()
         {
-            var AppDbContext = _context.Customers.Include(c => c.AppUser);
-            return View(await AppDbContext.ToListAsync());
+            return View(await _repo.GetAllAsync());
         }
 
         // GET: Customer/Details/5
@@ -30,9 +33,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var customer = await _context.Customers
-                .Include(c => c.AppUser)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var customer = await _repo.FirstOrDefaultAsync(id.Value);
             if (customer == null)
             {
                 return NotFound();
@@ -53,16 +54,16 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AppUserId,Name,Registration,Id")] Customer customer)
+        public async Task<IActionResult> Create(Customer customer)
         {
             if (ModelState.IsValid)
             {
                 customer.Id = Guid.NewGuid();
-                _context.Add(customer);
+                _repo.Add(customer);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", customer.AppUserId);
+            ViewData["AppUserId"] = new SelectList(await _repo.GetAllAsync(), "Id", "Id", customer.AppUserId);
             return View(customer);
         }
 
@@ -74,12 +75,12 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var customer = await _context.Customers.FindAsync(id);
+            var customer = await _repo.FirstOrDefaultAsync(id.Value);
             if (customer == null)
             {
                 return NotFound();
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", customer.AppUserId);
+            ViewData["AppUserId"] = new SelectList(await _repo.GetAllAsync(), "Id", "Id", customer.AppUserId);
             return View(customer);
         }
 
@@ -88,7 +89,7 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("AppUserId,Name,Registration,Id")] Customer customer)
+        public async Task<IActionResult> Edit(Guid id, Customer customer)
         {
             if (id != customer.Id)
             {
@@ -99,12 +100,12 @@ namespace WebApp.Controllers
             {
                 try
                 {
-                    _context.Update(customer);
-                    await _context.SaveChangesAsync();
+                    _repo.Update(customer);
+                    //await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CustomerExists(customer.Id))
+                    if (!await CustomerExists(customer.Id))
                     {
                         return NotFound();
                     }
@@ -115,7 +116,7 @@ namespace WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", customer.AppUserId);
+            ViewData["AppUserId"] = new SelectList(await _repo.GetAllAsync(), "Id", "Id", customer.AppUserId);
             return View(customer);
         }
 
@@ -127,9 +128,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var customer = await _context.Customers
-                .Include(c => c.AppUser)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var customer = await _repo.FirstOrDefaultAsync(id.Value);
             if (customer == null)
             {
                 return NotFound();
@@ -143,19 +142,19 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var customer = await _context.Customers.FindAsync(id);
+            var customer = await _repo.FirstOrDefaultAsync(id);
             if (customer != null)
             {
                 _context.Customers.Remove(customer);
             }
 
-            await _context.SaveChangesAsync();
+            //await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CustomerExists(Guid id)
+        private async Task<bool> CustomerExists(Guid id)
         {
-            return _context.Customers.Any(e => e.Id == id);
+            return await _repo.ExistsAsync(id);
         }
     }
 }
