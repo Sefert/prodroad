@@ -1,4 +1,3 @@
-using App.Contracts.DAL;
 using App.Contracts.DAL.Repositories;
 using App.DAL.EF;
 using App.DAL.EF.Repositories;
@@ -63,7 +62,7 @@ namespace WebApp.Controllers
             {
                 address.Id = Guid.NewGuid();
                 _repo.Add(address);
-                //await _context.SaveChangesAsync();
+                await _repo.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", address.AppUserId);
@@ -106,7 +105,7 @@ namespace WebApp.Controllers
                 try
                 {
                     _repo.Update(address);
-                    await _context.SaveChangesAsync();
+                    await _repo.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -154,7 +153,7 @@ namespace WebApp.Controllers
                 _repo.Remove(id);
             }
 
-            await _context.SaveChangesAsync();
+            await _repo.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
