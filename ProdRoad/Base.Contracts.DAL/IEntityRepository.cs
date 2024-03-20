@@ -27,4 +27,5 @@ public interface IEntityRepository<TKey, TEntity>
     int Remove(TEntity entity, TKey userId = default);
     Task<int> RemoveAsync(TEntity entity, TKey? userId = default);
     Task<int> RemoveAsync(TKey id, TKey? userId = default);
+    Task<int> SaveChangesAsync();
 }

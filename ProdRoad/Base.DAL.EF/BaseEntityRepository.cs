@@ -149,4 +149,9 @@ public class BaseEntityRepository<TKey, TDbContext, TDomainEntity, TDalEntity>
             .Where(e => e.Id.Equals(id))
             .ExecuteDeleteAsync();
     }
+    
+    public virtual async Task<int> SaveChangesAsync()
+    {
+        return await RepoDbContext.SaveChangesAsync();
+    }
 }
