@@ -10,13 +10,11 @@ namespace WebApp.Controllers
 {
     public class TeamController : Controller
     {
-        private readonly AppDbContext _context;
         private readonly ITeamRepository _repo;
 
         public TeamController(AppDbContext context)
         {
-            _context = context;
-            _repo = new TeamRepository(_context);
+            _repo = new TeamRepository(context);
         }
 
         // GET: Team
@@ -45,7 +43,7 @@ namespace WebApp.Controllers
         // GET: Team/Create
         public IActionResult Create()
         {
-            ViewData["AppUserId"] = new SelectList( _context.Users, "Id", "Id");
+            ViewData["AppUserId"] = new SelectList( _repo.GetAll().Select(a =>a.AppUser), "Id", "Id");
             return View();
         }
 
@@ -63,7 +61,7 @@ namespace WebApp.Controllers
                 await _repo.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", team.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_repo.GetAll().Select(a =>a.AppUser), "Id", "Id", team.AppUserId);
             return View(team);
         }
 
@@ -80,7 +78,7 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", team.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_repo.GetAll().Select(a =>a.AppUser), "Id", "Id", team.AppUserId);
             return View(team);
         }
 
@@ -116,7 +114,7 @@ namespace WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", team.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_repo.GetAll().Select(a =>a.AppUser), "Id", "Id", team.AppUserId);
             return View(team);
         }
 

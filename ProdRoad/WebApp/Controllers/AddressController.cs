@@ -10,13 +10,14 @@ namespace WebApp.Controllers
 {
     public class AddressController : Controller
     {
-        //private readonly AppDbContext _context;
         private readonly IAddressRepository _repo;
+        private readonly ICustomerRepository _repoC;
 
         public AddressController(AppDbContext context)
         {
             //_context = context;
             _repo = new AddressRepository(context);
+            _repoC = new CustomerRepository(context);
         }
 
         // GET: Address
@@ -46,8 +47,8 @@ namespace WebApp.Controllers
         // GET: Address/Create
         public IActionResult Create()
         {
-            ViewData["AppUserId"] = new SelectList(_repo.GetAll().Select(a => a.AppUser), "Id", "Id");
-            //ViewData["CustomerId"] = new SelectList(await _co, "Id", "Id");
+            ViewData["AppUserId"] = new SelectList(_repo.GetAll().Select(a =>a.AppUser),  "Id", "Id");
+            ViewData["CustomerId"] = new SelectList(_repoC.GetAll(), "Id", "Id");
             return View();
         }
 
