@@ -10,12 +10,12 @@ namespace WebApp.Controllers
 {
     public class AddressController : Controller
     {
-        private readonly AppDbContext _context;
+        //private readonly AppDbContext _context;
         private readonly IAddressRepository _repo;
 
         public AddressController(AppDbContext context)
         {
-            _context = context;
+            //_context = context;
             _repo = new AddressRepository(context);
         }
 
@@ -46,8 +46,8 @@ namespace WebApp.Controllers
         // GET: Address/Create
         public IActionResult Create()
         {
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id");
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id");
+            ViewData["AppUserId"] = new SelectList(_repo.GetAll().Select(a => a.AppUser), "Id", "Id");
+            //ViewData["CustomerId"] = new SelectList(await _co, "Id", "Id");
             return View();
         }
 
@@ -65,8 +65,8 @@ namespace WebApp.Controllers
                 await _repo.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", address.AppUserId);
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id", address.CustomerId);
+            ViewData["AppUserId"] = new SelectList(_repo.GetAll().Select(a => a.AppUser), "Id", "Id", address.AppUserId);
+            ViewData["CustomerId"] = new SelectList((await _repo.GetWithCustomers(address.Id)).Select(a => a!.Customer), "Id", "Id", address.CustomerId);
             return View(address);
         }
 
@@ -83,8 +83,8 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", address.AppUserId);
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id", address.CustomerId);
+            ViewData["AppUserId"] = new SelectList(_repo.GetAll().Select(a => a.AppUser), "Id", "Id", address.AppUserId);
+            ViewData["CustomerId"] = new SelectList((await _repo.GetWithCustomers(id.Value)).Select(a => a!.Customer), "Id", "Id", address.CustomerId);
             return View(address);
         }
 
@@ -120,8 +120,8 @@ namespace WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", address.AppUserId);
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id", address.CustomerId);
+            ViewData["AppUserId"] = new SelectList(_repo.GetAll().Select(a => a.AppUser), "Id", "Id", address.AppUserId);
+            ViewData["CustomerId"] = new SelectList((await _repo.GetWithCustomers(address.Id)).Select(a => a!.Customer), "Id", "Id", address.CustomerId);
             return View(address);
         }
 
