@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using App.Contracts.DAL;
 using App.DAL.EF;
 using App.Domain;
 using Microsoft.AspNetCore.Mvc;
@@ -12,18 +13,17 @@ namespace WebApp.Controllers
 {
     public class ItemController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IAppUOW _uow;
 
-        public ItemController(AppDbContext context)
+        public ItemController(IAppUOW uow)
         {
-            _context = context;
+            _uow = uow;
         }
 
         // GET: Item
         public async Task<IActionResult> Index()
         {
-            var AppDbContext = _context.Items.Include(i => i.AppUser);
-            return View(await AppDbContext.ToListAsync());
+            return View(await _uow.Items.GetAllAsync());
         }
 
         // GET: Item/Details/5
@@ -34,9 +34,8 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var item = await _context.Items
-                .Include(i => i.AppUser)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var item = await _uow.Items
+                .FirstOrDefaultAsync(id.Value);
             if (item == null)
             {
                 return NotFound();
@@ -48,7 +47,7 @@ namespace WebApp.Controllers
         // GET: Item/Create
         public IActionResult Create()
         {
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["AppUserId"] = new SelectList(_uow.Users.GetAll(), "Id", "Id");
             return View();
         }
 
@@ -57,16 +56,16 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AppUserId,Name,Type,Unit,Quantity,Id")] Item item)
+        public async Task<IActionResult> Create(Item item)
         {
             if (ModelState.IsValid)
             {
                 item.Id = Guid.NewGuid();
-                _context.Add(item);
-                await _context.SaveChangesAsync();
+                _uow.Items.Add(item);
+                await _uow.Items.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", item.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_uow.Users.GetAll(), "Id", "Id", item.AppUserId);
             return View(item);
         }
 
@@ -78,12 +77,12 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var item = await _context.Items.FindAsync(id);
+            var item = await _uow.Items.FirstOrDefaultAsync(id.Value);
             if (item == null)
             {
                 return NotFound();
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", item.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_uow.Users.GetAll(), "Id", "Id", item.AppUserId);
             return View(item);
         }
 
@@ -103,8 +102,8 @@ namespace WebApp.Controllers
             {
                 try
                 {
-                    _context.Update(item);
-                    await _context.SaveChangesAsync();
+                    _uow.Items.Update(item);
+                    await _uow.Items.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -119,7 +118,7 @@ namespace WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", item.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_uow.Users.GetAll(), "Id", "Id", item.AppUserId);
             return View(item);
         }
 
@@ -131,9 +130,8 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var item = await _context.Items
-                .Include(i => i.AppUser)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var item = await _uow.Items
+                .FirstOrDefaultAsync(id.Value);
             if (item == null)
             {
                 return NotFound();
@@ -147,19 +145,19 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var item = await _context.Items.FindAsync(id);
+            var item = await _uow.Items.FirstOrDefaultAsync(id);
             if (item != null)
             {
-                _context.Items.Remove(item);
+                _uow.Items.Remove(item);
             }
 
-            await _context.SaveChangesAsync();
+            await _uow.Items.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ItemExists(Guid id)
         {
-            return _context.Items.Any(e => e.Id == id);
+            return _uow.Items.Exists(id);
         }
     }
 }
