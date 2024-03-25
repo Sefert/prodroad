@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using App.Contracts.DAL;
 using App.DAL.EF;
 using App.Domain;
 using Microsoft.AspNetCore.Mvc;
@@ -12,18 +13,17 @@ namespace WebApp.Controllers
 {
     public class PriceController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IAppUOW _uow;
 
-        public PriceController(AppDbContext context)
+        public PriceController(IAppUOW uow)
         {
-            _context = context;
+            _uow = uow;
         }
 
         // GET: Price
         public async Task<IActionResult> Index()
         {
-            var AppDbContext = _context.Prices.Include(p => p.Item);
-            return View(await AppDbContext.ToListAsync());
+            return View(await _uow.Prices.GetAllAsync());
         }
 
         // GET: Price/Details/5
@@ -34,9 +34,8 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var price = await _context.Prices
-                .Include(p => p.Item)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var price = await _uow.Prices
+                .FirstOrDefaultAsync(id.Value);
             if (price == null)
             {
                 return NotFound();
@@ -48,7 +47,7 @@ namespace WebApp.Controllers
         // GET: Price/Create
         public IActionResult Create()
         {
-            ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Id");
+            ViewData["ItemId"] = new SelectList(_uow.Items.GetAll(), "Id", "Id");
             return View();
         }
 
@@ -62,11 +61,11 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 price.Id = Guid.NewGuid();
-                _context.Add(price);
-                await _context.SaveChangesAsync();
+                _uow.Prices.Add(price);
+                await _uow.Prices.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Id", price.ItemId);
+            ViewData["ItemId"] = new SelectList(_uow.Items.GetAll(), "Id", "Id", price.ItemId);
             return View(price);
         }
 
@@ -78,12 +77,12 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var price = await _context.Prices.FindAsync(id);
+            var price = await _uow.Prices.FirstOrDefaultAsync(id.Value);
             if (price == null)
             {
                 return NotFound();
             }
-            ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Id", price.ItemId);
+            ViewData["ItemId"] = new SelectList(_uow.Items.GetAll(), "Id", "Id", price.ItemId);
             return View(price);
         }
 
@@ -92,7 +91,7 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("ItemId,From,Until,Cost,Region,Id")] Price price)
+        public async Task<IActionResult> Edit(Guid id, Price price)
         {
             if (id != price.Id)
             {
@@ -103,8 +102,8 @@ namespace WebApp.Controllers
             {
                 try
                 {
-                    _context.Update(price);
-                    await _context.SaveChangesAsync();
+                    _uow.Prices.Update(price);
+                    await _uow.Prices.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -119,7 +118,7 @@ namespace WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Id", price.ItemId);
+            ViewData["ItemId"] = new SelectList(_uow.Items.GetAll(), "Id", "Id", price.ItemId);
             return View(price);
         }
 
@@ -131,9 +130,8 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var price = await _context.Prices
-                .Include(p => p.Item)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var price = await _uow.Prices
+                .FirstOrDefaultAsync(id.Value);
             if (price == null)
             {
                 return NotFound();
@@ -147,19 +145,19 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var price = await _context.Prices.FindAsync(id);
+            var price = await _uow.Prices.FirstOrDefaultAsync(id);
             if (price != null)
             {
-                _context.Prices.Remove(price);
+                _uow.Prices.Remove(price);
             }
 
-            await _context.SaveChangesAsync();
+            await _uow.Prices.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool PriceExists(Guid id)
         {
-            return _context.Prices.Any(e => e.Id == id);
+            return _uow.Prices.Exists(id);
         }
     }
 }
