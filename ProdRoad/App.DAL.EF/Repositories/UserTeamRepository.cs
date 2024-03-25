@@ -7,7 +7,7 @@ namespace App.DAL.EF.Repositories;
 
 public class UserTeamRepository : BaseEntityRepository<AppDbContext,UserTeam,UserTeam>, IUserTeamRepository
 {
-    public UserTeamRepository(AppDbContext dbContext, IDalMapper<UserTeam, UserTeam> dalMapper) : base(dbContext, dalMapper)
+    public UserTeamRepository(AppDbContext dbContext) : base(dbContext, new DalMapper<UserTeam, UserTeam>())
     {
     }
 }

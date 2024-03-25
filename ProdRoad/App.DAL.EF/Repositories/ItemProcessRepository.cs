@@ -7,7 +7,7 @@ namespace App.DAL.EF.Repositories;
 
 public class ItemProcessRepository : BaseEntityRepository<AppDbContext,ItemProcess,ItemProcess>, IItemProcessRepository
 {
-    public ItemProcessRepository(AppDbContext dbContext, IDalMapper<ItemProcess, ItemProcess> dalMapper) : base(dbContext, dalMapper)
+    public ItemProcessRepository(AppDbContext dbContext) : base(dbContext, new DalMapper<ItemProcess, ItemProcess>())
     {
     }
 }

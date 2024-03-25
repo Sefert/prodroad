@@ -7,7 +7,7 @@ namespace App.DAL.EF.Repositories;
 
 public class PriceRepository : BaseEntityRepository<AppDbContext,Price,Price>, IPriceRepository
 {
-    public PriceRepository(AppDbContext dbContext, IDalMapper<Price, Price> dalMapper) : base(dbContext, dalMapper)
+    public PriceRepository(AppDbContext dbContext) : base(dbContext, new DalMapper<Price, Price>() )
     {
     }
 }

@@ -8,8 +8,8 @@ namespace App.DAL.EF.Repositories;
 public class CustomerPriceRepository : BaseEntityRepository<AppDbContext,CustomerPrice,CustomerPrice>, 
     ICustomerPriceRepository
 {
-    public CustomerPriceRepository(AppDbContext dbContext, IDalMapper<CustomerPrice, CustomerPrice> dalMapper) : 
-        base(dbContext, dalMapper)
+    public CustomerPriceRepository(AppDbContext dbContext) : 
+        base(dbContext, new DalMapper<CustomerPrice, CustomerPrice>())
     {
     }
 }

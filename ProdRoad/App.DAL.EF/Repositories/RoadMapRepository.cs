@@ -7,7 +7,7 @@ namespace App.DAL.EF.Repositories;
 
 public class RoadMapRepository : BaseEntityRepository<AppDbContext,RoadMap,RoadMap>, IRoadMapRepository
 {
-    public RoadMapRepository(AppDbContext dbContext, IDalMapper<RoadMap, RoadMap> dalMapper) : base(dbContext, dalMapper)
+    public RoadMapRepository(AppDbContext dbContext) : base(dbContext, new DalMapper<RoadMap, RoadMap>())
     {
     }
 }

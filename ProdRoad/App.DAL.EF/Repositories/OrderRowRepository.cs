@@ -7,7 +7,7 @@ namespace App.DAL.EF.Repositories;
 
 public class OrderRowRepository : BaseEntityRepository<AppDbContext,OrderRow,OrderRow>, IOrderRowRepository
 {
-    public OrderRowRepository(AppDbContext dbContext, IDalMapper<OrderRow, OrderRow> dalMapper) : base(dbContext, dalMapper)
+    public OrderRowRepository(AppDbContext dbContext) : base(dbContext, new DalMapper<OrderRow, OrderRow>())
     {
     }
 }
