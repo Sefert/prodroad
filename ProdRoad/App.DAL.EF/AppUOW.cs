@@ -1,4 +1,5 @@
 
+using App.Contracts.DAL;
 using App.Contracts.DAL.Repositories;
 using App.DAL.EF;
 using App.DAL.EF.Repositories;
@@ -6,7 +7,7 @@ using App.Domain.Identity;
 using Base.Contracts.DAL;
 using Base.DAL.EF;
 
-public class AppUOW : BaseUnitOfWork<AppDbContext>
+public class AppUOW : BaseUnitOfWork<AppDbContext>, IAppUOW
 {
     public AppUOW(AppDbContext dbContext) : base(dbContext)
     {
