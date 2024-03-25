@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using App.DAL.EF;
+using App.Contracts.DAL;
 using App.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -12,18 +8,17 @@ namespace WebApp.Controllers
 {
     public class OrderController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IAppUOW _uow;
 
-        public OrderController(AppDbContext context)
+        public OrderController(IAppUOW uow)
         {
-            _context = context;
+            _uow = uow;
         }
 
         // GET: Order
         public async Task<IActionResult> Index()
         {
-            var AppDbContext = _context.Orders.Include(o => o.AppUser).Include(o => o.Customer);
-            return View(await AppDbContext.ToListAsync());
+            return View(await _uow.Orders.GetAllAsync());
         }
 
         // GET: Order/Details/5
@@ -34,10 +29,8 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var order = await _context.Orders
-                .Include(o => o.AppUser)
-                .Include(o => o.Customer)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var order = await _uow.Orders
+                .FirstOrDefaultAsync(id.Value);
             if (order == null)
             {
                 return NotFound();
@@ -49,8 +42,8 @@ namespace WebApp.Controllers
         // GET: Order/Create
         public IActionResult Create()
         {
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id");
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id");
+            ViewData["AppUserId"] = new SelectList(_uow.Users.GetAll(), "Id", "Id");
+            ViewData["CustomerId"] = new SelectList(_uow.Customers.GetAll(), "Id", "Id");
             return View();
         }
 
@@ -59,17 +52,17 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AppUserId,CustomerId,Deadline,Id")] Order order)
+        public async Task<IActionResult> Create(Order order)
         {
             if (ModelState.IsValid)
             {
                 order.Id = Guid.NewGuid();
-                _context.Add(order);
-                await _context.SaveChangesAsync();
+                _uow.Orders.Add(order);
+                await _uow.Orders.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", order.AppUserId);
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id", order.CustomerId);
+            ViewData["AppUserId"] = new SelectList(_uow.Users.GetAll(), "Id", "Id", order.AppUserId);
+            ViewData["CustomerId"] = new SelectList(_uow.Customers.GetAll(), "Id", "Id", order.CustomerId);
             return View(order);
         }
 
@@ -81,13 +74,13 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var order = await _context.Orders.FindAsync(id);
+            var order = await _uow.Orders.FirstOrDefaultAsync(id.Value);
             if (order == null)
             {
                 return NotFound();
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", order.AppUserId);
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id", order.CustomerId);
+            ViewData["AppUserId"] = new SelectList(_uow.Users.GetAll(), "Id", "Id", order.AppUserId);
+            ViewData["CustomerId"] = new SelectList(_uow.Customers.GetAll(), "Id", "Id", order.CustomerId);
             return View(order);
         }
 
@@ -96,7 +89,7 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("AppUserId,CustomerId,Deadline,Id")] Order order)
+        public async Task<IActionResult> Edit(Guid id, Order order)
         {
             if (id != order.Id)
             {
@@ -107,8 +100,8 @@ namespace WebApp.Controllers
             {
                 try
                 {
-                    _context.Update(order);
-                    await _context.SaveChangesAsync();
+                    _uow.Orders.Update(order);
+                    await _uow.Orders.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -123,8 +116,8 @@ namespace WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", order.AppUserId);
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id", order.CustomerId);
+            ViewData["AppUserId"] = new SelectList(_uow.Users.GetAll(), "Id", "Id", order.AppUserId);
+            ViewData["CustomerId"] = new SelectList(_uow.Customers.GetAll(), "Id", "Id", order.CustomerId);
             return View(order);
         }
 
@@ -136,10 +129,8 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var order = await _context.Orders
-                .Include(o => o.AppUser)
-                .Include(o => o.Customer)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var order = await _uow.Orders
+                .FirstOrDefaultAsync(id.Value);
             if (order == null)
             {
                 return NotFound();
@@ -153,19 +144,19 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var order = await _context.Orders.FindAsync(id);
+            var order = await _uow.Orders.FirstOrDefaultAsync(id);
             if (order != null)
             {
-                _context.Orders.Remove(order);
+                _uow.Orders.Remove(order);
             }
 
-            await _context.SaveChangesAsync();
+            await _uow.Orders.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool OrderExists(Guid id)
         {
-            return _context.Orders.Any(e => e.Id == id);
+            return _uow.Orders.Exists(id);
         }
     }
 }
