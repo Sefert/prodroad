@@ -15,7 +15,7 @@ public static class IdentityHelpers
         var expires = DateTime.Now.AddSeconds(expiresInSeconds);
         var token = new JwtSecurityToken(
             issuer: issuer,
-            audience: audience,//reciever
+            audience: audience,//recievery
             claims: claims,
             expires: expires,
             signingCredentials: signingCredentials
