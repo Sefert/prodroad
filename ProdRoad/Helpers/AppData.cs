@@ -1,5 +1,4 @@
 using App.DAL.EF;
-using App.Domain;
 using App.Domain.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -7,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace App.Data;
+namespace Helpers;
 
 public static class AppData
 {
