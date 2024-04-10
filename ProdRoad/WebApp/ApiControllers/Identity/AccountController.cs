@@ -1,4 +1,3 @@
-using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
@@ -46,7 +45,7 @@ public class AccountController : ControllerBase
         [FromQuery]
         int expiresInSeconds)
     {
-        //
+        //setting expiration selection by frontend value
         if (expiresInSeconds <= 0) expiresInSeconds = int.MaxValue;
         expiresInSeconds = expiresInSeconds < _configuration.GetValue<int>("JWT:expiresInSeconds")
             ? expiresInSeconds
@@ -75,7 +74,7 @@ public class AccountController : ControllerBase
             UserName = registrationData.Email,
             FirstName = registrationData.Firstname,
             LastName = registrationData.Lastname,
-            RefreshTokens = new List<AppRefreshToken>() {refreshToken}
+            AppRefreshTokens = new List<AppRefreshToken>() {refreshToken}
         };
         refreshToken.AppUser = appUser;
 
@@ -126,9 +125,9 @@ public class AccountController : ControllerBase
         var claimsPrincipal = await _signInManager.CreateUserPrincipalAsync(appUser);
         var jwt = IdentityHelpers.GenerateJwt(
             claimsPrincipal.Claims,
-            _configuration.GetValue<string>("JWT:key"),
-            _configuration.GetValue<string>("JWT:issuer"),
-            _configuration.GetValue<string>("JWT:audience"),
+            _configuration.GetValue<string>("JWT:key")!,
+            _configuration.GetValue<string>("JWT:issuer")!,
+            _configuration.GetValue<string>("JWT:audience")!,
             expiresInSeconds
         );
         var res = new JWTResponse()
@@ -180,8 +179,8 @@ public class AccountController : ControllerBase
             return NotFound("User/Password problem");
         }
 
-        var deletedRows = await _context.RefreshTokens
-            .Where(t => t.AppUserId == appUser.Id && t.ExpirationDT < DateTime.UtcNow)
+        var deletedRows = await _context.AppRefreshTokens
+            .Where(t => t.AppUserId == appUser.Id && t.ExpirationDateTime < DateTime.UtcNow)
             .ExecuteDeleteAsync();
         _logger.LogInformation("Deleted {} refresh tokens", deletedRows);
 
@@ -189,7 +188,7 @@ public class AccountController : ControllerBase
         {
             AppUserId = appUser.Id
         };
-        _context.RefreshTokens.Add(refreshToken);
+        _context.AppRefreshTokens.Add(refreshToken);
         await _context.SaveChangesAsync();
 
         var jwt = IdentityHelpers.GenerateJwt(
@@ -209,6 +208,7 @@ public class AccountController : ControllerBase
         return Ok(responseData);
     }
 
+    //renew refreshtoken
     [HttpPost]
     public async Task<ActionResult<JWTResponse>> RefreshTokenData(
         [FromBody]
@@ -279,27 +279,27 @@ public class AccountController : ControllerBase
         }
 
         // load and compare refresh tokens
-        await _context.Entry(appUser).Collection(u => u.RefreshTokens!)
+        await _context.Entry(appUser).Collection(u => u.AppRefreshTokens!)
             .Query()
             .Where(x =>
-                (x.RefreshToken == tokenRefreshInfo.RefreshToken && x.ExpirationDT > DateTime.UtcNow) ||
+                (x.RefreshToken == tokenRefreshInfo.RefreshToken && x.ExpirationDateTime > DateTime.UtcNow) ||
                 (x.PreviousRefreshToken == tokenRefreshInfo.RefreshToken &&
-                 x.PreviousExpirationDT > DateTime.UtcNow)
+                 x.PreviousExpirationDateTime > DateTime.UtcNow)
             )
             .ToListAsync();
 
-        if (appUser.RefreshTokens == null || appUser.RefreshTokens.Count == 0)
+        if (appUser.AppRefreshTokens == null || appUser.AppRefreshTokens.Count == 0)
         {
             return NotFound(
                 new RestApiErrorResponse()
                 {
                     Status = HttpStatusCode.NotFound,
-                    Error = $"RefreshTokens collection is null or empty - {appUser.RefreshTokens?.Count}"
+                    Error = $"RefreshTokens collection is null or empty - {appUser.AppRefreshTokens?.Count}"
                 }
             );
         }
 
-        if (appUser.RefreshTokens.Count != 1)
+        if (appUser.AppRefreshTokens.Count != 1)
         {
             return NotFound("More than one valid refresh token found");
         }
@@ -328,14 +328,14 @@ public class AccountController : ControllerBase
         );
 
         // make new refresh token, keep old one still valid for some time
-        var refreshToken = appUser.RefreshTokens.First();
+        var refreshToken = appUser.AppRefreshTokens.First();
         if (refreshToken.RefreshToken == tokenRefreshInfo.RefreshToken)
         {
             refreshToken.PreviousRefreshToken = refreshToken.RefreshToken;
-            refreshToken.PreviousExpirationDT = DateTime.UtcNow.AddMinutes(1);
+            refreshToken.PreviousExpirationDateTime = DateTime.UtcNow.AddMinutes(1);
 
             refreshToken.RefreshToken = Guid.NewGuid().ToString();
-            refreshToken.ExpirationDT = DateTime.UtcNow.AddDays(7);
+            refreshToken.ExpirationDateTime = DateTime.UtcNow.AddDays(7);
 
             await _context.SaveChangesAsync();
         }
@@ -391,7 +391,7 @@ public class AccountController : ControllerBase
         }
 
         await _context.Entry(appUser)
-            .Collection(u => u.RefreshTokens!)
+            .Collection(u => u.AppRefreshTokens!)
             .Query()
             .Where(x =>
                 (x.RefreshToken == logout.RefreshToken) ||
@@ -399,9 +399,9 @@ public class AccountController : ControllerBase
             )
             .ToListAsync();
 
-        foreach (var appRefreshToken in appUser.RefreshTokens!)
+        foreach (var appRefreshToken in appUser.AppRefreshTokens!)
         {
-            _context.RefreshTokens.Remove(appRefreshToken);
+            _context.AppRefreshTokens.Remove(appRefreshToken);
         }
 
         var deleteCount = await _context.SaveChangesAsync();
