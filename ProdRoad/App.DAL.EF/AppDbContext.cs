@@ -22,6 +22,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid, IdentityUs
     public DbSet<RoadMap> RoadMaps { get; set; } = default!;
     public DbSet<Team> Teams{ get; set; } = default!;
     public DbSet<UserTeam> UserTeams { get; set; } = default!;
+    public DbSet<AppRefreshToken> AppRefreshTokens { get; set; } = default!;
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
     {}
