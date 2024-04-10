@@ -18,4 +18,5 @@ public class AppUser : IdentityUser<Guid>, IDomainEntityId
     public ICollection<Order>? Orders { get; set; }
     public ICollection<Customer>? Customers { get; set; }
     public ICollection<Address>? Addresses { get; set; }
+    public ICollection<AppRefreshToken>? AppRefreshTokens { get; set; }
 }
