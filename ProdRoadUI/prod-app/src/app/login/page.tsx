@@ -1,32 +1,95 @@
 "use client"
 
 import { styled } from '@mui/material/styles';
-import { FormControl, FormHelperText, Grid, Input, InputLabel, Paper } from "@mui/material"
+import { Button, FormControl, FormHelperText, Grid, IconButton, Input, InputAdornment, InputLabel, OutlinedInput, Paper } from "@mui/material"
+import React from 'react';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+    backgroundColor: theme.palette.mode === 'light' ? '#fff' : '#fff',
     ...theme.typography.body2,
     padding: theme.spacing(1),
     textAlign: 'center',
-    color: theme.palette.text.secondary,
+    color: theme.palette.augmentColor = '#fff',
   }));
 
 export default function Login(){
+    const [showPassword, setShowPassword] = React.useState(false);
+    const [signUp, setSignUp] = React.useState(false);
+
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+    const handleClickSignUp = () => setSignUp((show) => !show);
+
+    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+    };
     return (
-        <Grid container spacing={0} marginTop={5}>
-            <Grid xs={4}/>
-            <Grid xs={4}>
-                <Item>
-                <FormControl margin="normal">
-                    <InputLabel htmlFor="e-mail">Email address</InputLabel>
-                    <Input id="mail" aria-describedby="my-helper-text" />
-                    <InputLabel htmlFor="my-input">Email address</InputLabel>
-                    <Input id="mail" aria-describedby="my-helper-text" />
-                    {<FormHelperText id="my-helper-text"></FormHelperText>}
-                </FormControl>
+        <Grid container paddingTop={5}>
+            <Grid xs={3}/>
+            <Grid xs={6}>
+                <Item sx={{ background:'#b3b292'}}>
+                    <FormControl sx={{padding:1, width: '100%'}} variant="outlined">
+                        <InputLabel htmlFor="outlined-adornment-password" sx={{color:"#ffffff",borderColor:"#ffffff"}}>E-mail</InputLabel>
+                        <OutlinedInput                   
+                        id="outlined-adornment-password"
+                        type={showPassword ? 'text' : 'password'}
+                        label="Password"
+                        />
+                    </FormControl>
+                    <FormControl sx={{padding:1,width: '100%' }} variant="outlined">
+                        <InputLabel htmlFor="outlined-adornment-password" sx={{color:"#ffffff"}}>Password</InputLabel>
+                        <OutlinedInput
+                        id="outlined-adornment-password"
+                        type={showPassword ? 'text' : 'password'}
+                        endAdornment={
+                            <InputAdornment position="end">
+                                <IconButton
+                                aria-label="toggle password visibility"
+                                onClick={handleClickShowPassword}
+                                onMouseDown={handleMouseDownPassword}
+                                edge="end"
+                                sx={{color:"#ffffff"}}
+                                >
+                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                            </InputAdornment>
+                        }
+                        label="Password"
+                        />
+                    </FormControl>
+                    <FormControl sx={{padding:1,width: '100%' }} variant="outlined">
+                        <InputLabel htmlFor="outlined-adornment-password" sx={{color:"#ffffff"}}>Confirm Password</InputLabel>
+                        <OutlinedInput
+                        id="outlined-adornment-password"
+                        type={showPassword ? 'text' : 'password'}
+                        endAdornment={
+                            <InputAdornment position="end">
+                                <IconButton
+                                aria-label="toggle password visibility"
+                                onClick={handleClickShowPassword}
+                                onMouseDown={handleMouseDownPassword}
+                                edge="end"
+                                sx={{color:"#ffffff"}}
+                                >
+                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                            </InputAdornment>
+                        }
+                        label="Password"
+                        />
+                    </FormControl>
+                    <Button variant="contained" color="success">
+                        LOGIN
+                    </Button>
+                    <p>
+                        Don&apos;t have account?
+                        <Button variant="text">
+                            SIGNUP
+                        </Button>
+                    </p>
                 </Item>
             </Grid>
-            <Grid xs={4}/>
+            <Grid xs={3}/>
         </Grid>
     );
 }

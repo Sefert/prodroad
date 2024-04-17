@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import MainNav from "@/components/nav/MainNav";
-import { Box, Container } from "@mui/material";
+import { Box, Container, Grid } from "@mui/material";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,11 +20,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <MainNav/>
-          <div className="container" >
-            <main role="main" className="pb-3">
+        <Container sx={{ height: '100vh', background:'#ffffff'}}>
               {children}
-            </main>
-          </div>
+        </Container>
       </body>
     </html>
   );
