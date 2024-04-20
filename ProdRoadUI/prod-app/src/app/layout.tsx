@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import MainNav from "@/components/nav/MainNav";
-import { Box, Container, Grid } from "@mui/material";
+import { Container, ThemeProvider } from "@mui/material";
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
+import theme from "@/components/Theme";
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,11 +21,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <MainNav/>
-        <Container sx={{ height: '100vh', background:'#ffffff'}}>
-              {children}
-        </Container>
+      <body className={inter.className} >
+        <AppRouterCacheProvider>
+          <ThemeProvider theme={theme}>
+            <MainNav/>
+            <Container sx={{ height: '100vh', background:'#ffffff'}}>           
+                  {children}
+            </Container>
+          </ThemeProvider>
+        </AppRouterCacheProvider>
       </body>
     </html>
   );

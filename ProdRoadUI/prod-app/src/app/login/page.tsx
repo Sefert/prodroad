@@ -7,10 +7,10 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'light' ? '#fff' : '#fff',
-    ...theme.typography.body2,
+    ...theme.typography.body2, 
+    color: theme.palette.primary.dark,
     padding: theme.spacing(1),
     textAlign: 'center',
-    color: theme.palette.augmentColor = '#fff',
   }));
 
 export default function Login(){
