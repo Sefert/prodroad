@@ -3,6 +3,9 @@ import { AppBar, Box, Button, IconButton, Toolbar, Typography } from "@mui/mater
 import MenuIcon from '@mui/icons-material/Menu';
 import React from "react";
 
+/*<Typography variant="h6" component="div" sx={{ flexGrow: 1, color:"#2D3D4E" }}>
+News
+</Typography>*/
 //https://mui.com/material-ui/react-menu/
 export default function MainNav() {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -14,20 +17,17 @@ export default function MainNav() {
     return (
         <header>
             <Box sx={{ flexGrow: 1 }}>
-                <AppBar position="static" sx={{background:'#ba9b0d'}}>
+                <AppBar position="static" sx={{background:'#E9F1FA'}}>
                     <Toolbar>
                         <IconButton
                             size="small"
                             edge="start"
                             aria-label="menu"
-                            sx={{ mr: 2, color:"#ffffff"}}//margin-right
+                            sx={{ mr: 2, color:"#2D3D4E"}}//margin-right
                         >
                             <MenuIcon />
                         </IconButton>
-                        <Typography variant="h6" component="div" sx={{ flexGrow: 1, color:"#ffffff" }}>
-                            News
-                        </Typography>
-                        <Button sx={{ mr: 2, color:"#ffffff" }}>Login</Button>
+                        <Button sx={{ mr: 2, color:"#2D3D4E" }}>Login</Button>
                     </Toolbar>
                 </AppBar>
             </Box>

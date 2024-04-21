@@ -23,11 +23,12 @@ export default function Login(){
     const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
     };
+    //https://blog.hubspot.com/website/center-div-css
     return (
         <Grid container paddingTop={5}>
             <Grid xs={3}/>
             <Grid xs={6}>
-                <Item sx={{ background:'#b3b292'}}>
+                <Item sx={{ background:'#929cb3', maxWidth:500, minWidth:350,position:"absolute",left: '50%', transform: 'translate(-50%, 50%)'}}>
                     <FormControl sx={{padding:1, width: '100%'}} variant="outlined">
                         <InputLabel htmlFor="outlined-adornment-password" sx={{color:"#ffffff",borderColor:"#ffffff"}}>E-mail</InputLabel>
                         <OutlinedInput                   

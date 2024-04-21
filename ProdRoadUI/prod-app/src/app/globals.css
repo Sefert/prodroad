@@ -83,6 +83,9 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
+  height: auto;
+  background-color:'#E9F1FA';
+  height: 100vh;
 }
 
 body {
