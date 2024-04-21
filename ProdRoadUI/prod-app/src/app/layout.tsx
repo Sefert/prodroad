@@ -5,6 +5,8 @@ import MainNav from "@/components/nav/MainNav";
 import { Container, ThemeProvider } from "@mui/material";
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import theme from "@/components/Theme";
+import SideNav from "@/components/nav/SideNav";
+import AppState from "@/components/AppState";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -26,8 +28,10 @@ export default function RootLayout({
       <body className={inter.className}>
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
-            <MainNav/>    
+            <AppState>
+                <MainNav/>
                   {children}
+            </AppState>
           </ThemeProvider>
         </AppRouterCacheProvider>
       </body>

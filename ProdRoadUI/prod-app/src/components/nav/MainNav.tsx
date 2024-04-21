@@ -1,5 +1,6 @@
 'use client'
-import { AppBar, Box, Button, IconButton, Toolbar, Typography } from "@mui/material";
+import { AppBar, AppBarProps, Box, Button, IconButton, Toolbar, Typography, styled } from "@mui/material";
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import MenuIcon from '@mui/icons-material/Menu';
 import React from "react";
 
@@ -7,23 +8,28 @@ import React from "react";
 News
 </Typography>*/
 //https://mui.com/material-ui/react-menu/
+
+  
 export default function MainNav() {
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const open = Boolean(anchorEl);
-    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
+    const [open, setOpen] = React.useState(false);
+    const handleDrawerOpen = () => {
+        setOpen(true);
+    };
 
     return (
         <header>
-            <Box sx={{ flexGrow: 1 }}>
-                <AppBar position="static" sx={{background:'#E9F1FA'}}>
+            <Box sx={{ flexGrow: 1}}>
+                <AppBar position="fixed" sx={{background:'#E9F1FA'}}>
                     <Toolbar>
                         <IconButton
                             size="small"
+                            aria-label="open drawer"
+                            onClick={handleDrawerOpen}
                             edge="start"
-                            aria-label="menu"
-                            sx={{ mr: 2, color:"#2D3D4E"}}//margin-right
+                            sx={{ mr: 2, 
+                                color:"#2D3D4E",
+                                marginRight: 5,
+                                ...(open && { display: 'none' }),}}//margin-right
                         >
                             <MenuIcon />
                         </IconButton>
