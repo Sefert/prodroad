@@ -15,6 +15,7 @@ export const metadata: Metadata = {
 };
 /*<Container sx={{ height: '100vh', background:'#E9F1FA'}}>    
             </Container>*/
+//npm install @dnd-kit/core
 export default function RootLayout({
   children,
 }: Readonly<{
