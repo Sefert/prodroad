@@ -9,7 +9,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItem from '@mui/material/ListItem';
@@ -73,15 +72,16 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 export default function MiniDrawer() {
   const theme = useTheme();
-  //const [open, setOpen] = React.useState(false);
-  const {sideNav, setSideNav} = React.useContext(AppContext)!.navContext;
+  const context = React.useContext(AppContext)!;
+  const {sideNav, setSideNav} = context.navContext;
+  const {userInfo, setUserInfo} = context.userContext!;
 
   function handleDrawerClose(){ 
-    console.log(sideNav);
     let open1 = sideNav ? false : true;
     setSideNav(open1);
 }
 
+  if (userInfo != null){
   return (
     <Box sx={{ display: 'flex'}}>
       <CssBaseline />
@@ -174,5 +174,5 @@ export default function MiniDrawer() {
         </Typography>
       </Box>
     </Box>
-  );
+  );}
 }

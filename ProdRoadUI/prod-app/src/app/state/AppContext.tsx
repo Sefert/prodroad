@@ -1,7 +1,7 @@
 import { createContext } from "react";
 
 export interface IUserInfo {
-    "token": string,
+    "token": boolean,//string
     "refreshToken": string,
     "firstName": string,
     "lastName": string

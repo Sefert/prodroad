@@ -34,11 +34,15 @@ const AppBar = styled(MuiAppBar, {
   
 export default function MainNav() {
     
-    const {sideNav,setSideNav} = useContext(AppContext)!.navContext;
+    const context = React.useContext(AppContext)!;
+    const {sideNav, setSideNav} = context.navContext;
+    const {userInfo, setUserInfo} = context.userContext!;
 
     function handleDrawerOpen(){ 
+      if (userInfo != null){
         let open = sideNav ? false : true;
         setSideNav(open);
+      }
     }
 
     return (
