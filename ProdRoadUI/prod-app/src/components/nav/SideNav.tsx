@@ -1,3 +1,4 @@
+'use client'
 import * as React from 'react';
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -18,6 +19,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
+import { AppContext } from '@/app/state/AppContext';
 
 const drawerWidth = 240;
 
@@ -45,17 +47,15 @@ const closedMixin = (theme: Theme): CSSObject => ({
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'flex-end',
+  justifyContent: 'flex-end',//arrow to flexed left
   padding: theme.spacing(0, 1),
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
 
 interface AppBarProps extends MuiAppBarProps {
-  open?: boolean;
+  sideNav?: boolean;
 }
-
-
 
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
@@ -76,17 +76,20 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 export default function MiniDrawer() {
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
+  //const [open, setOpen] = React.useState(false);
+  const {sideNav, setSideNav} = React.useContext(AppContext)!.navContext;
 
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
+  function handleDrawerClose(){ 
+    console.log(sideNav);
+    let open1 = sideNav ? false : true;
+    setSideNav(open1);
+}
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex'}}>
       <CssBaseline />
       
-      <Drawer variant="permanent" open={open}>
+      <Drawer variant="permanent" open={sideNav}>
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
@@ -99,20 +102,20 @@ export default function MiniDrawer() {
               <ListItemButton
                 sx={{
                   minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
+                  justifyContent: sideNav ? 'initial' : 'center',
                   px: 2.5,
                 }}
               >
                 <ListItemIcon
                   sx={{
                     minWidth: 0,
-                    mr: open ? 3 : 'auto',
+                    mr: sideNav ? 3 : 'auto',
                     justifyContent: 'center',
                   }}
                 >
                   {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                 </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+                <ListItemText primary={text} sx={{ opacity: sideNav ? 1 : 0 }} />
               </ListItemButton>
             </ListItem>
           ))}
@@ -124,20 +127,20 @@ export default function MiniDrawer() {
               <ListItemButton
                 sx={{
                   minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
+                  justifyContent: sideNav ? 'initial' : 'center',
                   px: 2.5,
                 }}
               >
                 <ListItemIcon
                   sx={{
                     minWidth: 0,
-                    mr: open ? 3 : 'auto',
+                    mr: sideNav ? 3 : 'auto',
                     justifyContent: 'center',
                   }}
                 >
                   {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                 </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+                <ListItemText primary={text} sx={{ opacity: sideNav ? 1 : 0 }} />
               </ListItemButton>
             </ListItem>
           ))}

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import MainNav from "@/components/nav/MainNav";
-import { Container, ThemeProvider } from "@mui/material";
+import { ThemeProvider } from "@mui/material";
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import theme from "@/components/Theme";
 import SideNav from "@/components/nav/SideNav";
@@ -30,6 +30,7 @@ export default function RootLayout({
           <ThemeProvider theme={theme}>
             <AppState>
                 <MainNav/>
+                <SideNav/>
                   {children}
             </AppState>
           </ThemeProvider>

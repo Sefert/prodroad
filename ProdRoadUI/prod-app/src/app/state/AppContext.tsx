@@ -12,5 +12,15 @@ export interface IUserContext {
     setUserInfo: (userInfo: IUserInfo | null) => void
 }
 
+export interface ISideBarContext {
+    sideNav: boolean,
+    setSideNav: (sideNav: boolean) => void
+}
 
-export const AppContext = createContext<IUserContext | null>(null);
+export interface IAppContext {
+    userContext : IUserContext | null,
+    navContext : ISideBarContext,
+}
+
+
+export const AppContext = createContext<IAppContext | null>(null);
