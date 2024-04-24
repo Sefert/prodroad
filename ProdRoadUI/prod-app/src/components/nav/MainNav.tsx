@@ -4,7 +4,6 @@ import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import MenuIcon from '@mui/icons-material/Menu';
 import React, { useContext } from "react";
 import { AppContext } from "@/app/state/AppContext";
-import theme from "../Theme";
 
 /*<Typography variant="h6" component="div" sx={{ flexGrow: 1, color:"#2D3D4E" }}>
 News
@@ -24,8 +23,8 @@ const AppBar = styled(MuiAppBar, {
       duration: theme.transitions.duration.leavingScreen,
     }),
     ...(open && {
-      marginLeft: useTheme().drawerWidth?.width,
-      width: `calc(100% - ${useTheme().drawerWidth?.width}px)`,
+      marginLeft: theme.drawerWidth!.width,
+      width: `calc(100% - ${theme.drawerWidth?.width}px)`,
       transition: theme.transitions.create(['width', 'margin'], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.enteringScreen,
