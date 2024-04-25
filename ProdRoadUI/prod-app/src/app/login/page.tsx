@@ -4,6 +4,8 @@ import { styled } from '@mui/material/styles';
 import { Button, FormControl, FormHelperText, Grid, IconButton, Input, InputAdornment, InputLabel, OutlinedInput, Paper } from "@mui/material"
 import React from 'react';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { AppContext } from '../state/AppContext';
+import router, { useRouter } from 'next/navigation';
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'light' ? '#fff' : '#fff',
@@ -14,8 +16,15 @@ const Item = styled(Paper)(({ theme }) => ({
   }));
 
 export default function Login(){
+    const router = useRouter();
     const [showPassword, setShowPassword] = React.useState(false);
     const [signUp, setSignUp] = React.useState(false);
+    const {userInfo, setUserInfo} = React.useContext(AppContext)!.userContext!;
+
+    // userManagment on login screen
+    if (userInfo != null){
+        router.push('./');
+      }
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
     const handleClickSignUp = () => setSignUp((show) => !show);
@@ -23,6 +32,18 @@ export default function Login(){
     const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
     };
+
+    function handleSettingUser(){
+        setUserInfo({
+            token: true,
+            refreshToken: 'aa',
+            firstName: 'aa',
+            lastName: 'string'
+        });
+        console.log(userInfo?.firstName);
+        router.push('./');
+    }
+    
     //https://blog.hubspot.com/website/center-div-css
     return (
         <Grid container paddingTop={5}>
@@ -79,7 +100,7 @@ export default function Login(){
                         label="Password"
                         />
                     </FormControl>
-                    <Button variant="contained" color="success">
+                    <Button variant="contained" color="success" onClick={handleSettingUser}>
                         LOGIN
                     </Button>
                     <p>
