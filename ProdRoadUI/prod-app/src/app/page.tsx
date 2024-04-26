@@ -2,7 +2,7 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect } from "react";
 import { AppContext } from "./state/AppContext";
 
 
@@ -11,9 +11,12 @@ export default function Home() {
   const context = React.useContext(AppContext)!;
   //const {sideNav, setSideNav} = context.navContext;
   const {userInfo, setUserInfo} = context.userContext!;
-  if (userInfo == null){
-    router.push('./login');
-  }
+
+  useEffect(() =>
+    {if (userInfo == null){
+      console.log(userInfo);
+      router.push('./login');
+    }});
   return (
     <></>
   );

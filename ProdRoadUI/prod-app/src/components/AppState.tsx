@@ -1,7 +1,7 @@
 "use client"
 
 import { AppContext, ISideBarContext, IUserContext, IUserInfo } from "@/app/state/AppContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function AppState({
     children,
@@ -11,8 +11,24 @@ export default function AppState({
 
     //const [userContext, setUserContext] = useState<IUserContext | null>(null);
     //const [navContext, setNavContext] = useState<ISideBarContext | null>(null); 
-    const [userInfo, setUserInfo] = useState<IUserInfo | null>(null);
+    const [userInfo, setUserInfo] = useState<IUserInfo | null>(() => {
+        const storedValue = localStorage.getItem('userContext');
+        if (storedValue) {
+          return JSON.parse(storedValue);
+        };
+        return null;
+    });
+
+    /*token: true,
+            refreshToken: 'aa',
+            firstName: 'aa',
+            lastName: 'string'*/
     const [sideNav, setSideNav] = useState(false);
+
+    useEffect(() => {
+        if (userInfo?.token === null) return;
+        localStorage.setItem('userContext', JSON.stringify(userInfo));
+      }, [userInfo]);
 
     return (
         <AppContext.Provider value={{

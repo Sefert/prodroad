@@ -22,5 +22,4 @@ export interface IAppContext {
     navContext : ISideBarContext,
 }
 
-
 export const AppContext = createContext<IAppContext | null>(null);

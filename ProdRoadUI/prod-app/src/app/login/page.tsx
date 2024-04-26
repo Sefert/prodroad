@@ -2,7 +2,7 @@
 
 import { styled } from '@mui/material/styles';
 import { Button, FormControl, FormHelperText, Grid, IconButton, Input, InputAdornment, InputLabel, OutlinedInput, Paper } from "@mui/material"
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { AppContext } from '../state/AppContext';
 import router, { useRouter } from 'next/navigation';
@@ -22,9 +22,11 @@ export default function Login(){
     const {userInfo, setUserInfo} = React.useContext(AppContext)!.userContext!;
 
     // userManagment on login screen
-    if (userInfo != null){
-        router.push('./');
-      }
+    useEffect(() =>
+        {if (userInfo != null){
+            console.log(userInfo?.firstName);
+            router.push('./');
+        }});
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
     const handleClickSignUp = () => setSignUp((show) => !show);
@@ -33,15 +35,15 @@ export default function Login(){
         event.preventDefault();
     };
 
-    function handleSettingUser(){
+    const handleSettingUser = () =>{
         setUserInfo({
             token: true,
             refreshToken: 'aa',
             firstName: 'aa',
             lastName: 'string'
         });
-        console.log(userInfo?.firstName);
-        router.push('./');
+        
+        //router.push('./');
     }
     
     //https://blog.hubspot.com/website/center-div-css
