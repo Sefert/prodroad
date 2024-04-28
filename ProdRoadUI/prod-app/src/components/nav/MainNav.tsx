@@ -45,6 +45,11 @@ export default function MainNav() {
       }
     }
 
+    const logout = () =>{
+      setUserInfo(null);    
+      //router.push('./');
+  }
+
     return (
         <header>
             <Box sx={{ flexGrow: 1}}>
@@ -63,7 +68,7 @@ export default function MainNav() {
                         >
                             <MenuIcon />
                         </IconButton>
-                        {userInfo != null  && <Button sx={{ mr: 2, color:"#2D3D4E" }}>Logout</Button>}
+                        {userInfo != null  && <Button sx={{ mr: 2, color:"#2D3D4E" }} onClick={logout}>Logout</Button>}
                     </Toolbar>
                 </AppBar>
             </Box>

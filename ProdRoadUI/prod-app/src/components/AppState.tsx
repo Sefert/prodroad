@@ -26,8 +26,11 @@ export default function AppState({
     const [sideNav, setSideNav] = useState(false);
 
     useEffect(() => {
-        if (userInfo?.token === null) return;
-        localStorage.setItem('userContext', JSON.stringify(userInfo));
+        if (userInfo?.token === null) { 
+            localStorage.setItem('userContext', 'undefined'); 
+        } else {
+            localStorage.setItem('userContext', JSON.stringify(userInfo));
+        }
       }, [userInfo]);
 
     return (
