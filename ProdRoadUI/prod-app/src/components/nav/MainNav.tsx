@@ -63,7 +63,7 @@ export default function MainNav() {
                         >
                             <MenuIcon />
                         </IconButton>
-                        <Button sx={{ mr: 2, color:"#2D3D4E" }}>Login</Button>
+                        {userInfo != null  && <Button sx={{ mr: 2, color:"#2D3D4E" }}>Logout</Button>}
                     </Toolbar>
                 </AppBar>
             </Box>
