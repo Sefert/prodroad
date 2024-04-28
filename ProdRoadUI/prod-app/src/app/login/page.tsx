@@ -47,8 +47,10 @@ export default function Login(){
     }
     
     //https://blog.hubspot.com/website/center-div-css
+
     return (
-        <Grid container paddingTop={5}>
+        userInfo == null && 
+        (<Grid container paddingTop={5}>
             <Grid xs={3}/>
             <Grid xs={6}>
                 <Item sx={{ background:'#929cb3', maxWidth:500, minWidth:350,position:"absolute",left: '50%', transform: 'translate(-50%, 50%)'}}>
@@ -114,6 +116,6 @@ export default function Login(){
                 </Item>
             </Grid>
             <Grid xs={3}/>
-        </Grid>
+        </Grid>)
     );
 }
