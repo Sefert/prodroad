@@ -6,7 +6,6 @@ import MuiDrawer from '@mui/material/Drawer';
 import { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import List from '@mui/material/List';
 import CssBaseline from '@mui/material/CssBaseline';
-import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -21,7 +20,6 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 import FactoryIcon from '@mui/icons-material/Factory';
 import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
-import { Button } from '@mui/material';
 import { useRouter } from 'next/navigation';
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -74,7 +72,11 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 
-export default function SideNav() {
+export default function SideNav({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>){
   const theme = useTheme();
   const context = React.useContext(AppContext)!;
   const {sideNav, setSideNav} = context.navContext;
@@ -162,7 +164,7 @@ export default function SideNav() {
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
-        
+        {children}
       </Box>
     </Box>
   );}

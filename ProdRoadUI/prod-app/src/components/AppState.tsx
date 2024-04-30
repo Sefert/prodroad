@@ -9,28 +9,25 @@ export default function AppState({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-
-    //const [userContext, setUserContext] = useState<IUserContext | null>(null);
-    //const [navContext, setNavContext] = useState<ISideBarContext | null>(null); 
+    const router = useRouter();
+    //https://github.com/vercel/next.js/discussions/19911
     const [userInfo, setUserInfo] = useState<IUserInfo | null>(() => {
-        const storedValue = () => {return localStorage.getItem('userContext');}
+        const storedValue = typeof window !== "undefined" ? localStorage.getItem('userContext') : null; 
         if (typeof storedValue === 'string') {
           return JSON.parse(storedValue);
         };
         return null;     
     });
-    const router = useRouter();
+    
 
-    /*token: true,
-            refreshToken: 'aa',
-            firstName: 'aa',
-            lastName: 'string'*/
     const [sideNav, setSideNav] = useState(false);
 
     useEffect(() => {
-        localStorage.setItem('userContext', JSON.stringify(userInfo));
-        if (userInfo === null){
-            router.push('/login');
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('userContext', JSON.stringify(userInfo));
+            if (userInfo === null){
+                router.push('/login');
+            }
         }
       }, [router, userInfo]);
 

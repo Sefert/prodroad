@@ -42,8 +42,6 @@ export default function Login(){
             firstName: 'aa',
             lastName: 'string'
         });
-        
-        //router.push('./');
     }
     
     //https://blog.hubspot.com/website/center-div-css
