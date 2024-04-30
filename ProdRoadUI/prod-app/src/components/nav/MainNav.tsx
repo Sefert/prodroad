@@ -47,7 +47,6 @@ export default function MainNav() {
 
     const logout = () =>{
       setUserInfo(null);    
-      //router.push('./');
   }
 
     return (

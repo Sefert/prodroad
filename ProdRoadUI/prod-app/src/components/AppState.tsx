@@ -1,6 +1,7 @@
 "use client"
 
 import { AppContext, ISideBarContext, IUserContext, IUserInfo } from "@/app/state/AppContext";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function AppState({
@@ -18,6 +19,7 @@ export default function AppState({
         };
         return null;     
     });
+    const router = useRouter();
 
     /*token: true,
             refreshToken: 'aa',
@@ -27,7 +29,10 @@ export default function AppState({
 
     useEffect(() => {
         localStorage.setItem('userContext', JSON.stringify(userInfo));
-      }, [userInfo]);
+        if (userInfo === null){
+            router.push('/login');
+        }
+      }, [router, userInfo]);
 
     return (
         <AppContext.Provider value={{
