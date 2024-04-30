@@ -15,10 +15,14 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
 import { AppContext } from '@/app/state/AppContext';
-
+import GroupsIcon from '@mui/icons-material/Groups';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import FactoryIcon from '@mui/icons-material/Factory';
+import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
+import { Button } from '@mui/material';
+import { useRouter } from 'next/navigation';
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: theme.drawerWidth!.width,
@@ -75,12 +79,20 @@ export default function MiniDrawer() {
   const context = React.useContext(AppContext)!;
   const {sideNav, setSideNav} = context.navContext;
   const {userInfo, setUserInfo} = context.userContext!;
+  const router = useRouter();
+ 
 
   function handleDrawerClose(){ 
     let open1 = sideNav ? false : true;
     setSideNav(open1);
-}
-
+  }
+  //https://sentry.io/answers/why-can-t-the-react-js-onclick-event-pass-a-value-to-a-method/
+  function navTo(index:Number){
+    if (index === 0) {
+      router.push('./teams');
+    }
+  }
+   
   if (userInfo != null){
   return (
     <Box sx={{ display: 'flex'}}>
@@ -94,9 +106,9 @@ export default function MiniDrawer() {
         </DrawerHeader>
         <Divider />
         <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+          {['Plan','Stock'].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-              <ListItemButton
+              <ListItemIcon
                 sx={{
                   minHeight: 48,
                   justifyContent: sideNav ? 'initial' : 'center',
@@ -110,16 +122,17 @@ export default function MiniDrawer() {
                     justifyContent: 'center',
                   }}
                 >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  {index == 0 && <FactoryIcon/>}
+                  {index == 1 && <InventoryIcon/>}
                 </ListItemIcon>
                 <ListItemText primary={text} sx={{ opacity: sideNav ? 1 : 0 }} />
-              </ListItemButton>
+              </ListItemIcon>
             </ListItem>
           ))}
         </List>
         <Divider />
         <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
+          {['Teams', 'Business', 'Problems'].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: 'block' }}>
               <ListItemButton
                 sx={{
@@ -127,6 +140,8 @@ export default function MiniDrawer() {
                   justifyContent: sideNav ? 'initial' : 'center',
                   px: 2.5,
                 }}
+                href=''
+                onClick={() => navTo(index)}
               >
                 <ListItemIcon
                   sx={{
@@ -135,7 +150,9 @@ export default function MiniDrawer() {
                     justifyContent: 'center',
                   }}
                 >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  {index == 0 && <GroupsIcon/>}
+                  {index == 1 && <BusinessCenterIcon/>}
+                  {index == 2 && <ReportProblemIcon/>}
                 </ListItemIcon>
                 <ListItemText primary={text} sx={{ opacity: sideNav ? 1 : 0 }} />
               </ListItemButton>

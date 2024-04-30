@@ -25,7 +25,6 @@ declare module '@mui/material/styles' {
   }
 }
 
-
 //https://mui.com/material-ui/customization/default-theme/?expand-path=$.palette.warning
 const theme : Theme = createTheme({
   typography: {

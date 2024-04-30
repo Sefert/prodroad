@@ -12,11 +12,11 @@ export default function AppState({
     //const [userContext, setUserContext] = useState<IUserContext | null>(null);
     //const [navContext, setNavContext] = useState<ISideBarContext | null>(null); 
     const [userInfo, setUserInfo] = useState<IUserInfo | null>(() => {
-        const storedValue = localStorage.getItem('userContext');
-        if (storedValue) {
+        const storedValue = () => {return localStorage.getItem('userContext');}
+        if (typeof storedValue === 'string') {
           return JSON.parse(storedValue);
         };
-        return null;
+        return null;     
     });
 
     /*token: true,
@@ -26,11 +26,7 @@ export default function AppState({
     const [sideNav, setSideNav] = useState(false);
 
     useEffect(() => {
-        if (userInfo?.token === null) { 
-            localStorage.setItem('userContext', 'undefined'); 
-        } else {
-            localStorage.setItem('userContext', JSON.stringify(userInfo));
-        }
+        localStorage.setItem('userContext', JSON.stringify(userInfo));
       }, [userInfo]);
 
     return (
