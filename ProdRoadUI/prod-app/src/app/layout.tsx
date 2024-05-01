@@ -8,6 +8,7 @@ import theme from "@/components/Theme";
 import SideNav from "@/components/nav/SideNav";
 import AppState from "@/components/AppState";
 import { matchPath, useLocation } from "react-router";
+import Login from "./login/page";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -35,7 +36,7 @@ export default function RootLayout({
                 <SideNav>
                   {children}
                 </SideNav>
-                {children}
+                <Login/>
             </AppState>
           </ThemeProvider>
         </AppRouterCacheProvider>
