@@ -21,6 +21,7 @@ import FactoryIcon from '@mui/icons-material/Factory';
 import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import { useRouter } from 'next/navigation';
+import Login from '@/app/login/page';
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: theme.drawerWidth!.width,
@@ -167,5 +168,7 @@ export default function SideNav({
         {children}
       </Box>
     </Box>
-  );}
+  );} else if (userInfo == null) {
+    return (<Login/>);
+  } else {return (<></>);};
 }

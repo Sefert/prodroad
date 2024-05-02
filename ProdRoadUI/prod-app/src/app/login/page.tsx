@@ -6,6 +6,7 @@ import React, { useEffect } from 'react';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { AppContext } from '../state/AppContext';
 import router, { useRouter } from 'next/navigation';
+import { NextResponse } from 'next/server';
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'light' ? '#fff' : '#fff',
@@ -15,6 +16,7 @@ const Item = styled(Paper)(({ theme }) => ({
     textAlign: 'center',
   }));
 
+  //export default dynamic(() => Promise.resolve(Mycomponent), { ssr: false });
 export default function Login(){
     const router = useRouter();
     const [showPassword, setShowPassword] = React.useState(false);
@@ -22,11 +24,11 @@ export default function Login(){
     const {userInfo, setUserInfo} = React.useContext(AppContext)!.userContext!;
 
     // userManagment on login screen
-    useEffect(() =>
+    /*useEffect(() =>
         {if (userInfo != null){
             console.log(userInfo?.firstName);
-            router.push('./');
-        }});
+            router.back;
+        }});*/
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
     const handleClickSignUp = () => setSignUp((show) => !show);
@@ -42,7 +44,13 @@ export default function Login(){
             firstName: 'aa',
             lastName: 'string'
         });
+        router.push('./');
     }
+
+    if (userInfo) {
+        return (
+          <></>
+    )};
     
     //https://blog.hubspot.com/website/center-div-css
 

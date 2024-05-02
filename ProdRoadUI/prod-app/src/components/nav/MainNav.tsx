@@ -2,8 +2,9 @@
 import { Box, Button, CssBaseline, IconButton, Toolbar, styled, useTheme } from "@mui/material";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import MenuIcon from '@mui/icons-material/Menu';
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { AppContext } from "@/app/state/AppContext";
+import { useRouter } from "next/navigation";
 
 /*<Typography variant="h6" component="div" sx={{ flexGrow: 1, color:"#2D3D4E" }}>
 News
@@ -33,10 +34,11 @@ const AppBar = styled(MuiAppBar, {
   }));
   
 export default function MainNav() {
-    
+    const router = useRouter();
     const context = React.useContext(AppContext)!;
     const {sideNav, setSideNav} = context.navContext;
     const {userInfo, setUserInfo} = context.userContext!;
+
 
     function handleDrawerOpen(){ 
       if (userInfo != null){
@@ -46,7 +48,8 @@ export default function MainNav() {
     }
 
     const logout = () =>{
-      setUserInfo(null);    
+      setUserInfo(null);
+      setSideNav(false);
   }
 
     return (

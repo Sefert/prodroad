@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { AppContext } from "./state/AppContext";
 
-//https://stackoverflow.com/questions/65657347/how-to-use-if-statement-in-array-map-function-with-next-js
+//
 export default function Home() {
   const router = useRouter();
   const context = React.useContext(AppContext)!;
