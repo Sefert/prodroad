@@ -39,10 +39,13 @@ export default function AppState({
 }>) {
     const router = useRouter();
     //https://github.com/vercel/next.js/discussions/19911  typeof window !== "undefined" ? localStorage.getItem('userContext') : null
+    //https://stackoverflow.com/questions/60688411/assign-local-storage-to-react-state-react-hooks
     const [userInfo, setUserInfo] = useReducer((prev:IUserInfo|null, cur:IUserInfo|null) => {
         localStorage.setItem('userContext', JSON.stringify(cur));
         return cur;
-      }, typeof localStorage.getItem('userContext') !== 'undefined' && localStorage.getItem('userContext') !== null ? JSON.parse(localStorage!.getItem('userContext')!) : null
+      }, typeof localStorage.getItem('userContext') !== 'undefined' && 
+            localStorage.getItem('userContext') !== null ? 
+            JSON.parse(localStorage!.getItem('userContext')!) : null
     );
     
     /*useLocalStorageState('userContext', null);*/

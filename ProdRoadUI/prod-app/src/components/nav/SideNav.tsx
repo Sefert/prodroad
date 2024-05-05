@@ -92,7 +92,7 @@ export default function SideNav({
   //https://sentry.io/answers/why-can-t-the-react-js-onclick-event-pass-a-value-to-a-method/
   function navTo(index:Number){
     if (index === 0) {
-      router.push('./teams');
+      router.push('/teams');
     }
   }
    
