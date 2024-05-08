@@ -5,8 +5,8 @@ import { grey } from "@mui/material/colors"
 //https://stackoverflow.com/questions/49007357/how-to-make-the-whole-card-component-clickable-in-material-ui-using-react-js
 export default function TeamsId(){
     return (
-        <Box sx={{ width: 180, float: "right", borderRight:1, borderRightColor:grey[300], 
-                borderRightStyle:'solid', marginTop:-1, height:"80vh"}}>
+        <Box sx={{ width: 180, float: "left", borderRight:1, borderRightColor:grey[300], 
+                borderRightStyle:'solid', height:"80vh"}}>
             <CardActionArea sx={{ width:150, height:35}}>
             <CardContent sx={{ width:150, height:35, padding:0}}>
                 <Card sx={{ width:150, height:35, float: "left"}}>
