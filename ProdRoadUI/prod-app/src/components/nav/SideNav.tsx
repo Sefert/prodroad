@@ -163,7 +163,7 @@ export default function SideNav({
           ))}
         </List>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box component="main" sx={{ flexGrow: 1, p: 0 }}>
         <DrawerHeader />
         {children}
       </Box>
