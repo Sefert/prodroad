@@ -9,6 +9,8 @@ import { useLocation } from "react-router";
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useState } from "react";
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import { IItemCardProp } from "@/types/IItemCardProp";
 
 
 //https://stackoverflow.com/questions/49007357/how-to-make-the-whole-card-component-clickable-in-material-ui-using-react-js
@@ -16,10 +18,14 @@ export default function ItemCards<T>(
   //elemList:T[],
   {
     elemList,
+    marginLeft,
     children,
+    itemCardProp
   }: Readonly<{
     children: React.ReactNode;
     elemList:Array<T>;
+    marginLeft:number,
+    itemCardProp:IItemCardProp
   }>){
     const router = useRouter();
     const [elements, addElem] =useState<Array<T>>(elemList);
@@ -42,15 +48,26 @@ export default function ItemCards<T>(
     <Box component="main" sx={{float: "left", display:"inline"}}>
         <Box sx={{ width: 180, float: "left", borderRight:1, borderRightColor:grey[300], 
                     borderRightStyle:'solid', height:"100vh"}}>                    
+          {itemCardProp.showAddName == true && 
           <Stack direction="row" spacing={1} sx={{borderBottom:1, borderBottomColor:grey[300], 
                       borderBottomStyle:'solid'}}>
             <IconButton aria-label="add" onClick={addElems}>
               <AddIcon />
               <Typography>
-                ADDTEAM
+                {itemCardProp.addName}
               </Typography>
             </IconButton>
-          </Stack>
+          </Stack>}
+          {itemCardProp.showAddOther == true && 
+          <Stack direction="row" spacing={1} sx={{borderBottom:1, borderBottomColor:grey[300], 
+                      borderBottomStyle:'solid'}}>
+            <IconButton aria-label="add" onClick={addElems}>
+              <PersonAddIcon />
+              <Typography>
+                {itemCardProp.addOther}
+              </Typography>
+            </IconButton>
+          </Stack>}
           {elements.map((text:T,index:number) => (
            <CardActionArea key={index} sx={{ width:170, height:35,m:0.5}} onClick={()=>navTo(0)}>
                 <CardContent sx={{ width:170, height:35,p:0}}>
@@ -63,7 +80,7 @@ export default function ItemCards<T>(
             </CardActionArea>
           ))}
         </Box>
-        <Box sx={{float: "left" , flexGrow: 1, ml:5}}>
+        <Box sx={{float: "left" , flexGrow: 1, ml:marginLeft}}>
           {children}
         </Box>
     </Box>
