@@ -28,19 +28,19 @@ export default function ItemCards<T>(
     const router = useRouter();
     const [elements, addElem] =useState<Array<T>>(elemList);
 
-    const navTo = (index:Number) =>{
-      router.push('/teams/persons/'+index);
+    const navToUser = (path:string) =>{
+      router.push(path);
     }
 
-    const navToUserPath = (path:string) =>{
-        router.push(path);
+    const navToUserPath = (index:number,path:string) =>{
+      router.push(path+(index+1));
     }
 
     const addElems = () =>{
       let data:T = elements[0];
       if (typeof data == 'string'){
         console.log(elements.length);
-        addElem([...elements,'TeamNew'+(elements.length+1)]);
+        addElem([...elements,'TeamNew'+(elements.length+2)]);
       }
     }
     console.log({elemList}.elemList);
@@ -49,7 +49,7 @@ export default function ItemCards<T>(
     <Box component="main" sx={{float: "left", display:"inline"}}>
         <Box sx={{ width: 180, float: "left", borderRight:1, borderRightColor:grey[300], 
                     borderRightStyle:'solid', height:"100vh"}}>                    
-          {itemCardProp.showAddMain == true && 
+          {itemCardProp.showAddMain && 
           <Stack direction="row" spacing={1} sx={{borderBottom:1, borderBottomColor:grey[300], 
                       borderBottomStyle:'solid'}}>
             <IconButton aria-label="add" onClick={addElems}>
@@ -59,10 +59,10 @@ export default function ItemCards<T>(
               </Typography>
             </IconButton>
           </Stack>}
-          {itemCardProp.showAddOther == true && 
+          {itemCardProp.showAddOther && 
           <Stack direction="row" spacing={1} sx={{borderBottom:1, borderBottomColor:grey[300], 
                       borderBottomStyle:'solid'}}>
-            <IconButton aria-label="add" onClick={addElems}>
+            <IconButton aria-label="add" onClick={()=>navToUser(itemCardProp.addOtherPath!)}>
               <PersonAddIcon />
               <Typography>
                 {itemCardProp.addOther}
@@ -70,7 +70,8 @@ export default function ItemCards<T>(
             </IconButton>
           </Stack>}
           {elements.map((text:T,index:number) => (
-           <CardActionArea key={index} sx={{ width:170, height:35,m:0.5}} onClick={()=>navTo(index)}>
+           <CardActionArea key={index} sx={{ width:170, height:35,m:0.5}} 
+              onClick={()=>navToUserPath(index,itemCardProp.addMainPath!)}>
                 <CardContent sx={{ width:170, height:35,p:0}}>
                     <Card sx={{ width:170, height:35, float: "left",pl:2}}>
                         <Typography>

@@ -11,10 +11,10 @@ export default function Teams({
           elemList= {['TEAM1','TEAM2']} 
           marginLeft={0}
           itemCardProp={{
-            addMain:"ADDTEAM",
-            addMainPath: undefined,
-            addOther: "ADDNEWPERSON",
-            addOtherPath: undefined,
+            addMain:"NEW TEAM",
+            addMainPath: '/teams/persons/',
+            addOther: "CONNECT PERSON",
+            addOtherPath: '/teams/person/',
             showAddMain: true,
             showAddOther: true,
         }}
