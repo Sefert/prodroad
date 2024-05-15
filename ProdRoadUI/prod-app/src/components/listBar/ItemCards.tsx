@@ -1,16 +1,14 @@
 "use client"
 
-import Layout from "@/app/layout";
 import { Box, Card, CardActionArea, CardContent, Container, IconButton, Stack, Typography } from "@mui/material"
 import { grey } from "@mui/material/colors"
-import { LayoutRouter } from "next/dist/server/app-render/entry-base";
 import { useRouter } from "next/navigation";
-import { useLocation } from "react-router";
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useState } from "react";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { IItemCardProp } from "@/types/IItemCardProp";
+import { Key } from "@mui/icons-material";
 
 
 //https://stackoverflow.com/questions/49007357/how-to-make-the-whole-card-component-clickable-in-material-ui-using-react-js
@@ -31,15 +29,18 @@ export default function ItemCards<T>(
     const [elements, addElem] =useState<Array<T>>(elemList);
 
     const navTo = (index:Number) =>{
-        if (index === 0) {
-          router.push('/teams/persons/id');
-        }
+      router.push('/teams/persons/'+index);
+    }
+
+    const navToUserPath = (path:string) =>{
+        router.push(path);
     }
 
     const addElems = () =>{
       let data:T = elements[0];
       if (typeof data == 'string'){
-        addElem([...elements,'TeamNew2']);
+        console.log(elements.length);
+        addElem([...elements,'TeamNew'+(elements.length+1)]);
       }
     }
     console.log({elemList}.elemList);
@@ -48,13 +49,13 @@ export default function ItemCards<T>(
     <Box component="main" sx={{float: "left", display:"inline"}}>
         <Box sx={{ width: 180, float: "left", borderRight:1, borderRightColor:grey[300], 
                     borderRightStyle:'solid', height:"100vh"}}>                    
-          {itemCardProp.showAddName == true && 
+          {itemCardProp.showAddMain == true && 
           <Stack direction="row" spacing={1} sx={{borderBottom:1, borderBottomColor:grey[300], 
                       borderBottomStyle:'solid'}}>
             <IconButton aria-label="add" onClick={addElems}>
               <AddIcon />
               <Typography>
-                {itemCardProp.addName}
+                {itemCardProp.addMain}
               </Typography>
             </IconButton>
           </Stack>}
@@ -69,7 +70,7 @@ export default function ItemCards<T>(
             </IconButton>
           </Stack>}
           {elements.map((text:T,index:number) => (
-           <CardActionArea key={index} sx={{ width:170, height:35,m:0.5}} onClick={()=>navTo(0)}>
+           <CardActionArea key={index} sx={{ width:170, height:35,m:0.5}} onClick={()=>navTo(index)}>
                 <CardContent sx={{ width:170, height:35,p:0}}>
                     <Card sx={{ width:170, height:35, float: "left",pl:2}}>
                         <Typography>

@@ -12,9 +12,11 @@ export default function Personslist({
             elemList= {['PERSON1','PERSON2']} 
             marginLeft={0}
             itemCardProp={{
-                addName: undefined,
+                addMain: undefined,
+                addMainPath: undefined,
                 addOther: undefined,
-                showAddName: false,
+                addOtherPath: undefined,
+                showAddMain: false,
                 showAddOther: false,
             }}
         >

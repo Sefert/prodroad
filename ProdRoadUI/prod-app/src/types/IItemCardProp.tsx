@@ -1,6 +1,8 @@
 export interface IItemCardProp {
-    addName?: string,
+    addMain?: string,
+    addMainPath?:string,
     addOther?: string,
-    showAddName?: boolean,
+    addOtherPath?:string,
+    showAddMain?: boolean,
     showAddOther?: boolean
 }
