@@ -4,12 +4,11 @@ import { Box, Card, CardActionArea, CardContent, Container, IconButton, Stack, T
 import { grey } from "@mui/material/colors"
 import { useRouter } from "next/navigation";
 import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { useState } from "react";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { IItemCardProp } from "@/types/IItemCardProp";
-import { Key } from "@mui/icons-material";
-
+import {DndContext} from '@dnd-kit/core';
+import {Draggable} from '@/components/dnd/Draggable';
 
 //https://stackoverflow.com/questions/49007357/how-to-make-the-whole-card-component-clickable-in-material-ui-using-react-js
 export default function ItemCards<T>(
@@ -40,7 +39,7 @@ export default function ItemCards<T>(
       let data:T = elements[0];
       if (typeof data == 'string'){
         console.log(elements.length);
-        addElem([...elements,'TeamNew'+(elements.length+2)]);
+        addElem([...elements,'TeamNew'+(elements.length+1)]);
       }
     }
     console.log({elemList}.elemList);
@@ -69,17 +68,23 @@ export default function ItemCards<T>(
               </Typography>
             </IconButton>
           </Stack>}
+
           {elements.map((text:T,index:number) => (
-           <CardActionArea key={index} sx={{ width:170, height:35,m:0.5}} 
+                      <DndContext key={index} >
+                      <Draggable>
+           <CardActionArea sx={{ width:170, height:35,m:0.5}} 
               onClick={()=>navToUserPath(index,itemCardProp.addMainPath!)}>
+
                 <CardContent sx={{ width:170, height:35,p:0}}>
                     <Card sx={{ width:170, height:35, float: "left",pl:2}}>
-                        <Typography>
+                      <Typography>
                             {text}
                         </Typography>
                     </Card>        
                 </CardContent>
             </CardActionArea>
+                            </Draggable>
+                            </DndContext>
           ))}
         </Box>
         <Box sx={{float: "left" , flexGrow: 1, ml:marginLeft}}>
