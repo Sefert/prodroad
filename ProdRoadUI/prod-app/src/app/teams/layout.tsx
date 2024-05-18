@@ -17,6 +17,7 @@ export default function Teams({
             addOtherPath: '/teams/person/',
             showAddMain: true,
             showAddOther: true,
+            draggable:false
         }}
         >
             {children}

@@ -4,5 +4,6 @@ export interface IItemCardProp {
     addOther?: string,
     addOtherPath?:string,
     showAddMain?: boolean,
-    showAddOther?: boolean
+    showAddOther?: boolean,
+    draggable?:boolean
 }

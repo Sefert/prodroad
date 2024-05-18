@@ -9,6 +9,8 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { IItemCardProp } from "@/types/IItemCardProp";
 import {DndContext} from '@dnd-kit/core';
 import {Draggable} from '@/components/dnd/Draggable';
+import { ContextMenu, ContextMenuItem, ContextMenuTrigger } from "rctx-contextmenu";
+import CardMenu from "../menu/cardMenu";
 
 //https://stackoverflow.com/questions/49007357/how-to-make-the-whole-card-component-clickable-in-material-ui-using-react-js
 export default function ItemCards<T>(
@@ -25,6 +27,7 @@ export default function ItemCards<T>(
     itemCardProp:IItemCardProp
   }>){
     const router = useRouter();
+
     const [elements, addElem] =useState<Array<T>>(elemList);
 
     const navToUser = (path:string) =>{
@@ -43,6 +46,7 @@ export default function ItemCards<T>(
       }
     }
     console.log({elemList}.elemList);
+
     return (
 
     <Box component="main" sx={{float: "left", display:"inline"}}>
@@ -69,12 +73,14 @@ export default function ItemCards<T>(
             </IconButton>
           </Stack>}
 
+          <CardMenu/>
+
           {elements.map((text:T,index:number) => (
-          <DndContext  key={index} >
+             <ContextMenuTrigger key={index} id={index.toString()}>
+             <DndContext >
           <Draggable id={index.toString()}>
            <CardActionArea sx={{ width:170, height:35,m:0.5}} 
               onClick={()=>navToUserPath(index,itemCardProp.addMainPath!)}>
-
                 <CardContent sx={{ width:170, height:35,p:0}}>
                     <Card sx={{ width:170, height:35, float: "left",pl:2}}>
                       <Typography>
@@ -85,6 +91,9 @@ export default function ItemCards<T>(
             </CardActionArea>
           </Draggable>
           </DndContext>
+           </ContextMenuTrigger>
+
+          
           ))}
         </Box>
         <Box sx={{float: "left" , flexGrow: 1, ml:marginLeft}}>
