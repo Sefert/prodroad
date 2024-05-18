@@ -70,8 +70,8 @@ export default function ItemCards<T>(
           </Stack>}
 
           {elements.map((text:T,index:number) => (
-                      <DndContext key={index} >
-                      <Draggable>
+          <DndContext  key={index} >
+          <Draggable id={index.toString()}>
            <CardActionArea sx={{ width:170, height:35,m:0.5}} 
               onClick={()=>navToUserPath(index,itemCardProp.addMainPath!)}>
 
@@ -80,11 +80,11 @@ export default function ItemCards<T>(
                       <Typography>
                             {text}
                         </Typography>
-                    </Card>        
+                    </Card> 
                 </CardContent>
             </CardActionArea>
-                            </Draggable>
-                            </DndContext>
+          </Draggable>
+          </DndContext>
           ))}
         </Box>
         <Box sx={{float: "left" , flexGrow: 1, ml:marginLeft}}>
