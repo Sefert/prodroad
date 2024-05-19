@@ -45,7 +45,36 @@ export default function ItemCards<T>(
         addElem([...elements,'TeamNew'+(elements.length+1)]);
       }
     }
-    console.log({elemList}.elemList);
+    
+    const draggableView = (text:T,index:number) =>{
+        if (itemCardProp.draggable) {
+            return (<DndContext>
+              <Draggable id={index.toString()}>
+                <CardActionArea sx={{ width:170, height:35,m:0.5}} 
+                    onClick={()=>navToUserPath(index,itemCardProp.addMainPath!)}>
+                      <CardContent sx={{ width:170, height:35,p:0}}>
+                          <Card sx={{ width:170, height:35, float: "left",pl:2}}>
+                            <Typography>
+                              {text}
+                            </Typography>
+                          </Card> 
+                      </CardContent>
+                </CardActionArea>
+              </Draggable>
+            </DndContext>)
+        } else {
+        return (<CardActionArea sx={{ width:170, height:35,m:0.5}} 
+          onClick={()=>navToUserPath(index,itemCardProp.addMainPath!)}>
+            <CardContent sx={{ width:170, height:35,p:0}}>
+                <Card sx={{ width:170, height:35, float: "left",pl:2}}>
+                  <Typography>
+                    {text}
+                  </Typography>
+                </Card> 
+            </CardContent>
+          </CardActionArea>)
+        }
+    }
 
     return (
 
@@ -73,27 +102,11 @@ export default function ItemCards<T>(
             </IconButton>
           </Stack>}
 
-          <CardMenu/>
-
           {elements.map((text:T,index:number) => (
-             <ContextMenuTrigger key={index} id={index.toString()}>
-             <DndContext >
-          <Draggable id={index.toString()}>
-           <CardActionArea sx={{ width:170, height:35,m:0.5}} 
-              onClick={()=>navToUserPath(index,itemCardProp.addMainPath!)}>
-                <CardContent sx={{ width:170, height:35,p:0}}>
-                    <Card sx={{ width:170, height:35, float: "left",pl:2}}>
-                      <Typography>
-                            {text}
-                        </Typography>
-                    </Card> 
-                </CardContent>
-            </CardActionArea>
-          </Draggable>
-          </DndContext>
-           </ContextMenuTrigger>
-
-          
+          <ContextMenuTrigger key={index} id={index.toString()}>
+            <CardMenu id={index.toString()}/>
+            {draggableView(text,index)}
+          </ContextMenuTrigger>
           ))}
         </Box>
         <Box sx={{float: "left" , flexGrow: 1, ml:marginLeft}}>
